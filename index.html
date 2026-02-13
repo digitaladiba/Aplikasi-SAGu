@@ -3,457 +3,491 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Guru Pro V2</title>
+  <title>Admin Guru Pro V3</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script> 
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
     body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
     
-    .loader { border: 4px solid #f3f3f3; border-radius: 50%; border-top: 4px solid #3b82f6; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+    .loader { border: 4px solid #f3f3f3; border-top: 4px solid #2563eb; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Sidebar Submenu Animation */
+    .submenu { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background-color: #1e293b; }
+    .submenu.open { max-height: 200px; }
 
     /* Print Styling */
     @media print {
-      @page { size: landscape; margin: 10mm; }
-      body * { visibility: hidden; }
-      .print-area, .print-area * { visibility: visible; }
-      .print-area { position: absolute; left: 0; top: 0; width: 100%; }
-      .no-print { display: none !important; }
-      table { border-collapse: collapse; width: 100%; font-size: 11px; }
-      th, td { border: 1px solid black !important; padding: 4px; }
-      th { background-color: #e2e8f0 !important; -webkit-print-color-adjust: exact; }
+      @page { size: landscape; margin: 5mm; }
+      body { background: white; -webkit-print-color-adjust: exact; }
+      #sidebar, #login-screen, #loading, .no-print { display: none !important; }
+      #main-content { margin: 0; padding: 0; width: 100%; }
+      .view-sec { display: none; }
+      .view-sec.active-print { display: block !important; }
+      table { width: 100%; border-collapse: collapse; font-size: 11px; }
+      th, td { border: 1px solid black !important; padding: 4px; color: black !important; page-break-inside: avoid; }
+      th { background-color: #e2e8f0 !important; }
+      .kop-surat { display: flex; border-bottom: 3px double black; padding-bottom: 10px; margin-bottom: 10px; justify-content: center; text-align: center; }
     }
   </style>
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800">
 
-  <div id="loading" class="fixed inset-0 bg-white/90 z-50 flex flex-col items-center justify-center hidden">
-    <div class="loader mb-2"></div>
-    <p class="text-sm font-bold text-blue-600">Menyimpan ke Database...</p>
+  <!-- LOADING -->
+  <div id="loading" class="fixed inset-0 bg-white/90 z-[60] flex flex-col items-center justify-center hidden">
+    <div class="loader mb-2"></div><p class="font-bold text-blue-600">Memproses...</p>
   </div>
 
-  <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-2xl z-20">
-    <div class="p-5 border-b border-slate-700 text-center">
-      <h1 class="text-xl font-bold tracking-wider">GURU PRO <span class="text-blue-400">V2</span></h1>
-      <p class="text-[10px] text-slate-400 mt-1">Sistem Administrasi Terpadu</p>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center">
+    <div class="bg-white p-8 rounded-2xl shadow-2xl w-96 border-t-8 border-blue-600">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 text-blue-600 text-2xl"><i class="fa-solid fa-user-shield"></i></div>
+        <h2 class="text-2xl font-bold text-slate-800">Login Admin</h2>
+        <p class="text-xs text-slate-500">Sistem Administrasi Guru V3.0</p>
+      </div>
+      <form onsubmit="handleLogin(event)" class="space-y-4">
+        <input type="text" id="uName" class="w-full border p-3 rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Username" required>
+        <input type="password" id="uPass" class="w-full border p-3 rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Password" required>
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">MASUK APLIKASI</button>
+      </form>
+      <div class="mt-4 text-center text-[10px] text-slate-400">Default: admin / 12345</div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="bg-slate-900 text-slate-300 w-64 flex flex-col shadow-xl z-20 transition-all hidden">
+    <div class="p-5 border-b border-slate-700 bg-slate-800 flex items-center gap-3">
+      <div class="w-10 h-10 bg-blue-600 rounded flex items-center justify-center text-white font-bold"><i class="fa-solid fa-school"></i></div>
+      <div><h1 class="font-bold text-white text-sm">GURU PRO</h1><p class="text-[10px] text-blue-400">Admin V3.0</p></div>
     </div>
     
-    <nav class="flex-1 overflow-y-auto p-2 space-y-1 text-xs">
-      <div class="px-3 py-2 text-slate-500 font-bold uppercase text-[10px]">Utama</div>
-      <button onclick="nav('dashboard')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-home w-4"></i> Dashboard</button>
-      <button onclick="nav('kelas')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-chalkboard w-4"></i> Data Kelas</button>
-      <button onclick="nav('siswa')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-users w-4"></i> Data Siswa</button>
+    <nav class="flex-1 overflow-y-auto py-2 text-xs font-medium">
+      <div class="px-4 py-2 text-[10px] uppercase text-slate-500 font-bold tracking-wider mt-2">Utama</div>
+      <button onclick="nav('dashboard')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex gap-3 items-center"><i class="fa-solid fa-gauge w-4"></i> Dashboard</button>
+      <button onclick="nav('kelas')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex gap-3 items-center"><i class="fa-solid fa-chalkboard w-4"></i> Data Kelas</button>
+      <button onclick="nav('siswa')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex gap-3 items-center"><i class="fa-solid fa-users w-4"></i> Data Siswa</button>
       
-      <div class="px-3 py-2 text-slate-500 font-bold uppercase text-[10px] mt-2">Administrasi</div>
-      <button onclick="nav('absen')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-regular fa-calendar-check w-4"></i> Absensi Harian</button>
-      <button onclick="nav('jurnal')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-book w-4"></i> Jurnal Mengajar</button>
-      <button onclick="nav('prota')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-list w-4"></i> Prota & Prosem</button>
+      <!-- MENU ABSENSI -->
+      <div class="px-4 py-2 text-[10px] uppercase text-slate-500 font-bold tracking-wider mt-2">Administrasi</div>
+      <button onclick="toggleMenu('sub-absen')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex justify-between items-center group">
+        <span class="flex gap-3 items-center"><i class="fa-solid fa-calendar-check w-4 text-yellow-400"></i> Absensi</span>
+        <i class="fa-solid fa-chevron-down text-[10px] group-hover:rotate-180 transition"></i>
+      </button>
+      <div id="sub-absen" class="submenu">
+        <button onclick="nav('absen_input')" class="w-full text-left pl-12 py-2 hover:bg-slate-700 hover:text-white flex gap-2"><i class="fa-solid fa-pen"></i> Input Absen</button>
+        <button onclick="nav('absen_rekap')" class="w-full text-left pl-12 py-2 hover:bg-slate-700 hover:text-white flex gap-2"><i class="fa-solid fa-table"></i> Rekapitulasi</button>
+        <button onclick="nav('absen_cetak')" class="w-full text-left pl-12 py-2 hover:bg-slate-700 hover:text-white flex gap-2"><i class="fa-solid fa-print"></i> Cetak Absen</button>
+      </div>
 
-      <div class="px-3 py-2 text-slate-500 font-bold uppercase text-[10px] mt-2">Penilaian</div>
-      <button onclick="nav('nilai')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-marker w-4"></i> Input Nilai</button>
-      <button onclick="nav('rekap_nilai')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-print w-4"></i> Rekap & Rapor</button>
+      <!-- MENU JURNAL -->
+      <button onclick="toggleMenu('sub-jurnal')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex justify-between items-center group">
+        <span class="flex gap-3 items-center"><i class="fa-solid fa-book-open w-4 text-purple-400"></i> Jurnal KBM</span>
+        <i class="fa-solid fa-chevron-down text-[10px] group-hover:rotate-180 transition"></i>
+      </button>
+      <div id="sub-jurnal" class="submenu">
+        <button onclick="nav('jurnal_input')" class="w-full text-left pl-12 py-2 hover:bg-slate-700 hover:text-white flex gap-2"><i class="fa-solid fa-pen"></i> Input Jurnal</button>
+        <button onclick="nav('jurnal_rekap')" class="w-full text-left pl-12 py-2 hover:bg-slate-700 hover:text-white flex gap-2"><i class="fa-solid fa-list"></i> Lihat Jurnal</button>
+        <button onclick="nav('jurnal_cetak')" class="w-full text-left pl-12 py-2 hover:bg-slate-700 hover:text-white flex gap-2"><i class="fa-solid fa-print"></i> Cetak Jurnal</button>
+      </div>
+
+      <!-- MENU NILAI -->
+      <button onclick="toggleMenu('sub-nilai')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex justify-between items-center group">
+        <span class="flex gap-3 items-center"><i class="fa-solid fa-marker w-4 text-red-400"></i> Penilaian</span>
+        <i class="fa-solid fa-chevron-down text-[10px] group-hover:rotate-180 transition"></i>
+      </button>
+      <div id="sub-nilai" class="submenu">
+        <button onclick="nav('nilai_input')" class="w-full text-left pl-12 py-2 hover:bg-slate-700 hover:text-white flex gap-2"><i class="fa-solid fa-pen"></i> Input Nilai</button>
+        <button onclick="nav('nilai_rekap')" class="w-full text-left pl-12 py-2 hover:bg-slate-700 hover:text-white flex gap-2"><i class="fa-solid fa-file-contract"></i> Rekap/Rapor</button>
+        <button onclick="nav('nilai_cetak')" class="w-full text-left pl-12 py-2 hover:bg-slate-700 hover:text-white flex gap-2"><i class="fa-solid fa-print"></i> Cetak Nilai</button>
+      </div>
+
+      <div class="px-4 py-2 text-[10px] uppercase text-slate-500 font-bold tracking-wider mt-2">Lainnya</div>
+      <button onclick="nav('pengaturan')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex gap-3 items-center"><i class="fa-solid fa-gear w-4"></i> Pengaturan</button>
+      <button onclick="location.reload()" class="w-full text-left px-6 py-3 hover:bg-red-900 text-red-300 flex gap-3 items-center"><i class="fa-solid fa-power-off w-4"></i> Logout</button>
     </nav>
   </aside>
 
-  <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50">
-    <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6 z-10">
-      <h2 id="page-title" class="text-lg font-bold text-slate-700">DASHBOARD</h2>
-      <div class="flex items-center gap-4">
-        <select id="globalKelasFilter" onchange="applyGlobalFilter()" class="border rounded p-1 text-xs bg-slate-50">
-          <option value="all">Semua Kelas</option>
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-100 hidden" id="main-app">
+    <header class="h-16 bg-white border-b flex items-center justify-between px-6 shadow-sm z-10 no-print">
+      <h2 id="page-title" class="text-xl font-bold text-slate-800">DASHBOARD</h2>
+      <div class="flex items-center gap-3">
+        <select id="globalKelas" class="text-xs border p-2 rounded bg-slate-50 font-bold" onchange="applyFilter()">
+           <option value="all">Semua Kelas</option>
         </select>
         <div class="text-right">
-          <p class="text-xs font-bold">Admin Guru</p>
-          <p class="text-[10px] text-slate-400">Online</p>
+            <p class="text-xs font-bold" id="headNama">Admin</p>
+            <p class="text-[10px] text-green-600">Online</p>
         </div>
       </div>
     </header>
 
-    <div id="content-area" class="flex-1 overflow-auto p-6 relative">
-      
-      <div id="view-dashboard" class="page-view">
-        <div class="grid grid-cols-4 gap-4 mb-6">
-          <div class="bg-blue-600 text-white p-4 rounded-xl shadow-lg">
-            <h3 class="text-2xl font-bold" id="dash-siswa-count">0</h3>
-            <p class="text-xs opacity-80">Total Siswa</p>
-          </div>
-          <div class="bg-green-600 text-white p-4 rounded-xl shadow-lg">
-            <h3 class="text-2xl font-bold" id="dash-kelas-count">0</h3>
-            <p class="text-xs opacity-80">Kelas Aktif</p>
-          </div>
-        </div>
-        <div class="bg-white p-6 rounded-xl border">
-          <h3 class="font-bold mb-2">Status Sistem</h3>
-          <p class="text-sm text-slate-600">Database terhubung. Gunakan menu di samping untuk mengelola data.</p>
-        </div>
+    <div class="flex-1 overflow-auto p-6 relative" id="content-area">
+
+      <!-- DASHBOARD -->
+      <div id="view-dashboard" class="view-sec">
+         <div class="bg-blue-600 text-white p-8 rounded-xl shadow-lg mb-6">
+            <h2 class="text-2xl font-bold">Selamat Datang di Guru Pro V3!</h2>
+            <p class="opacity-90 mt-1">Sistem Manajemen Sekolah & Administrasi Kelas.</p>
+         </div>
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow border-l-4 border-blue-500">
+                <p class="text-xs text-slate-400 font-bold">Total Siswa</p>
+                <h3 class="text-3xl font-bold mt-1" id="dashSiswa">0</h3>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow border-l-4 border-green-500">
+                <p class="text-xs text-slate-400 font-bold">Kelas</p>
+                <h3 class="text-3xl font-bold mt-1" id="dashKelas">0</h3>
+            </div>
+         </div>
       </div>
 
-      <div id="view-kelas" class="page-view hidden">
-        <div class="bg-white p-6 rounded-xl shadow-sm border mb-4">
-          <h3 class="font-bold mb-4 border-b pb-2">Buat Kelas Baru</h3>
-          <form onsubmit="handleNewClass(event)" class="flex gap-4 items-end">
-            <div class="flex-1">
-              <label class="text-xs font-bold text-slate-500">Nama Kelas</label>
-              <input type="text" id="newClassName" class="w-full border p-2 rounded text-sm" placeholder="Contoh: IV-A" required>
+      <!-- DATA SISWA (LENGKAP) -->
+      <div id="view-siswa" class="view-sec hidden">
+         <div class="bg-white p-6 rounded-xl shadow border">
+            <div class="flex justify-between mb-4 no-print">
+               <h3 class="font-bold text-lg">Data Peserta Didik</h3>
+               <button onclick="showModalSiswa()" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold">+ Tambah Siswa</button>
             </div>
-            <div class="flex-1">
-              <label class="text-xs font-bold text-slate-500">Tahun Ajaran</label>
-              <input type="text" id="newClassYear" class="w-full border p-2 rounded text-sm" value="2024/2025" required>
+            <div class="overflow-x-auto">
+               <table class="w-full text-xs text-left whitespace-nowrap">
+                  <thead class="bg-slate-100 font-bold">
+                     <tr>
+                        <th class="p-3 border">No</th>
+                        <th class="p-3 border">Identitas (NIS/NISN)</th>
+                        <th class="p-3 border">Nama Lengkap & L/P</th>
+                        <th class="p-3 border">TTL & Usia</th>
+                        <th class="p-3 border">Alamat</th>
+                        <th class="p-3 border w-48">Ayah (Pekerjaan/Pendidikan)</th>
+                        <th class="p-3 border w-48">Ibu (Pekerjaan/Pendidikan)</th>
+                     </tr>
+                  </thead>
+                  <tbody id="tbody-siswa"></tbody>
+               </table>
             </div>
-            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">SIMPAN</button>
-          </form>
-        </div>
-        <div class="bg-white p-6 rounded-xl shadow-sm border">
-            <h3 class="font-bold mb-2">Daftar Kelas</h3>
-            <table class="w-full text-sm text-left"><thead class="bg-slate-100"><tr><th class="p-2">Kelas</th><th class="p-2">Tahun</th><th class="p-2">Jml Siswa</th></tr></thead><tbody id="tbody-kelas"></tbody></table>
-        </div>
+         </div>
       </div>
 
-      <div id="view-siswa" class="page-view hidden">
-        <div class="flex justify-between mb-4">
-           <button onclick="openModalSiswa()" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold shadow">+ Tambah Siswa</button>
-           <button onclick="downloadExcel('tblSiswa', 'Data_Siswa')" class="bg-green-600 text-white px-4 py-2 rounded text-xs font-bold shadow"><i class="fa-solid fa-file-excel mr-1"></i> Download Excel</button>
-        </div>
-        <div class="bg-white rounded-lg shadow border overflow-x-auto print-area">
-          <div class="p-4 border-b bg-slate-50 flex justify-between items-center">
-             <div class="flex items-center gap-4">
-               <img src="https://via.placeholder.com/50" class="h-12 w-12 object-contain hidden" id="logo-print-siswa"> 
-               <div>
-                 <h2 class="text-lg font-bold uppercase" id="kop-sekolah-siswa">NAMA SEKOLAH</h2>
-                 <p class="text-xs">Data Peserta Didik</p>
-               </div>
+      <!-- ABSENSI: INPUT -->
+      <div id="view-absen_input" class="view-sec hidden">
+         <div class="bg-white p-6 rounded-xl shadow border max-w-4xl mx-auto">
+            <h3 class="font-bold border-b pb-2 mb-4">Input Absensi Harian</h3>
+            <div class="flex gap-4 mb-4">
+               <input type="date" id="tglAbsen" class="border p-2 rounded text-sm font-bold" onchange="renderAbsenInput()">
+               <span class="text-xs text-red-500 self-center">* Pilih tanggal & Kelas di atas</span>
+            </div>
+            <form onsubmit="saveAbsen(event)">
+               <table class="w-full text-xs border">
+                  <thead class="bg-slate-100 text-center">
+                     <tr><th class="p-2 border">No</th><th class="p-2 border text-left">Nama</th><th class="p-2 border bg-green-100 w-10">H</th><th class="p-2 border bg-blue-100 w-10">S</th><th class="p-2 border bg-yellow-100 w-10">I</th><th class="p-2 border bg-red-100 w-10">A</th></tr>
+                  </thead>
+                  <tbody id="tbody-absen"></tbody>
+               </table>
+               <button type="submit" class="mt-4 bg-blue-600 text-white w-full py-2 rounded font-bold text-sm">SIMPAN ABSENSI</button>
+            </form>
+         </div>
+      </div>
+
+      <!-- ABSENSI: CETAK -->
+      <div id="view-absen_cetak" class="view-sec hidden">
+         <div class="bg-white p-6 rounded-xl shadow border no-print mb-6">
+            <h3 class="font-bold text-lg mb-2">Cetak Rekap Absensi</h3>
+            <p class="text-xs mb-4">Pilih kelas di pojok kanan atas, lalu klik tombol cetak.</p>
+            <button onclick="window.print()" class="bg-slate-800 text-white px-6 py-2 rounded font-bold text-xs"><i class="fa-solid fa-print"></i> CETAK LAPORAN</button>
+         </div>
+         <div class="bg-white p-8 border shadow print-area">
+             <div class="kop-surat">
+                 <div><h1 class="text-xl font-bold uppercase">Laporan Presensi Siswa</h1><p>Bulan: <span id="lblBulanAbsen">...</span></p></div>
              </div>
-          </div>
-          <table id="tblSiswa" class="w-full text-xs text-left whitespace-nowrap">
-            <thead class="bg-slate-100 font-bold text-slate-700">
-              <tr>
-                <th class="p-2 border">No</th>
-                <th class="p-2 border">NIS/NISN</th>
-                <th class="p-2 border">Nama Siswa</th>
-                <th class="p-2 border">L/P</th>
-                <th class="p-2 border">Kelas</th>
-                <th class="p-2 border">Data Ayah (Nama/Kerja/Pendidikan)</th>
-                <th class="p-2 border">Data Ibu (Nama/Kerja/Pendidikan)</th>
-                <th class="p-2 border no-print">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-siswa" class="divide-y"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="view-absen" class="page-view hidden">
-        <div class="bg-white p-6 rounded-xl shadow-sm border">
-          <div class="flex gap-4 mb-6 border-b pb-4 items-end">
-            <div>
-              <label class="text-xs font-bold block mb-1">Tanggal Absen</label>
-              <input type="date" id="absenDate" class="border p-2 rounded text-sm bg-slate-50" onchange="loadAbsenForm()">
-            </div>
-            <div class="text-xs text-red-500 italic">* Pilih tanggal untuk memuat siswa</div>
-          </div>
-          
-          <form onsubmit="submitAbsen(event)">
-            <table class="w-full text-sm border">
-              <thead class="bg-slate-100 text-center">
-                <tr>
-                  <th class="p-2 border w-10">No</th>
-                  <th class="p-2 border text-left">Nama Siswa</th>
-                  <th class="p-2 border w-16 bg-green-50">Hadir</th>
-                  <th class="p-2 border w-16 bg-blue-50">Sakit</th>
-                  <th class="p-2 border w-16 bg-yellow-50">Ijin</th>
-                  <th class="p-2 border w-16 bg-red-50">Alpha</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-absen-input">
-                <tr><td colspan="6" class="p-4 text-center text-slate-400">Pilih Tanggal & Kelas Terlebih Dahulu</td></tr>
-              </tbody>
-            </table>
-            <button type="submit" class="mt-4 w-full bg-blue-600 text-white py-3 rounded font-bold hover:bg-blue-700">SIMPAN ABSENSI</button>
-          </form>
-        </div>
-      </div>
-
-      <div id="view-nilai" class="page-view hidden">
-        <div class="bg-white p-4 rounded-xl shadow border mb-4">
-           <div class="grid grid-cols-4 gap-4 text-xs">
-              <select id="nMapel" class="border p-2 rounded"><option>Matematika</option><option>Bahasa Indonesia</option></select>
-              <select id="nLingkup" class="border p-2 rounded"><option value="LM1">Lingkup Materi 1</option><option value="LM2">Lingkup Materi 2</option></select>
-           </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow border overflow-x-auto">
-          <form onsubmit="submitNilai(event)">
-             <table class="w-full text-xs text-center">
-               <thead class="bg-slate-100 font-bold">
-                 <tr>
-                   <th rowspan="2" class="p-2 border w-8">No</th>
-                   <th rowspan="2" class="p-2 border text-left w-48">Nama</th>
-                   <th colspan="5" class="p-2 border bg-blue-50">Formatif (4 TP)</th>
-                   <th colspan="2" class="p-2 border bg-yellow-50">Sumatif</th>
-                   <th rowspan="2" class="p-2 border bg-green-50 w-16">SAS</th>
-                   <th rowspan="2" class="p-2 border bg-gray-100 w-16">Rapor</th>
-                 </tr>
-                 <tr>
-                    <th class="border p-1">TP1</th><th class="border p-1">TP2</th><th class="border p-1">TP3</th><th class="border p-1">TP4</th><th class="border p-1 bg-blue-100">Rata</th>
-                    <th class="border p-1">Nilai LM</th><th class="border p-1 bg-yellow-100">Rata Sum</th>
-                 </tr>
-               </thead>
-               <tbody id="tbody-nilai-input"></tbody>
+             <table class="w-full text-xs border-collapse text-center">
+                 <thead class="bg-slate-100 font-bold">
+                     <tr><th rowspan="2" class="border p-2">No</th><th rowspan="2" class="border p-2 text-left">Nama Siswa</th><th colspan="4" class="border p-2">Rekapitulasi</th></tr>
+                     <tr><th class="border bg-green-50">H</th><th class="border bg-blue-50">S</th><th class="border bg-yellow-50">I</th><th class="border bg-red-50">A</th></tr>
+                 </thead>
+                 <tbody id="tbody-absen-cetak">
+                     <!-- Diisi JS -->
+                     <tr><td colspan="6" class="p-4 italic">Silakan filter data terlebih dahulu...</td></tr>
+                 </tbody>
              </table>
-             <div class="p-4 text-right">
-                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded font-bold shadow">SIMPAN NILAI</button>
-             </div>
-          </form>
-        </div>
+         </div>
+      </div>
+
+      <!-- PENGATURAN -->
+      <div id="view-pengaturan" class="view-sec hidden">
+         <div class="bg-white p-8 rounded-xl shadow border max-w-2xl mx-auto">
+             <h3 class="font-bold text-lg border-b pb-4 mb-4">Pengaturan Identitas Sekolah</h3>
+             <form onsubmit="saveConfig(event)" class="space-y-4 text-sm">
+                <div><label class="block font-bold mb-1">Nama Sekolah</label><input id="cfgSekolah" class="w-full border p-2 rounded"></div>
+                <div><label class="block font-bold mb-1">Alamat Sekolah</label><input id="cfgAlamat" class="w-full border p-2 rounded"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block font-bold mb-1">Nama Kepala Sekolah</label><input id="cfgKS" class="w-full border p-2 rounded"></div>
+                    <div><label class="block font-bold mb-1">NIP KS</label><input id="cfgNipKS" class="w-full border p-2 rounded"></div>
+                </div>
+                <div><label class="block font-bold mb-1">Nama Guru Kelas</label><input id="cfgGuru" class="w-full border p-2 rounded"></div>
+                <button type="submit" class="bg-slate-800 text-white w-full py-3 rounded font-bold">SIMPAN PENGATURAN</button>
+             </form>
+         </div>
       </div>
 
     </div>
   </main>
 
-  <div id="modalSiswa" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 overflow-y-auto">
-    <div class="bg-white p-6 rounded-lg w-[600px] my-10 shadow-2xl">
-       <h3 class="font-bold text-lg mb-4 border-b">Form Data Siswa</h3>
-       <form onsubmit="submitSiswa(event)" class="space-y-3 text-xs">
-         <div class="grid grid-cols-2 gap-4">
-            <input id="sNama" placeholder="Nama Lengkap" class="border p-2 rounded col-span-2" required>
-            <input id="sNIS" placeholder="NIS" class="border p-2 rounded">
-            <input id="sNISN" placeholder="NISN" class="border p-2 rounded">
-            <select id="sLP" class="border p-2 rounded"><option>L</option><option>P</option></select>
-            <select id="sKelas" class="border p-2 rounded"></select> <input id="sTmp" placeholder="Tempat Lahir" class="border p-2 rounded">
-            <input id="sTgl" type="date" class="border p-2 rounded">
-            <textarea id="sAlamat" placeholder="Alamat" class="border p-2 rounded col-span-2"></textarea>
-         </div>
-         <div class="bg-slate-50 p-3 rounded border">
-            <p class="font-bold mb-2">Data Ayah</p>
-            <div class="grid grid-cols-3 gap-2">
-               <input id="sAyah" placeholder="Nama Ayah" class="border p-2 rounded">
-               <input id="sKerjaAyah" placeholder="Pekerjaan" class="border p-2 rounded">
-               <input id="sDidikAyah" placeholder="Pendidikan" class="border p-2 rounded">
-            </div>
-         </div>
-         <div class="bg-slate-50 p-3 rounded border">
-            <p class="font-bold mb-2">Data Ibu</p>
-            <div class="grid grid-cols-3 gap-2">
-               <input id="sIbu" placeholder="Nama Ibu" class="border p-2 rounded">
-               <input id="sKerjaIbu" placeholder="Pekerjaan" class="border p-2 rounded">
-               <input id="sDidikIbu" placeholder="Pendidikan" class="border p-2 rounded">
-            </div>
-         </div>
-         <div class="flex justify-end gap-2 mt-4">
-            <button type="button" onclick="document.getElementById('modalSiswa').classList.add('hidden')" class="px-4 py-2 bg-slate-200 rounded">Batal</button>
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded font-bold">Simpan</button>
-         </div>
-       </form>
-    </div>
+  <!-- MODAL SISWA -->
+  <div id="modalSiswa" class="fixed inset-0 bg-black/60 z-[70] hidden flex items-center justify-center overflow-y-auto p-4">
+     <div class="bg-white w-full max-w-3xl rounded-xl shadow-2xl p-6">
+        <h3 class="font-bold text-lg mb-4 border-b pb-2">Form Data Siswa Lengkap</h3>
+        <form onsubmit="submitSiswa(event)" class="text-xs grid grid-cols-1 md:grid-cols-2 gap-4">
+           <!-- Identitas -->
+           <div class="md:col-span-2 bg-slate-50 p-3 rounded border"><h4 class="font-bold text-blue-600 mb-2">Identitas Siswa</h4>
+             <div class="grid grid-cols-2 gap-3">
+               <input id="sNama" class="border p-2 rounded w-full col-span-2" placeholder="Nama Lengkap" required>
+               <input id="sNIS" class="border p-2 rounded" placeholder="NIS">
+               <input id="sNISN" class="border p-2 rounded" placeholder="NISN">
+               <select id="sKelas" class="border p-2 rounded bg-white font-bold"></select>
+               <select id="sLP" class="border p-2 rounded bg-white"><option>Laki-laki</option><option>Perempuan</option></select>
+               <input id="sTmp" class="border p-2 rounded" placeholder="Tempat Lahir">
+               <input id="sTgl" type="date" class="border p-2 rounded">
+               <textarea id="sAlamat" class="border p-2 rounded col-span-2" placeholder="Alamat Lengkap" rows="2"></textarea>
+             </div>
+           </div>
+           <!-- Ortu -->
+           <div class="bg-blue-50 p-3 rounded border"><h4 class="font-bold text-slate-700 mb-2">Data Ayah</h4>
+              <input id="sAyah" class="border p-2 rounded w-full mb-2" placeholder="Nama Ayah">
+              <input id="sJobAyah" class="border p-2 rounded w-full mb-2" placeholder="Pekerjaan Ayah">
+              <input id="sDidikAyah" class="border p-2 rounded w-full" placeholder="Pendidikan Ayah">
+           </div>
+           <div class="bg-pink-50 p-3 rounded border"><h4 class="font-bold text-slate-700 mb-2">Data Ibu</h4>
+              <input id="sIbu" class="border p-2 rounded w-full mb-2" placeholder="Nama Ibu">
+              <input id="sJobIbu" class="border p-2 rounded w-full mb-2" placeholder="Pekerjaan Ibu">
+              <input id="sDidikIbu" class="border p-2 rounded w-full" placeholder="Pendidikan Ibu">
+           </div>
+           
+           <div class="md:col-span-2 flex justify-end gap-3 pt-4 border-t">
+              <button type="button" onclick="document.getElementById('modalSiswa').classList.add('hidden')" class="px-4 py-2 bg-slate-200 rounded font-bold">Batal</button>
+              <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded font-bold">Simpan</button>
+           </div>
+        </form>
+     </div>
   </div>
 
   <script>
-    // --- STATE MANAGEMENT ---
+    // --- STATE ---
     let db = {};
-    let currentFilterKelas = 'all';
+    let activeKelas = 'all';
 
-    // --- INIT ---
-    window.onload = function() {
-       refreshData();
-       // Set Date Input to Today
-       document.getElementById('absenDate').valueAsDate = new Date();
-    };
-
-    function refreshData() {
-       toggleLoad(true);
-       google.script.run.withSuccessHandler(data => {
-         db = data;
-         initDropdowns();
-         renderAll();
-         toggleLoad(false);
-       }).getAllData();
+    // --- MOCKUP API (Agar tombol login bisa dicoba di preview) ---
+    if(typeof google === 'undefined') {
+       console.warn("Mode Preview");
+       window.google = { script: { run: { withSuccessHandler: (cb) => { 
+           return {
+               loginUser: (u,p) => { setTimeout(()=>cb({status:true, nama:'Admin Mock', role:'Admin'}),500) },
+               getDataInit: () => { setTimeout(()=>cb({
+                   pengaturan: [{Key:'Nama Sekolah', Value:'SDN MOCKUP 01'}],
+                   kelas: [{'Nama Kelas':'IV-A'},{'Nama Kelas':'V-B'}],
+                   siswa: [
+                       {ID:'1', 'Nama Lengkap':'Budi Santoso', Kelas:'IV-A', 'L/P':'L', 'Tanggal Lahir':'2014-05-20', 'Tempat Lahir':'Jakarta', Alamat:'Jl. Mawar No 1', 'Nama Ayah':'Joko', 'Pekerjaan Ayah':'Wiraswasta', 'Pendidikan Ayah':'SMA', 'Nama Ibu':'Susi', 'Pekerjaan Ibu':'IRT', 'Pendidikan Ibu':'SMP'}
+                   ]
+               }),500) },
+               simpanSiswa: () => { setTimeout(()=>cb("Siswa Tersimpan"),500) },
+               simpanAbsensi: () => { setTimeout(()=>cb("Absen Tersimpan"),500) }
+           }
+       }}}}
     }
 
-    function toggleLoad(show) {
-       document.getElementById('loading').style.display = show ? 'flex' : 'none';
+    // --- NAVIGASI ---
+    function handleLogin(e) {
+       e.preventDefault();
+       document.getElementById('loading').classList.remove('hidden');
+       const u = document.getElementById('uName').value;
+       const p = document.getElementById('uPass').value;
+       
+       google.script.run.withSuccessHandler(res => {
+          document.getElementById('loading').classList.add('hidden');
+          if(res.status) {
+             document.getElementById('login-screen').classList.add('hidden');
+             document.getElementById('sidebar').classList.remove('hidden');
+             document.getElementById('main-app').classList.remove('hidden');
+             document.getElementById('headNama').innerText = res.nama;
+             loadData();
+          } else {
+             alert(res.message);
+          }
+       }).loginUser(u, p);
+    }
+
+    function toggleMenu(id) {
+       const el = document.getElementById(id);
+       el.classList.toggle('open');
     }
 
     function nav(viewId) {
-       document.querySelectorAll('.page-view').forEach(el => el.classList.add('hidden'));
-       document.getElementById('view-' + viewId).classList.remove('hidden');
-       document.getElementById('page-title').innerText = viewId.toUpperCase().replace('_', ' ');
+       // Hide all views
+       document.querySelectorAll('.view-sec').forEach(el => {
+           el.classList.add('hidden');
+           el.classList.remove('active-print'); // Reset print status
+       });
+
+       // Show target
+       const target = document.getElementById('view-' + viewId);
+       if(target) {
+           target.classList.remove('hidden');
+           // If it's a cetak view, mark for print CSS
+           if(viewId.includes('cetak')) target.classList.add('active-print');
+           
+           document.getElementById('page-title').innerText = viewId.replace('_',' ').toUpperCase();
+           
+           // Init specific view data
+           if(viewId === 'siswa') renderSiswa();
+           if(viewId.includes('absen')) renderAbsenInput();
+       } else {
+           alert("Halaman " + viewId + " masih dalam tahap pengembangan.");
+       }
     }
 
-    // --- DROPDOWNS & FILTER ---
+    function loadData() {
+       google.script.run.withSuccessHandler(d => {
+           db = d;
+           initDropdowns();
+           renderSiswa();
+           document.getElementById('dashSiswa').innerText = db.siswa ? db.siswa.length : 0;
+           document.getElementById('dashKelas').innerText = db.kelas ? db.kelas.length : 0;
+           
+           // Load Config
+           const s = {};
+           if(db.pengaturan) db.pengaturan.forEach(x => s[x.Key] = x.Value);
+           document.getElementById('cfgSekolah').value = s['Nama Sekolah']||'';
+       }).getDataInit();
+    }
+
     function initDropdowns() {
-       const selK = document.getElementById('globalKelasFilter');
-       const selSK = document.getElementById('sKelas'); // Modal
-       
-       selK.innerHTML = '<option value="all">Semua Kelas</option>';
-       selSK.innerHTML = '';
-       
-       if(db.kelas) db.kelas.forEach(k => {
-          selK.innerHTML += `<option value="${k['Nama Kelas']}">${k['Nama Kelas']}</option>`;
-          selSK.innerHTML += `<option value="${k['Nama Kelas']}">${k['Nama Kelas']}</option>`;
-       });
+        const k = document.getElementById('globalKelas');
+        const ks = document.getElementById('sKelas');
+        k.innerHTML = '<option value="all">Semua Kelas</option>';
+        ks.innerHTML = '';
+        if(db.kelas) db.kelas.forEach(i => {
+            k.innerHTML += `<option value="${i['Nama Kelas']}">${i['Nama Kelas']}</option>`;
+            ks.innerHTML += `<option value="${i['Nama Kelas']}">${i['Nama Kelas']}</option>`;
+        });
     }
 
-    function applyGlobalFilter() {
-       currentFilterKelas = document.getElementById('globalKelasFilter').value;
-       renderAll();
+    function applyFilter() {
+        activeKelas = document.getElementById('globalKelas').value;
+        renderSiswa();
+        renderAbsenInput();
     }
 
-    function getFilteredSiswa() {
-       if(!db.siswa) return [];
-       if(currentFilterKelas === 'all') return db.siswa;
-       return db.siswa.filter(s => s.Kelas === currentFilterKelas);
+    // --- SISWA RENDER ---
+    function getAge(dateString) {
+        if(!dateString) return "-";
+        const today = new Date();
+        const birthDate = new Date(dateString);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
     }
 
-    // --- RENDER FUNCTIONS ---
-    function renderAll() {
-       document.getElementById('dash-siswa-count').innerText = db.siswa ? db.siswa.length : 0;
-       document.getElementById('dash-kelas-count').innerText = db.kelas ? db.kelas.length : 0;
+    function renderSiswa() {
+        const tb = document.getElementById('tbody-siswa');
+        tb.innerHTML = '';
+        const data = activeKelas === 'all' ? db.siswa : db.siswa.filter(x => x.Kelas === activeKelas);
+        
+        if(!data || data.length === 0) { tb.innerHTML = '<tr><td colspan="7" class="p-4 text-center">Data Kosong</td></tr>'; return; }
 
-       renderSiswaTable();
-       renderKelasTable();
-       if(!document.getElementById('view-absen').classList.contains('hidden')) loadAbsenForm();
-    }
-
-    function renderKelasTable() {
-       const tb = document.getElementById('tbody-kelas'); tb.innerHTML = '';
-       if(db.kelas) db.kelas.forEach(k => {
-          tb.innerHTML += `<tr class="border-b hover:bg-slate-50"><td class="p-2 font-bold">${k['Nama Kelas']}</td><td class="p-2">${k['Tahun Ajaran']}</td><td class="p-2">-</td></tr>`;
-       });
-    }
-
-    function renderSiswaTable() {
-       const tb = document.getElementById('tbody-siswa'); tb.innerHTML = '';
-       const data = getFilteredSiswa();
-       data.forEach((s, idx) => {
-          tb.innerHTML += `
-            <tr class="hover:bg-slate-50 border-b">
-              <td class="p-2 text-center border">${idx+1}</td>
-              <td class="p-2 border font-bold">${s.NIS}<br><span class="text-gray-400 font-normal">${s.NISN}</span></td>
-              <td class="p-2 border font-bold text-blue-900">${s['Nama Lengkap']}</td>
-              <td class="p-2 border text-center">${s['L/P']}</td>
-              <td class="p-2 border text-center font-bold bg-yellow-50">${s.Kelas}</td>
-              <td class="p-2 border text-[10px]">${s['Nama Ayah']}<br>${s['Pekerjaan Ayah']} | ${s['Pendidikan Ayah']}</td>
-              <td class="p-2 border text-[10px]">${s['Nama Ibu']}<br>${s['Pekerjaan Ibu']} | ${s['Pendidikan Ibu']}</td>
-              <td class="p-2 border text-center no-print"><button class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-edit"></i></button></td>
+        data.forEach((s, i) => {
+            tb.innerHTML += `
+            <tr class="border-b hover:bg-slate-50">
+                <td class="p-2 border text-center">${i+1}</td>
+                <td class="p-2 border font-bold">${s.NIS||'-'}<br><span class="text-[10px] font-normal text-slate-500">${s.NISN||'-'}</span></td>
+                <td class="p-2 border font-bold text-blue-800">${s['Nama Lengkap']}<br><span class="text-[10px] text-slate-500">${s['L/P']}</span></td>
+                <td class="p-2 border">${s['Tempat Lahir']||''}, ${s['Tanggal Lahir']||''}<br><span class="text-[10px] font-bold bg-green-100 text-green-700 px-1 rounded">${getAge(s['Tanggal Lahir'])} Thn</span></td>
+                <td class="p-2 border truncate max-w-[150px]" title="${s.Alamat||''}">${s.Alamat||'-'}</td>
+                <td class="p-2 border text-[10px]">
+                    <span class="font-bold block">${s['Nama Ayah']||'-'}</span>
+                    Pek: ${s['Pekerjaan Ayah']||'-'}<br>Didik: ${s['Pendidikan Ayah']||'-'}
+                </td>
+                <td class="p-2 border text-[10px]">
+                    <span class="font-bold block">${s['Nama Ibu']||'-'}</span>
+                    Pek: ${s['Pekerjaan Ibu']||'-'}<br>Didik: ${s['Pendidikan Ibu']||'-'}
+                </td>
             </tr>`;
-       });
+        });
     }
 
-    // --- ABSENSI LOGIC ---
-    function loadAbsenForm() {
-       const tb = document.getElementById('tbody-absen-input');
-       const dateVal = document.getElementById('absenDate').value;
-       const data = getFilteredSiswa();
+    // --- ABSENSI ---
+    function renderAbsenInput() {
+        // Tgl hari ini default
+        if(!document.getElementById('tglAbsen').value) document.getElementById('tglAbsen').valueAsDate = new Date();
 
-       if(data.length === 0) {
-          tb.innerHTML = '<tr><td colspan="6" class="p-4 text-center">Pilih Kelas yang memiliki siswa</td></tr>';
-          return;
-       }
+        const tb = document.getElementById('tbody-absen');
+        const tbCetak = document.getElementById('tbody-absen-cetak');
+        tb.innerHTML = ''; tbCetak.innerHTML = '';
 
-       // Cek Hari Minggu
-       const day = new Date(dateVal).getDay();
-       if(day === 0) {
-          tb.innerHTML = '<tr><td colspan="6" class="p-4 text-center bg-red-100 text-red-600 font-bold">HARI MINGGU / LIBUR</td></tr>';
-          return;
-       }
+        if(activeKelas === 'all') {
+            const msg = '<tr><td colspan="6" class="p-4 text-center italic text-slate-500">Pilih Kelas di atas terlebih dahulu</td></tr>';
+            tb.innerHTML = msg; tbCetak.innerHTML = msg;
+            return;
+        }
 
-       tb.innerHTML = '';
-       data.forEach((s, i) => {
-          tb.innerHTML += `
-          <tr class="border-b hover:bg-slate-50" data-id="${s.ID}" data-nama="${s['Nama Lengkap']}">
-            <td class="p-2 text-center">${i+1}</td>
-            <td class="p-2 font-bold text-left">${s['Nama Lengkap']}</td>
-            <td class="p-2 text-center bg-green-50"><input type="radio" name="abs_${i}" value="H" checked class="w-4 h-4 cursor-pointer"></td>
-            <td class="p-2 text-center bg-blue-50"><input type="radio" name="abs_${i}" value="S" class="w-4 h-4 cursor-pointer"></td>
-            <td class="p-2 text-center bg-yellow-50"><input type="radio" name="abs_${i}" value="I" class="w-4 h-4 cursor-pointer"></td>
-            <td class="p-2 text-center bg-red-50"><input type="radio" name="abs_${i}" value="A" class="w-4 h-4 cursor-pointer"></td>
-          </tr>`;
-       });
+        const data = db.siswa.filter(x => x.Kelas === activeKelas);
+        data.forEach((s, i) => {
+            // Input Row
+            tb.innerHTML += `
+            <tr class="border-b row-absen" data-id="${s.ID}" data-nama="${s['Nama Lengkap']}" data-kelas="${s.Kelas}">
+                <td class="p-2 border text-center">${i+1}</td>
+                <td class="p-2 border font-bold">${s['Nama Lengkap']}</td>
+                <td class="p-1 border bg-green-50 text-center"><input type="radio" name="abs${i}" value="H" checked class="w-4 h-4"></td>
+                <td class="p-1 border bg-blue-50 text-center"><input type="radio" name="abs${i}" value="S" class="w-4 h-4"></td>
+                <td class="p-1 border bg-yellow-50 text-center"><input type="radio" name="abs${i}" value="I" class="w-4 h-4"></td>
+                <td class="p-1 border bg-red-50 text-center"><input type="radio" name="abs${i}" value="A" class="w-4 h-4"></td>
+            </tr>`;
+
+            // Cetak Row (Mockup Rekap data - di real case ambil dari DB Absensi_Log)
+            tbCetak.innerHTML += `
+            <tr>
+                <td class="border p-2">${i+1}</td><td class="border p-2 text-left">${s['Nama Lengkap']}</td>
+                <td class="border bg-green-50">0</td><td class="border bg-blue-50">0</td><td class="border bg-yellow-50">0</td><td class="border bg-red-50">0</td>
+            </tr>`;
+        });
     }
 
-    function submitAbsen(e) {
-       e.preventDefault();
-       toggleLoad(true);
-       const tgl = document.getElementById('absenDate').value;
-       const rows = document.querySelectorAll('#tbody-absen-input tr');
-       let payload = [];
-       
-       rows.forEach(r => {
-          if(r.dataset.id) {
-             const status = r.querySelector('input[type="radio"]:checked').value;
-             payload.push({
-               id: r.dataset.id,
-               nama: r.dataset.nama,
-               status: status
-             });
-          }
-       });
-
-       google.script.run.withSuccessHandler(res => {
-          alert(res);
-          toggleLoad(false);
-          refreshData(); // Refresh to update matrix view if exists
-       }).saveAbsensiHarian(tgl, currentFilterKelas, payload);
+    function saveAbsen(e) {
+        e.preventDefault();
+        const rows = document.querySelectorAll('.row-absen');
+        let payload = [];
+        rows.forEach(r => {
+            payload.push({
+                id: r.dataset.id, nama: r.dataset.nama, kelas: r.dataset.kelas,
+                status: r.querySelector('input:checked').value
+            });
+        });
+        google.script.run.withSuccessHandler(r=>alert(r)).simpanAbsensi(document.getElementById('tglAbsen').value, payload);
     }
 
-    // --- CLASS MANAGEMENT ---
-    function handleNewClass(e) {
-       e.preventDefault();
-       const n = document.getElementById('newClassName').value;
-       const t = document.getElementById('newClassYear').value;
-       toggleLoad(true);
-       google.script.run.withSuccessHandler(res => {
-          alert(res); refreshData();
-       }).saveKelas(n, t);
-    }
-
-    // --- SISWA MANAGEMENT ---
-    function openModalSiswa() {
-       document.getElementById('modalSiswa').classList.remove('hidden');
-    }
-    
+    // --- FORM HANDLERS ---
+    function showModalSiswa() { document.getElementById('modalSiswa').classList.remove('hidden'); }
     function submitSiswa(e) {
-      e.preventDefault();
-      // Collect Data
-      const obj = {
-         nama: document.getElementById('sNama').value,
-         nis: document.getElementById('sNIS').value,
-         nisn: document.getElementById('sNISN').value,
-         lp: document.getElementById('sLP').value,
-         kelas: document.getElementById('sKelas').value,
-         tmplahir: document.getElementById('sTmp').value,
-         tgllahir: document.getElementById('sTgl').value,
-         alamat: document.getElementById('sAlamat').value,
-         ayah: document.getElementById('sAyah').value,
-         payah: document.getElementById('sKerjaAyah').value,
-         pdayah: document.getElementById('sDidikAyah').value,
-         ibu: document.getElementById('sIbu').value,
-         pibu: document.getElementById('sKerjaIbu').value,
-         pdibu: document.getElementById('sDidikIbu').value,
-      };
-      
-      toggleLoad(true);
-      google.script.run.withSuccessHandler(res => {
-         alert(res);
-         document.getElementById('modalSiswa').classList.add('hidden');
-         refreshData();
-      }).saveSiswa(obj);
+        e.preventDefault();
+        const getVal = (id) => document.getElementById(id).value;
+        const d = {
+            nama: getVal('sNama'), nis: getVal('sNIS'), nisn: getVal('sNISN'), kelas: getVal('sKelas'), lp: getVal('sLP'),
+            tmp_lahir: getVal('sTmp'), tgl_lahir: getVal('sTgl'), alamat: getVal('sAlamat'),
+            ayah: getVal('sAyah'), job_ayah: getVal('sJobAyah'), didik_ayah: getVal('sDidikAyah'),
+            ibu: getVal('sIbu'), job_ibu: getVal('sJobIbu'), didik_ibu: getVal('sDidikIbu')
+        };
+        google.script.run.withSuccessHandler(r=>{ alert(r); document.getElementById('modalSiswa').classList.add('hidden'); loadData(); }).simpanSiswa(d);
     }
 
-    // --- NILAI LOGIC (AUTO CALC) ---
-    // Placeholder function: Di implementasi penuh perlu render form input nilai 
-    // dengan event listener 'input' yang menghitung (TP1+TP2+TP3+TP4)/4 secara realtime
-    // lalu menghitung (70% * RataSumatif) + (30% * SAS)
-    
-    // --- EXPORT TO EXCEL FUNCTION ---
-    function downloadExcel(tableId, fileName) {
-       const table = document.getElementById(tableId);
-       const wb = XLSX.utils.table_to_book(table, {sheet: "Sheet1"});
-       XLSX.writeFile(wb, fileName + ".xlsx");
+    function saveConfig(e) {
+        e.preventDefault();
+        // Implement save logic to Backend
+        alert("Pengaturan Disimpan (Mock)");
     }
-
   </script>
 </body>
 </html>
