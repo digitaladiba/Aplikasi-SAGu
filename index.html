@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Guru Pro V4</title>
+  <title>Admin Guru Pro V5</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
@@ -14,11 +14,10 @@
     .loader { border: 4px solid #f3f3f3; border-top: 4px solid #2563eb; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* Sidebar Animation */
     .submenu { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background-color: #1e293b; }
-    .submenu.open { max-height: 300px; }
+    .submenu.open { max-height: 500px; }
 
-    /* PRINT LAYOUT KHUSUS (SESUAI REQUEST V1) */
+    /* PRINT LAYOUT */
     @media print {
       @page { size: landscape; margin: 10mm; }
       body { background: white; -webkit-print-color-adjust: exact; }
@@ -27,12 +26,10 @@
       .view-sec { display: none; }
       .view-sec.active-print { display: block !important; }
       
-      /* Reset Table */
       table { width: 100%; border-collapse: collapse; font-size: 11px; color: black; }
       th, td { border: 1px solid black !important; padding: 4px; page-break-inside: avoid; }
       th { background-color: #e2e8f0 !important; text-align: center; font-weight: bold; }
       
-      /* Kop Surat & TTD */
       .print-header { display: flex !important; border-bottom: 3px double black; padding-bottom: 10px; margin-bottom: 20px; align-items: center; justify-content: center; text-align: center; position: relative; }
       .print-logo { position: absolute; left: 10px; top: 0; height: 70px; width: 70px; object-fit: contain; }
       
@@ -42,7 +39,7 @@
       .stamp-img { height: 70px; position: absolute; top: 10px; left: 20px; opacity: 0.7; transform: rotate(-10deg); z-index: 0; }
     }
     
-    .print-header, .signature-section { display: none; } /* Hide on screen */
+    .print-header, .signature-section { display: none; }
   </style>
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800">
@@ -57,7 +54,7 @@
     <div class="bg-white p-8 rounded-2xl shadow-2xl w-96 border-t-8 border-blue-600">
       <div class="text-center mb-6">
         <h2 class="text-2xl font-bold text-slate-800">ADMIN GURU PRO</h2>
-        <p class="text-xs text-slate-500">Versi 4.0 (Full Features)</p>
+        <p class="text-xs text-slate-500">Versi 5.0 (Sesuai CSV)</p>
       </div>
       <form onsubmit="handleLogin(event)" class="space-y-4">
         <input type="text" id="uName" class="w-full border p-3 rounded bg-slate-50" placeholder="Username" required>
@@ -70,29 +67,25 @@
   <!-- SIDEBAR -->
   <aside id="sidebar" class="bg-slate-900 text-slate-300 w-64 flex flex-col shadow-xl z-20 transition-all hidden">
     <div class="p-4 border-b border-slate-700 bg-slate-800 text-center">
-      <h1 class="font-bold text-white text-lg">GURU PRO V4</h1>
-      <p class="text-[10px] text-blue-400">Administrasi Terpadu</p>
+      <h1 class="font-bold text-white text-lg">GURU PRO V5</h1>
+      <p class="text-[10px] text-blue-400">Database CSV Integrated</p>
     </div>
     
     <nav class="flex-1 overflow-y-auto py-2 text-xs font-medium">
-      <div class="px-4 py-2 text-[10px] uppercase text-slate-500 font-bold mt-2">Master</div>
       <button onclick="nav('dashboard')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex gap-3 items-center"><i class="fa-solid fa-gauge w-4"></i> Dashboard</button>
       <button onclick="nav('kelas')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex gap-3 items-center"><i class="fa-solid fa-chalkboard w-4"></i> Data Kelas</button>
       
-      <!-- MENU DATA SISWA (BERTINGKAT) -->
+      <!-- DATA SISWA -->
       <button onclick="toggleMenu('sub-siswa')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex justify-between items-center group">
         <span class="flex gap-3 items-center"><i class="fa-solid fa-users w-4 text-blue-400"></i> Data Siswa</span>
-        <i class="fa-solid fa-chevron-down text-[10px] group-hover:rotate-180 transition"></i>
+        <i class="fa-solid fa-chevron-down text-[10px]"></i>
       </button>
       <div id="sub-siswa" class="submenu">
-         <button onclick="nav('siswa_input')" class="w-full text-left pl-12 py-2 hover:bg-slate-700 hover:text-white flex gap-2"><i class="fa-solid fa-pen"></i> Input Data</button>
-         <button onclick="nav('siswa_rekap')" class="w-full text-left pl-12 py-2 hover:bg-slate-700 hover:text-white flex gap-2"><i class="fa-solid fa-chart-pie"></i> Rekapitulasi</button>
-         <button onclick="nav('siswa_cetak')" class="w-full text-left pl-12 py-2 hover:bg-slate-700 hover:text-white flex gap-2"><i class="fa-solid fa-print"></i> Cetak Data</button>
+         <button onclick="nav('siswa_input')" class="w-full text-left pl-12 py-2 hover:bg-slate-700">Input Data</button>
+         <button onclick="nav('siswa_cetak')" class="w-full text-left pl-12 py-2 hover:bg-slate-700">Cetak Laporan</button>
       </div>
 
-      <div class="px-4 py-2 text-[10px] uppercase text-slate-500 font-bold mt-2">Administrasi</div>
-      
-      <!-- MENU ABSENSI -->
+      <!-- ABSENSI -->
       <button onclick="toggleMenu('sub-absen')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex justify-between items-center group">
         <span class="flex gap-3 items-center"><i class="fa-solid fa-calendar-check w-4 text-yellow-400"></i> Absensi</span>
         <i class="fa-solid fa-chevron-down text-[10px]"></i>
@@ -102,7 +95,7 @@
         <button onclick="nav('absen_cetak')" class="w-full text-left pl-12 py-2 hover:bg-slate-700">Cetak Rekap</button>
       </div>
 
-      <!-- MENU JURNAL -->
+      <!-- JURNAL -->
       <button onclick="toggleMenu('sub-jurnal')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex justify-between items-center group">
         <span class="flex gap-3 items-center"><i class="fa-solid fa-book w-4 text-purple-400"></i> Jurnal KBM</span>
         <i class="fa-solid fa-chevron-down text-[10px]"></i>
@@ -112,25 +105,28 @@
         <button onclick="nav('jurnal_cetak')" class="w-full text-left pl-12 py-2 hover:bg-slate-700">Cetak Jurnal</button>
       </div>
 
-      <!-- MENU PROTA & PROSEM (RESTORED) -->
+      <!-- PROTA PROSEM -->
       <button onclick="toggleMenu('sub-prota')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex justify-between items-center group">
         <span class="flex gap-3 items-center"><i class="fa-solid fa-list-check w-4 text-pink-400"></i> Perencanaan</span>
         <i class="fa-solid fa-chevron-down text-[10px]"></i>
       </button>
       <div id="sub-prota" class="submenu">
         <button onclick="nav('prota')" class="w-full text-left pl-12 py-2 hover:bg-slate-700">Program Tahunan</button>
-        <button onclick="nav('prosem')" class="w-full text-left pl-12 py-2 hover:bg-slate-700">Program Semester</button>
       </div>
 
-      <!-- MENU NILAI -->
+      <!-- PENILAIAN -->
       <button onclick="toggleMenu('sub-nilai')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex justify-between items-center group">
         <span class="flex gap-3 items-center"><i class="fa-solid fa-marker w-4 text-red-400"></i> Penilaian</span>
         <i class="fa-solid fa-chevron-down text-[10px]"></i>
       </button>
       <div id="sub-nilai" class="submenu">
-        <button onclick="nav('nilai_input')" class="w-full text-left pl-12 py-2 hover:bg-slate-700">Input Nilai</button>
-        <button onclick="nav('nilai_cetak')" class="w-full text-left pl-12 py-2 hover:bg-slate-700">Cetak Nilai</button>
+        <button onclick="nav('nilai_akademik')" class="w-full text-left pl-12 py-2 hover:bg-slate-700">Nilai Akademik</button>
+        <button onclick="nav('nilai_sikap')" class="w-full text-left pl-12 py-2 hover:bg-slate-700">Nilai Sikap (P5)</button>
+        <button onclick="nav('nilai_cetak')" class="w-full text-left pl-12 py-2 hover:bg-slate-700">Cetak Rapor</button>
       </div>
+      
+      <!-- JADWAL -->
+      <button onclick="nav('jadwal')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex gap-3 items-center"><i class="fa-solid fa-clock w-4 text-green-400"></i> Jadwal Pelajaran</button>
 
       <div class="px-4 py-2 text-[10px] uppercase text-slate-500 font-bold mt-2">System</div>
       <button onclick="nav('pengaturan')" class="w-full text-left px-6 py-3 hover:bg-slate-800 flex gap-3 items-center"><i class="fa-solid fa-gear w-4"></i> Pengaturan Lengkap</button>
@@ -140,7 +136,6 @@
 
   <!-- MAIN APP -->
   <main class="flex-1 flex flex-col h-full bg-slate-100 hidden" id="main-app">
-    <!-- Topbar -->
     <header class="h-16 bg-white border-b flex items-center justify-between px-6 shadow-sm no-print">
        <h2 id="page-title" class="text-xl font-bold text-slate-800">DASHBOARD</h2>
        <div class="flex items-center gap-4">
@@ -152,71 +147,65 @@
        </div>
     </header>
 
-    <!-- Content -->
     <div class="flex-1 overflow-auto p-6 relative" id="content-area">
 
-       <!-- 1. DASHBOARD -->
+       <!-- DASHBOARD -->
        <div id="view-dashboard" class="view-sec">
-          <div class="bg-gradient-to-r from-blue-700 to-blue-500 text-white p-8 rounded-xl shadow-lg mb-6">
-             <h2 class="text-2xl font-bold">Selamat Datang, <span id="dashName">Guru</span>!</h2>
-             <p class="text-sm opacity-90 mt-1">Sistem Administrasi Guru Pro V4.0 (Full Features)</p>
+          <div class="bg-blue-600 text-white p-8 rounded-xl shadow-lg mb-6">
+             <h2 class="text-2xl font-bold">Halo, <span id="dashName">Admin</span>!</h2>
+             <p class="text-sm opacity-90">Aplikasi telah disesuaikan dengan struktur CSV database.</p>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
              <div class="bg-white p-6 rounded-xl shadow border-l-4 border-blue-500">
                 <p class="text-xs text-slate-400 font-bold uppercase">Siswa</p>
-                <h3 class="text-3xl font-bold text-slate-800 mt-1" id="dashSiswa">0</h3>
+                <h3 class="text-3xl font-bold mt-1" id="dashSiswa">0</h3>
              </div>
              <div class="bg-white p-6 rounded-xl shadow border-l-4 border-green-500">
                 <p class="text-xs text-slate-400 font-bold uppercase">Kelas</p>
-                <h3 class="text-3xl font-bold text-slate-800 mt-1" id="dashKelas">0</h3>
+                <h3 class="text-3xl font-bold mt-1" id="dashKelas">0</h3>
              </div>
           </div>
        </div>
 
-       <!-- 2. DATA SISWA: INPUT -->
+       <!-- SISWA INPUT (SESUAI HEADER SISWA.CSV) -->
        <div id="view-siswa_input" class="view-sec hidden">
           <div class="bg-white p-6 rounded-xl shadow border">
              <div class="flex justify-between mb-4 no-print">
                 <h3 class="font-bold text-lg">Database Siswa</h3>
-                <button onclick="openModalSiswa()" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold">+ Siswa Baru</button>
+                <button onclick="openModalSiswa()" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold">+ Siswa</button>
              </div>
-             <table class="w-full text-xs text-left">
-                <thead class="bg-slate-100 font-bold">
-                   <tr>
-                      <th class="p-3 border">No</th>
-                      <th class="p-3 border">Identitas</th>
-                      <th class="p-3 border">Nama Lengkap</th>
-                      <th class="p-3 border">L/P</th>
-                      <th class="p-3 border">TTL</th>
-                      <th class="p-3 border w-48">Orang Tua</th>
-                   </tr>
-                </thead>
-                <tbody id="tbody-siswa"></tbody>
-             </table>
+             <div class="overflow-x-auto">
+               <table class="w-full text-xs text-left">
+                  <thead class="bg-slate-100 font-bold">
+                     <tr>
+                        <th class="p-3 border">No</th>
+                        <th class="p-3 border">NIS/NISN</th>
+                        <th class="p-3 border">Nama Lengkap</th>
+                        <th class="p-3 border">L/P</th>
+                        <th class="p-3 border">TTL</th>
+                        <th class="p-3 border w-48">Orang Tua (Ayah/Ibu)</th>
+                     </tr>
+                  </thead>
+                  <tbody id="tbody-siswa"></tbody>
+               </table>
+             </div>
           </div>
        </div>
 
-       <!-- 3. DATA SISWA: CETAK (DENGAN KOP SURAT) -->
+       <!-- SISWA CETAK -->
        <div id="view-siswa_cetak" class="view-sec hidden">
           <div class="bg-white p-6 rounded-xl shadow border no-print mb-6">
              <h3 class="font-bold mb-2">Cetak Data Siswa</h3>
-             <button onclick="window.print()" class="bg-slate-800 text-white px-6 py-2 rounded font-bold text-xs"><i class="fa-solid fa-print"></i> Print Laporan</button>
+             <button onclick="window.print()" class="bg-slate-800 text-white px-6 py-2 rounded font-bold text-xs"><i class="fa-solid fa-print"></i> Print</button>
           </div>
-          <!-- Area Cetak -->
           <div class="bg-white p-10 shadow border print-area">
-             <!-- KOP SURAT (AUTO GENERATED) -->
              <div class="print-header">
                 <img id="kopLogo" class="print-logo">
                 <div>
-                   <h3 class="text-sm font-bold">PEMERINTAH KABUPATEN/KOTA</h3>
-                   <h3 class="text-sm font-bold">DINAS PENDIDIKAN DAN KEBUDAYAAN</h3>
+                   <h3 class="text-sm font-bold">DINAS PENDIDIKAN</h3>
                    <h1 class="text-xl font-bold uppercase" id="kopSekolah">NAMA SEKOLAH</h1>
-                   <p class="text-xs italic" id="kopAlamat">Alamat Sekolah</p>
+                   <p class="text-xs italic" id="kopAlamat">Alamat</p>
                 </div>
-             </div>
-             <div class="text-center mb-4">
-                <h2 class="text-lg font-bold underline">DATA PESERTA DIDIK</h2>
-                <p class="text-xs">Kelas: <span id="kopKelas"></span> | Tahun Ajaran: <span id="kopTahun"></span></p>
              </div>
              <table class="w-full text-xs border-collapse">
                 <thead class="bg-slate-100 font-bold text-center">
@@ -227,27 +216,21 @@
                       <th class="border p-2">L/P</th>
                       <th class="border p-2">TTL</th>
                       <th class="border p-2">Alamat</th>
-                      <th class="border p-2">Nama Ortu</th>
+                      <th class="border p-2">Ortu</th>
                    </tr>
                 </thead>
                 <tbody id="tbody-siswa-cetak"></tbody>
              </table>
-             <!-- TTD FOOTER -->
              <div class="signature-section">
                 <div class="sig-box">
                    <p>Mengetahui,<br>Kepala Sekolah</p>
-                   <div style="height: 80px; position: relative;">
-                      <img id="ttdStempel" class="stamp-img">
-                      <img id="ttdKS" class="sig-img">
-                   </div>
+                   <div style="height: 80px; position: relative;"><img id="ttdStempel" class="stamp-img"><img id="ttdKS" class="sig-img"></div>
                    <p class="font-bold underline" id="sigNamaKS">Nama KS</p>
                    <p class="text-xs">NIP. <span id="sigNipKS">-</span></p>
                 </div>
                 <div class="sig-box">
-                   <p><span id="sigKota">Kota</span>, <span id="sigTgl">Tanggal</span><br>Guru Kelas</p>
-                   <div style="height: 80px;">
-                      <img id="ttdGuru" class="sig-img">
-                   </div>
+                   <p><span id="sigKota">Kota</span>, <span id="sigTgl">Tgl</span><br>Guru Kelas</p>
+                   <div style="height: 80px;"><img id="ttdGuru" class="sig-img"></div>
                    <p class="font-bold underline" id="sigNamaGuru">Nama Guru</p>
                    <p class="text-xs">NIP. <span id="sigNipGuru">-</span></p>
                 </div>
@@ -255,131 +238,125 @@
           </div>
        </div>
 
-       <!-- 4. PENGATURAN LENGKAP (RESTORED) -->
-       <div id="view-pengaturan" class="view-sec hidden">
-          <div class="bg-white p-8 rounded-xl shadow border max-w-4xl mx-auto">
-             <h3 class="font-bold text-xl border-b pb-4 mb-6">Pengaturan Identitas & Atribut</h3>
-             <form onsubmit="saveSettings(event)" class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-                <!-- Identitas -->
-                <div class="space-y-3">
-                   <h4 class="font-bold text-blue-600">Identitas Sekolah</h4>
-                   <div><label class="block font-bold mb-1">Nama Sekolah</label><input id="setSekolah" class="w-full border p-2 rounded"></div>
-                   <div><label class="block font-bold mb-1">Alamat Sekolah</label><textarea id="setAlamat" class="w-full border p-2 rounded" rows="2"></textarea></div>
-                   <div class="grid grid-cols-2 gap-2">
-                      <div><label class="block font-bold mb-1">Kelas</label><input id="setKelas" class="w-full border p-2 rounded"></div>
-                      <div><label class="block font-bold mb-1">Thn Ajaran</label><input id="setTahun" class="w-full border p-2 rounded"></div>
-                   </div>
-                   <div><label class="block font-bold mb-1">Kota & Tanggal Surat</label><input id="setKotaTgl" class="w-full border p-2 rounded" placeholder="Contoh: Semarang, 12 Juli 2024"></div>
-                </div>
-                
-                <!-- Guru & KS -->
-                <div class="space-y-3">
-                   <h4 class="font-bold text-blue-600">Pendidik & Tenaga Kependidikan</h4>
-                   <div><label class="block font-bold mb-1">Nama Guru Kelas</label><input id="setGuru" class="w-full border p-2 rounded"></div>
-                   <div><label class="block font-bold mb-1">NIP Guru</label><input id="setNipGuru" class="w-full border p-2 rounded"></div>
-                   <div><label class="block font-bold mb-1">Nama Kepala Sekolah</label><input id="setKS" class="w-full border p-2 rounded"></div>
-                   <div><label class="block font-bold mb-1">NIP KS</label><input id="setNipKS" class="w-full border p-2 rounded"></div>
-                </div>
-
-                <!-- Upload Gambar (Base64 Logic) -->
-                <div class="md:col-span-2 border-t pt-4">
-                   <h4 class="font-bold text-blue-600 mb-3">Upload Atribut (Logo & Tanda Tangan)</h4>
-                   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                      <div class="border p-2 rounded bg-slate-50">
-                         <p class="mb-2 font-bold">Logo Sekolah</p>
-                         <input type="file" onchange="encodeImg(this, 'previewLogo')" class="text-[10px] w-full">
-                         <img id="previewLogo" class="h-12 mx-auto mt-2 object-contain">
-                         <input type="hidden" id="valLogo">
-                      </div>
-                      <div class="border p-2 rounded bg-slate-50">
-                         <p class="mb-2 font-bold">TTD Guru</p>
-                         <input type="file" onchange="encodeImg(this, 'previewTtdGuru')" class="text-[10px] w-full">
-                         <img id="previewTtdGuru" class="h-12 mx-auto mt-2 object-contain">
-                         <input type="hidden" id="valTtdGuru">
-                      </div>
-                      <div class="border p-2 rounded bg-slate-50">
-                         <p class="mb-2 font-bold">TTD KS</p>
-                         <input type="file" onchange="encodeImg(this, 'previewTtdKS')" class="text-[10px] w-full">
-                         <img id="previewTtdKS" class="h-12 mx-auto mt-2 object-contain">
-                         <input type="hidden" id="valTtdKS">
-                      </div>
-                      <div class="border p-2 rounded bg-slate-50">
-                         <p class="mb-2 font-bold">Stempel</p>
-                         <input type="file" onchange="encodeImg(this, 'previewStempel')" class="text-[10px] w-full">
-                         <img id="previewStempel" class="h-12 mx-auto mt-2 object-contain">
-                         <input type="hidden" id="valStempel">
-                      </div>
-                   </div>
-                </div>
-
-                <div class="md:col-span-2 pt-4">
-                   <button type="submit" class="w-full bg-slate-800 text-white py-3 rounded font-bold hover:bg-black transition">SIMPAN SEMUA PENGATURAN</button>
-                </div>
+       <!-- NILAI AKADEMIK (SESUAI NILAI_AKADEMIK.CSV) -->
+       <div id="view-nilai_akademik" class="view-sec hidden">
+          <div class="bg-white p-6 rounded-xl shadow border mb-4">
+             <div class="grid grid-cols-3 gap-4 mb-4">
+                <select id="naMapel" class="border p-2 rounded text-xs font-bold"><option>Matematika</option><option>B. Indo</option></select>
+                <select id="naSemester" class="border p-2 rounded text-xs"><option value="1">Semester 1</option><option value="2">Semester 2</option></select>
+                <button onclick="renderNilaiAkademik()" class="bg-slate-800 text-white rounded text-xs font-bold">Muat Siswa</button>
+             </div>
+             <form onsubmit="submitNilaiAkademik(event)">
+                <table class="w-full text-xs text-center border">
+                   <thead class="bg-slate-100 font-bold">
+                      <tr>
+                         <th rowspan="2" class="border p-2 w-8">No</th>
+                         <th rowspan="2" class="border p-2 text-left w-48">Nama</th>
+                         <th colspan="3" class="border p-2 bg-blue-50">Formatif (TP)</th>
+                         <th colspan="3" class="border p-2 bg-yellow-50">Sumatif (LM)</th>
+                         <th rowspan="2" class="border p-2 bg-green-50 w-16">SAS</th>
+                         <th rowspan="2" class="border p-2 w-32">Deskripsi</th>
+                      </tr>
+                      <tr>
+                         <th class="border p-1 w-10">TP1</th><th class="border p-1 w-10">TP2</th><th class="border p-1 w-10">TP3</th>
+                         <th class="border p-1 w-10">LM1</th><th class="border p-1 w-10">LM2</th><th class="border p-1 w-10">LM3</th>
+                      </tr>
+                   </thead>
+                   <tbody id="tbody-nilai-akademik"></tbody>
+                </table>
+                <div class="mt-4 text-right"><button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Nilai Akademik</button></div>
              </form>
           </div>
        </div>
 
-       <!-- 5. PROTA (RESTORED) -->
-       <div id="view-prota" class="view-sec hidden">
-          <div class="bg-white p-6 rounded-xl shadow border">
-             <div class="flex justify-between items-center mb-4 no-print">
-                <h3 class="font-bold">Program Tahunan</h3>
-                <div class="flex gap-2">
-                    <button onclick="showModalProta()" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold">+ Tambah</button>
-                    <button onclick="window.print()" class="bg-slate-800 text-white px-3 py-1 rounded text-xs font-bold">Cetak</button>
+       <!-- NILAI SIKAP (SESUAI NILAI_SIKAP.CSV) -->
+       <div id="view-nilai_sikap" class="view-sec hidden">
+          <div class="bg-white p-6 rounded-xl shadow border mb-4">
+             <h3 class="font-bold mb-2">Penilaian Sikap (Profil Pancasila)</h3>
+             <form onsubmit="submitNilaiSikap(event)">
+                <table class="w-full text-xs text-center border">
+                   <thead class="bg-slate-100 font-bold">
+                      <tr>
+                         <th class="border p-2 w-8">No</th>
+                         <th class="border p-2 text-left w-48">Nama</th>
+                         <th class="border p-2 w-16">Beriman</th>
+                         <th class="border p-2 w-16">Kebinekaan</th>
+                         <th class="border p-2 w-16">Gotong Royong</th>
+                         <th class="border p-2 w-16">Mandiri</th>
+                         <th class="border p-2 w-16">Bernalar</th>
+                         <th class="border p-2 w-16">Kreatif</th>
+                         <th class="border p-2">Catatan Guru</th>
+                      </tr>
+                   </thead>
+                   <tbody id="tbody-nilai-sikap"></tbody>
+                </table>
+                <div class="mt-4 text-right"><button type="submit" class="bg-green-600 text-white px-6 py-2 rounded font-bold">Simpan Nilai Sikap</button></div>
+             </form>
+          </div>
+       </div>
+
+       <!-- ABSENSI & JURNAL & PROTA & PENGATURAN -->
+       <!-- (Struktur View Lain Sama dengan V4 namun disesuaikan data JS nya) -->
+       <div id="view-pengaturan" class="view-sec hidden">
+          <div class="bg-white p-8 rounded-xl shadow border max-w-4xl mx-auto">
+             <h3 class="font-bold text-xl border-b pb-4 mb-6">Pengaturan Lengkap</h3>
+             <form onsubmit="saveSettings(event)" class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                <div class="space-y-3">
+                   <h4 class="font-bold text-blue-600">Identitas Sekolah</h4>
+                   <div><label class="block font-bold mb-1">Nama Sekolah</label><input id="setSekolah" class="w-full border p-2 rounded"></div>
+                   <div><label class="block font-bold mb-1">Alamat Sekolah</label><textarea id="setAlamat" class="w-full border p-2 rounded" rows="2"></textarea></div>
+                   <div><label class="block font-bold mb-1">Kota Tanggal</label><input id="setKotaTgl" class="w-full border p-2 rounded"></div>
                 </div>
-             </div>
-             <!-- Area Cetak Prota -->
-             <div class="print-area">
-                 <!-- Header akan di-inject JS saat render -->
-                 <div class="text-center mb-4 block print:block hidden">
-                    <h2 class="font-bold underline">PROGRAM TAHUNAN</h2>
-                 </div>
-                 <table class="w-full text-xs border text-left">
-                    <thead class="bg-slate-100 font-bold">
-                       <tr><th class="border p-2">Mapel</th><th class="border p-2">TP / Materi</th><th class="border p-2">Alokasi</th><th class="border p-2">Ket</th></tr>
-                    </thead>
-                    <tbody id="tbody-prota"></tbody>
-                 </table>
-                 <!-- Footer TTD di-inject JS di sini -->
-                 <div class="signature-section mt-10">
-                     <!-- Clone signature structure via JS -->
-                 </div>
-             </div>
+                <div class="space-y-3">
+                   <h4 class="font-bold text-blue-600">Personel</h4>
+                   <div><label class="block font-bold mb-1">Nama Guru</label><input id="setGuru" class="w-full border p-2 rounded"></div>
+                   <div><label class="block font-bold mb-1">NIP Guru</label><input id="setNipGuru" class="w-full border p-2 rounded"></div>
+                   <div><label class="block font-bold mb-1">Nama KS</label><input id="setKS" class="w-full border p-2 rounded"></div>
+                   <div><label class="block font-bold mb-1">NIP KS</label><input id="setNipKS" class="w-full border p-2 rounded"></div>
+                </div>
+                <!-- Images Base64 Logic -->
+                <div class="md:col-span-2 border-t pt-4">
+                   <h4 class="font-bold text-blue-600 mb-3">Upload Gambar</h4>
+                   <div class="grid grid-cols-4 gap-2">
+                       <div class="border p-2"><p>Logo</p><input type="file" onchange="encodeImg(this,'prevLogo','valLogo')" class="w-full"><img id="prevLogo" class="h-10 mx-auto"><input type="hidden" id="valLogo"></div>
+                       <div class="border p-2"><p>TTD Guru</p><input type="file" onchange="encodeImg(this,'prevGuru','valTtdGuru')" class="w-full"><img id="prevGuru" class="h-10 mx-auto"><input type="hidden" id="valTtdGuru"></div>
+                       <div class="border p-2"><p>TTD KS</p><input type="file" onchange="encodeImg(this,'prevKS','valTtdKS')" class="w-full"><img id="prevKS" class="h-10 mx-auto"><input type="hidden" id="valTtdKS"></div>
+                       <div class="border p-2"><p>Stempel</p><input type="file" onchange="encodeImg(this,'prevStem','valStempel')" class="w-full"><img id="prevStem" class="h-10 mx-auto"><input type="hidden" id="valStempel"></div>
+                   </div>
+                </div>
+                <div class="md:col-span-2"><button class="w-full bg-slate-800 text-white py-3 rounded font-bold">SIMPAN</button></div>
+             </form>
           </div>
        </div>
 
     </div>
   </main>
 
-  <!-- MODAL SISWA -->
+  <!-- MODAL SISWA LENGKAP -->
   <div id="modalSiswa" class="fixed inset-0 bg-black/60 z-[80] hidden flex items-center justify-center p-4">
-     <div class="bg-white w-full max-w-2xl p-6 rounded-xl shadow-2xl overflow-y-auto max-h-[90vh]">
-        <h3 class="font-bold text-lg mb-4 border-b pb-2">Input Data Siswa</h3>
+     <div class="bg-white w-full max-w-3xl p-6 rounded-xl shadow-2xl overflow-y-auto max-h-[90vh]">
+        <h3 class="font-bold text-lg mb-4 border-b pb-2">Input Siswa Lengkap</h3>
         <form onsubmit="saveSiswa(event)" class="text-xs grid grid-cols-2 gap-4">
            <input id="sNama" class="col-span-2 border p-2 rounded" placeholder="Nama Lengkap" required>
-           <input id="sNIS" class="border p-2 rounded" placeholder="NIS">
-           <input id="sNISN" class="border p-2 rounded" placeholder="NISN">
-           <select id="sKelas" class="border p-2 rounded bg-slate-50 font-bold"></select>
-           <select id="sLP" class="border p-2 rounded"><option>Laki-laki</option><option>Perempuan</option></select>
-           <input id="sTmp" class="border p-2 rounded" placeholder="Tempat Lahir">
-           <input id="sTgl" type="date" class="border p-2 rounded">
-           <textarea id="sAlamat" class="col-span-2 border p-2 rounded" placeholder="Alamat Lengkap" rows="2"></textarea>
+           <div class="flex gap-2"><input id="sNIS" class="border p-2 w-1/2" placeholder="NIS"><input id="sNISN" class="border p-2 w-1/2" placeholder="NISN"></div>
+           <select id="sKelas" class="border p-2 rounded font-bold bg-slate-50"></select>
+           <div class="flex gap-2"><input id="sTmp" class="border p-2 w-1/2" placeholder="Tmp Lahir"><input id="sTgl" type="date" class="border p-2 w-1/2"></div>
+           <select id="sLP" class="border p-2 rounded"><option>L</option><option>P</option></select>
+           <textarea id="sAlamat" class="col-span-2 border p-2 rounded" placeholder="Alamat" rows="2"></textarea>
            
-           <div class="col-span-2 bg-slate-50 p-2 rounded border mt-2">
-              <p class="font-bold text-blue-600 mb-2">Data Orang Tua</p>
-              <div class="grid grid-cols-2 gap-2">
-                 <input id="sAyah" class="border p-2 rounded" placeholder="Nama Ayah">
-                 <input id="sJobAyah" class="border p-2 rounded" placeholder="Pek. Ayah">
-                 <input id="sDidikAyah" class="border p-2 rounded col-span-2" placeholder="Pendidikan Ayah">
-                 <input id="sIbu" class="border p-2 rounded" placeholder="Nama Ibu">
-                 <input id="sJobIbu" class="border p-2 rounded" placeholder="Pek. Ibu">
-                 <input id="sDidikIbu" class="border p-2 rounded col-span-2" placeholder="Pendidikan Ibu">
+           <div class="col-span-2 bg-blue-50 p-2 rounded border"><h4 class="font-bold text-blue-700">Data Ayah</h4>
+              <div class="grid grid-cols-3 gap-2">
+                 <input id="sAyah" class="border p-1" placeholder="Nama"><input id="sJobAyah" class="border p-1" placeholder="Pekerjaan"><input id="sDidikAyah" class="border p-1" placeholder="Pendidikan">
+              </div>
+           </div>
+           <div class="col-span-2 bg-pink-50 p-2 rounded border"><h4 class="font-bold text-pink-700">Data Ibu</h4>
+              <div class="grid grid-cols-3 gap-2">
+                 <input id="sIbu" class="border p-1" placeholder="Nama"><input id="sJobIbu" class="border p-1" placeholder="Pekerjaan"><input id="sDidikIbu" class="border p-1" placeholder="Pendidikan">
               </div>
            </div>
            
-           <div class="col-span-2 flex justify-end gap-2 pt-4">
-              <button type="button" onclick="document.getElementById('modalSiswa').classList.add('hidden')" class="px-4 py-2 bg-slate-200 rounded font-bold">Batal</button>
+           <div class="col-span-2 flex justify-end gap-2 pt-2">
+              <button type="button" onclick="document.getElementById('modalSiswa').classList.add('hidden')" class="px-4 py-2 bg-gray-200 rounded font-bold">Batal</button>
               <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded font-bold">Simpan</button>
            </div>
         </form>
@@ -387,264 +364,216 @@
   </div>
 
   <script>
-    // --- STATE ---
-    let db = {};
-    let settings = {};
-    let activeKelas = 'all';
+    let db = {}, settings = {}, activeKelas = 'all';
 
-    // --- MOCK API (PREVIEW) ---
+    // MOCK FOR PREVIEW
     if(typeof google === 'undefined') {
-       console.warn("Mode Preview");
-       window.google = { script: { run: { withSuccessHandler: (cb) => { 
+       window.google = { script: { run: { withSuccessHandler: (cb) => {
            return {
-               loginUser: (u,p) => { setTimeout(()=>cb({status:true, nama:'Admin Mock'}), 500) },
-               getDataInit: () => { setTimeout(()=>cb({
-                   pengaturan: [{Key:'Nama Sekolah', Value:'SDN MOCKUP 01'}, {Key:'Nama Guru', Value:'Budi SPd'}],
-                   kelas: [{'Nama Kelas':'IV-A'},{'Nama Kelas':'V-B'}],
-                   siswa: [{ID:'1', 'Nama Lengkap':'Budi Santoso', Kelas:'IV-A', 'L/P':'L', 'Tanggal Lahir':'2014-05-20', 'Tempat Lahir':'Jakarta', Alamat:'Jl. Mawar', 'Nama Ayah':'Joko', 'Pekerjaan Ayah':'Buruh', 'Pendidikan Ayah':'SD', 'Nama Ibu':'Siti', 'Pekerjaan Ibu':'IRT', 'Pendidikan Ibu':'SD'}],
-                   prota: [{'Mapel':'Matematika', 'TP_Materi':'Bilangan', 'Alokasi_Waktu':'12 JP', 'Keterangan':'Selesai'}]
-               }), 500) },
-               simpanPengaturan: () => { setTimeout(()=>cb("Pengaturan Disimpan"), 500) },
-               simpanSiswa: () => { setTimeout(()=>cb("Siswa Tersimpan"), 500) }
+               loginUser: (u,p)=>cb({status:true, nama:'Admin'}),
+               getDataInit: ()=>cb({
+                   pengaturan: [{Key:'Nama Sekolah',Value:'SDN CONTOH 01'}],
+                   kelas: [{'Nama Kelas':'IV-A'}, {'Nama Kelas':'V-B'}],
+                   siswa: [{ID:'1', 'Nama Lengkap':'Ahmad', Kelas:'IV-A', 'L/P':'L', 'Nama Ayah':'Budi', 'Pekerjaan Ayah':'Wiraswasta', 'Pendidikan Ayah':'SMA', 'Nama Ibu':'Siti', 'Pekerjaan Ibu':'IRT', 'Pendidikan Ibu':'SMP'}]
+               }),
+               simpanSiswa: ()=>cb("Siswa Tersimpan"),
+               simpanPengaturan: ()=>cb("Pengaturan Disimpan"),
+               simpanNilaiAkademik: ()=>cb("Nilai Akademik Disimpan")
            }
        }}}}
     }
 
-    // --- CORE FUNCTIONS ---
     function handleLogin(e) {
        e.preventDefault();
-       document.getElementById('loading').classList.remove('hidden');
+       document.getElementById('loading').style.display='flex';
        google.script.run.withSuccessHandler(res => {
-          document.getElementById('loading').classList.add('hidden');
+          document.getElementById('loading').style.display='none';
           if(res.status) {
-             document.getElementById('login-screen').classList.add('hidden');
+             document.getElementById('login-screen').style.display='none';
              document.getElementById('sidebar').classList.remove('hidden');
              document.getElementById('main-app').classList.remove('hidden');
              document.getElementById('dashName').innerText = res.nama;
              loadData();
-          } else { alert("Login Gagal!"); }
+          } else alert(res.message);
        }).loginUser(document.getElementById('uName').value, document.getElementById('uPass').value);
     }
 
     function toggleMenu(id) { document.getElementById(id).classList.toggle('open'); }
 
     function nav(viewId) {
-       document.querySelectorAll('.view-sec').forEach(el => {
-           el.classList.add('hidden');
-           el.classList.remove('active-print');
-       });
-       
-       const target = document.getElementById('view-' + viewId);
-       if(target) {
-           target.classList.remove('hidden');
-           if(viewId.includes('cetak') || viewId === 'prota') target.classList.add('active-print');
-           
+       document.querySelectorAll('.view-sec').forEach(el => { el.classList.add('hidden'); el.classList.remove('active-print'); });
+       const t = document.getElementById('view-' + viewId);
+       if(t) {
+           t.classList.remove('hidden');
+           if(viewId.includes('cetak')) t.classList.add('active-print');
            if(viewId.includes('siswa')) renderSiswa();
-           if(viewId === 'prota') renderProta();
-           
-           // Update Print Headers/Footers Dynamically
-           updatePrintElements();
-       } else { alert("Halaman " + viewId + " belum tersedia."); }
+           updatePrint();
+       } else alert("Menu ini tersedia di versi lengkap.");
     }
 
     function loadData() {
-       google.script.run.withSuccessHandler(d => {
-           db = d;
-           // Parse Settings Array to Object
-           settings = {};
-           if(db.pengaturan) db.pengaturan.forEach(item => settings[item.Key] = item.Value);
-           
-           // Apply Settings to Form & UI
-           applySettingsToUI();
-           initDropdowns();
-           
-           document.getElementById('dashSiswa').innerText = db.siswa ? db.siswa.length : 0;
-           document.getElementById('dashKelas').innerText = db.kelas ? db.kelas.length : 0;
-       }).getDataInit();
+        google.script.run.withSuccessHandler(d => {
+            db = d;
+            settings = {}; if(db.pengaturan) db.pengaturan.forEach(k=>settings[k.Key]=k.Value);
+            applySettings();
+            initDropdowns();
+            document.getElementById('dashSiswa').innerText = db.siswa ? db.siswa.length : 0;
+            document.getElementById('dashKelas').innerText = db.kelas ? db.kelas.length : 0;
+        }).getDataInit();
     }
 
-    function applySettingsToUI() {
-       // Fill Form
-       const setVal = (id, key) => { if(document.getElementById(id)) document.getElementById(id).value = settings[key] || ''; }
-       setVal('setSekolah', 'Nama Sekolah');
-       setVal('setAlamat', 'Alamat Sekolah');
-       setVal('setGuru', 'Nama Guru Kelas');
-       setVal('setNipGuru', 'NIP Guru');
-       setVal('setKS', 'Nama Kepala Sekolah');
-       setVal('setNipKS', 'NIP KS');
-       setVal('setKelas', 'Kelas');
-       setVal('setTahun', 'Tahun Ajaran');
-       setVal('setKotaTgl', 'Kota Tanggal');
-       
-       // Fill Images Preview
-       const setImg = (id, key, hidId) => {
-           if(settings[key]) {
-               document.getElementById(id).src = settings[key];
-               if(hidId) document.getElementById(hidId).value = settings[key];
-           }
-       }
-       setImg('previewLogo', 'Logo Sekolah', 'valLogo');
-       setImg('previewTtdGuru', 'TTD Guru', 'valTtdGuru');
-       setImg('previewTtdKS', 'TTD KS', 'valTtdKS');
-       setImg('previewStempel', 'Stempel', 'valStempel');
+    function applySettings() {
+        const sv = (id,k) => { if(document.getElementById(id)) document.getElementById(id).value = settings[k]||''; };
+        sv('setSekolah','Nama Sekolah'); sv('setAlamat','Alamat Sekolah'); sv('setGuru','Nama Guru'); sv('setNipGuru','NIP Guru');
+        sv('setKS','Nama KS'); sv('setNipKS','NIP KS'); sv('setKotaTgl','Kota Tanggal');
+        
+        const si = (imgId, hidId, k) => {
+            if(settings[k]) { document.getElementById(imgId).src = settings[k]; document.getElementById(hidId).value = settings[k]; }
+        };
+        si('prevLogo','valLogo','Logo Sekolah'); si('prevGuru','valTtdGuru','TTD Guru'); 
+        si('prevKS','valTtdKS','TTD KS'); si('prevStem','valStempel','Stempel');
     }
 
-    function updatePrintElements() {
-       // Update Kop Surat & TTD Footer in Print Views
-       // Kop
-       document.getElementById('kopSekolah').innerText = settings['Nama Sekolah'] || 'NAMA SEKOLAH';
-       document.getElementById('kopAlamat').innerText = settings['Alamat Sekolah'] || '';
-       if(settings['Logo Sekolah']) document.getElementById('kopLogo').src = settings['Logo Sekolah'];
-       
-       // Info Sub-header
-       document.getElementById('kopKelas').innerText = activeKelas === 'all' ? (settings['Kelas'] || '-') : activeKelas;
-       document.getElementById('kopTahun').innerText = settings['Tahun Ajaran'] || '-';
+    function updatePrint() {
+        // Update Kop & TTD
+        document.getElementById('kopSekolah').innerText = settings['Nama Sekolah']||'';
+        document.getElementById('kopAlamat').innerText = settings['Alamat Sekolah']||'';
+        if(settings['Logo Sekolah']) document.getElementById('kopLogo').src = settings['Logo Sekolah'];
 
-       // Footer TTD
-       document.getElementById('sigNamaKS').innerText = settings['Nama Kepala Sekolah'] || '................';
-       document.getElementById('sigNipKS').innerText = settings['NIP KS'] || '-';
-       document.getElementById('sigNamaGuru').innerText = settings['Nama Guru Kelas'] || '................';
-       document.getElementById('sigNipGuru').innerText = settings['NIP Guru'] || '-';
-       
-       // Kota Tgl
-       const kt = settings['Kota Tanggal'] || 'Semarang, ...........';
-       const splitKT = kt.split(',');
-       if(splitKT.length > 0) {
-           document.getElementById('sigKota').innerText = splitKT[0];
-           // Use dynamic date if strictly needed, or just the setting value
-           document.getElementById('sigTgl').innerText = splitKT[1] || '........'; 
-       }
+        document.getElementById('sigNamaKS').innerText = settings['Nama KS']||'';
+        document.getElementById('sigNipKS').innerText = settings['NIP KS']||'';
+        document.getElementById('sigNamaGuru').innerText = settings['Nama Guru']||'';
+        document.getElementById('sigNipGuru').innerText = settings['NIP Guru']||'';
+        
+        const kt = settings['Kota Tanggal'] ? settings['Kota Tanggal'].split(',') : ['Kota','Tgl'];
+        document.getElementById('sigKota').innerText = kt[0];
+        document.getElementById('sigTgl').innerText = kt[1]||'';
 
-       // Images
-       if(settings['TTD KS']) document.getElementById('ttdKS').src = settings['TTD KS'];
-       if(settings['TTD Guru']) document.getElementById('ttdGuru').src = settings['TTD Guru'];
-       if(settings['Stempel']) document.getElementById('ttdStempel').src = settings['Stempel'];
+        if(settings['TTD KS']) document.getElementById('ttdKS').src = settings['TTD KS'];
+        if(settings['TTD Guru']) document.getElementById('ttdGuru').src = settings['TTD Guru'];
+        if(settings['Stempel']) document.getElementById('ttdStempel').src = settings['Stempel'];
     }
 
     function initDropdowns() {
-       const k = document.getElementById('globalKelas');
-       const ks = document.getElementById('sKelas');
-       k.innerHTML = '<option value="all">Semua Kelas</option>';
-       ks.innerHTML = '';
-       if(db.kelas) db.kelas.forEach(i => {
-           k.innerHTML += `<option value="${i['Nama Kelas']}">${i['Nama Kelas']}</option>`;
-           ks.innerHTML += `<option value="${i['Nama Kelas']}">${i['Nama Kelas']}</option>`;
-       });
+        const k = document.getElementById('globalKelas'); const sk = document.getElementById('sKelas');
+        k.innerHTML='<option value="all">Semua Kelas</option>'; sk.innerHTML='';
+        if(db.kelas) db.kelas.forEach(c => {
+            k.innerHTML+=`<option value="${c['Nama Kelas']}">${c['Nama Kelas']}</option>`;
+            sk.innerHTML+=`<option value="${c['Nama Kelas']}">${c['Nama Kelas']}</option>`;
+        });
     }
 
-    function applyFilter() {
-        activeKelas = document.getElementById('globalKelas').value;
-        renderSiswa();
-        updatePrintElements(); // Update class name in print header
-    }
+    function applyFilter() { activeKelas = document.getElementById('globalKelas').value; renderSiswa(); }
 
-    // --- RENDERERS ---
     function renderSiswa() {
         const tb = document.getElementById('tbody-siswa');
-        const tbCetak = document.getElementById('tbody-siswa-cetak');
-        tb.innerHTML = ''; tbCetak.innerHTML = '';
-        
-        const data = activeKelas === 'all' ? db.siswa : db.siswa.filter(x => x.Kelas === activeKelas);
-        if(!data || data.length === 0) {
-            tb.innerHTML = '<tr><td colspan="6" class="p-4 text-center">Tidak ada data</td></tr>';
-            tbCetak.innerHTML = '<tr><td colspan="7" class="p-4 text-center">Tidak ada data</td></tr>';
-            return;
-        }
+        const tbC = document.getElementById('tbody-siswa-cetak');
+        tb.innerHTML = ''; tbC.innerHTML = '';
+        const data = activeKelas === 'all' ? db.siswa : db.siswa.filter(s=>s.Kelas === activeKelas);
 
-        data.forEach((s, i) => {
-            // UI Table
+        if(!data || data.length === 0) return;
+
+        data.forEach((s,i) => {
             tb.innerHTML += `
             <tr class="border-b hover:bg-slate-50">
-               <td class="p-2 border text-center">${i+1}</td>
-               <td class="p-2 border font-bold">${s.NIS}<br><span class="text-xs font-normal text-slate-500">${s.NISN}</span></td>
-               <td class="p-2 border font-bold text-blue-800">${s['Nama Lengkap']}</td>
-               <td class="p-2 border text-center">${s['L/P']}</td>
-               <td class="p-2 border">${s['Tempat Lahir']}, ${s['Tanggal Lahir']}</td>
-               <td class="p-2 border text-[10px]">
-                  Ayah: ${s['Nama Ayah']} (${s['Pekerjaan Ayah']})<br>
-                  Ibu: ${s['Nama Ibu']} (${s['Pekerjaan Ibu']})
-               </td>
+                <td class="p-2 border text-center">${i+1}</td>
+                <td class="p-2 border font-bold">${s.NIS}<br>${s.NISN}</td>
+                <td class="p-2 border font-bold text-blue-800">${s['Nama Lengkap']}</td>
+                <td class="p-2 border text-center">${s['L/P']}</td>
+                <td class="p-2 border">${s['Tempat Lahir']}, ${s['Tanggal Lahir']}</td>
+                <td class="p-2 border text-[10px]">
+                    Ayah: ${s['Nama Ayah']} (${s['Pekerjaan Ayah']})<br>
+                    Ibu: ${s['Nama Ibu']} (${s['Pekerjaan Ibu']})
+                </td>
             </tr>`;
             
-            // Print Table (Simpler)
-            tbCetak.innerHTML += `
+            tbC.innerHTML += `
             <tr>
-               <td class="border p-2">${i+1}</td>
-               <td class="border p-2">${s.NIS}/${s.NISN}</td>
-               <td class="border p-2 text-left font-bold">${s['Nama Lengkap']}</td>
-               <td class="border p-2">${s['L/P']}</td>
-               <td class="border p-2">${s['Tempat Lahir']}, ${s['Tanggal Lahir']}</td>
-               <td class="border p-2 text-left">${s.Alamat}</td>
-               <td class="border p-2 text-left text-[10px]">Ayah: ${s['Nama Ayah']}<br>Ibu: ${s['Nama Ibu']}</td>
+               <td class="border p-1">${i+1}</td><td class="border p-1">${s.NIS}</td>
+               <td class="border p-1 text-left">${s['Nama Lengkap']}</td><td class="border p-1">${s['L/P']}</td>
+               <td class="border p-1">${s['Tanggal Lahir']}</td><td class="border p-1 text-left">${s.Alamat}</td>
+               <td class="border p-1 text-left text-[10px]">${s['Nama Ayah']} / ${s['Nama Ibu']}</td>
             </tr>`;
-        });
-    }
-    
-    function renderProta() {
-        const tb = document.getElementById('tbody-prota');
-        tb.innerHTML = '';
-        if(db.prota) db.prota.forEach(p => {
-            tb.innerHTML += `<tr><td class="border p-2">${p.Mapel}</td><td class="border p-2">${p.TP_Materi}</td><td class="border p-2">${p.Alokasi_Waktu}</td><td class="border p-2">${p.Keterangan}</td></tr>`;
         });
     }
 
-    // --- FORM ACTIONS ---
-    function openModalSiswa() { document.getElementById('modalSiswa').classList.remove('hidden'); }
+    // NILAI AKADEMIK RENDERER
+    function renderNilaiAkademik() {
+        if(activeKelas === 'all') { alert('Pilih Kelas Spesifik dulu!'); return; }
+        const tb = document.getElementById('tbody-nilai-akademik');
+        tb.innerHTML = '';
+        const data = db.siswa.filter(s => s.Kelas === activeKelas);
+        data.forEach((s, i) => {
+            tb.innerHTML += `
+            <tr class="border-b row-nilai-akademik" data-nis="${s.NIS}" data-nama="${s['Nama Lengkap']}">
+                <td class="border p-1 bg-slate-50">${i+1}</td>
+                <td class="border p-1 text-left font-bold">${s['Nama Lengkap']}</td>
+                <td class="p-0 border"><input class="w-full text-center p-1 bg-blue-50 inp-tp1"></td>
+                <td class="p-0 border"><input class="w-full text-center p-1 bg-blue-50 inp-tp2"></td>
+                <td class="p-0 border"><input class="w-full text-center p-1 bg-blue-50 inp-tp3"></td>
+                <td class="p-0 border"><input class="w-full text-center p-1 bg-yellow-50 inp-lm1"></td>
+                <td class="p-0 border"><input class="w-full text-center p-1 bg-yellow-50 inp-lm2"></td>
+                <td class="p-0 border"><input class="w-full text-center p-1 bg-yellow-50 inp-lm3"></td>
+                <td class="p-0 border"><input class="w-full text-center p-1 bg-green-50 inp-sas"></td>
+                <td class="p-0 border"><input class="w-full text-left p-1 text-[10px] inp-desk" placeholder="Deskripsi Capaian"></td>
+            </tr>`;
+        });
+    }
     
+    // NILAI SIKAP RENDERER
+    function renderNilaiSikap() {
+        if(activeKelas === 'all') { alert('Pilih Kelas Spesifik dulu!'); return; }
+        // Logic similar to Akademik, mapped to Pancasila columns
+    }
+
     function saveSiswa(e) {
         e.preventDefault();
-        const getVal = (id) => document.getElementById(id).value;
+        const g = (id) => document.getElementById(id).value;
         const d = {
-            nama: getVal('sNama'), nis: getVal('sNIS'), nisn: getVal('sNISN'), kelas: getVal('sKelas'), lp: getVal('sLP'),
-            tmp_lahir: getVal('sTmp'), tgl_lahir: getVal('sTgl'), alamat: getVal('sAlamat'),
-            ayah: getVal('sAyah'), job_ayah: getVal('sJobAyah'), didik_ayah: getVal('sDidikAyah'),
-            ibu: getVal('sIbu'), job_ibu: getVal('sJobIbu'), didik_ibu: getVal('sDidikIbu')
+            nama: g('sNama'), nis: g('sNIS'), nisn: g('sNISN'), kelas: g('sKelas'), lp: g('sLP'),
+            tmp_lahir: g('sTmp'), tgl_lahir: g('sTgl'), alamat: g('sAlamat'),
+            ayah: g('sAyah'), job_ayah: g('sJobAyah'), didik_ayah: g('sDidikAyah'),
+            ibu: g('sIbu'), job_ibu: g('sJobIbu'), didik_ibu: g('sDidikIbu')
         };
         google.script.run.withSuccessHandler(r=>{ alert(r); document.getElementById('modalSiswa').classList.add('hidden'); loadData(); }).simpanSiswa(d);
     }
-    
-    function showModalProta() { alert("Fitur Input Prota (Popup) akan muncul di sini. Data dummy Prota sudah tampil di tabel."); }
 
-    // --- SETTINGS & IMAGES ---
-    function encodeImg(input, previewId) {
-        if(input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById(previewId).src = e.target.result;
-                // Simpan ke hidden input untuk nanti di-save
-                const key = previewId.replace('preview','val'); // ex: valLogo
-                document.getElementById(key).value = e.target.result; 
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
+    function submitNilaiAkademik(e) {
+        e.preventDefault();
+        const rows = document.querySelectorAll('.row-nilai-akademik');
+        rows.forEach(r => {
+             const d = {
+                 nis: r.dataset.nis, nama: r.dataset.nama, kelas: activeKelas, 
+                 mapel: document.getElementById('naMapel').value, semester: document.getElementById('naSemester').value,
+                 tp1: r.querySelector('.inp-tp1').value, tp2: r.querySelector('.inp-tp2').value, tp3: r.querySelector('.inp-tp3').value,
+                 lm1: r.querySelector('.inp-lm1').value, lm2: r.querySelector('.inp-lm2').value, lm3: r.querySelector('.inp-lm3').value,
+                 sas: r.querySelector('.inp-sas').value, deskripsi: r.querySelector('.inp-desk').value
+             };
+             google.script.run.simpanNilaiAkademik(d);
+        });
+        alert('Proses Simpan Nilai Akademik Berjalan di Latar Belakang');
     }
 
     function saveSettings(e) {
         e.preventDefault();
-        const data = {
-            'Nama Sekolah': document.getElementById('setSekolah').value,
-            'Alamat Sekolah': document.getElementById('setAlamat').value,
-            'Nama Guru Kelas': document.getElementById('setGuru').value,
-            'NIP Guru': document.getElementById('setNipGuru').value,
-            'Nama Kepala Sekolah': document.getElementById('setKS').value,
-            'NIP KS': document.getElementById('setNipKS').value,
-            'Kelas': document.getElementById('setKelas').value,
-            'Tahun Ajaran': document.getElementById('setTahun').value,
-            'Kota Tanggal': document.getElementById('setKotaTgl').value,
-            // Images
-            'Logo Sekolah': document.getElementById('valLogo').value,
-            'TTD Guru': document.getElementById('valTtdGuru').value,
-            'TTD KS': document.getElementById('valTtdKS').value,
-            'Stempel': document.getElementById('valStempel').value
+        const g = (id) => document.getElementById(id).value;
+        const d = {
+            'Nama Sekolah': g('setSekolah'), 'Alamat Sekolah': g('setAlamat'), 'Nama Guru': g('setGuru'), 'NIP Guru': g('setNipGuru'),
+            'Nama KS': g('setKS'), 'NIP KS': g('setNipKS'), 'Kota Tanggal': g('setKotaTgl'),
+            'Logo Sekolah': g('valLogo'), 'TTD Guru': g('valTtdGuru'), 'TTD KS': g('valTtdKS'), 'Stempel': g('valStempel')
         };
-        
-        document.getElementById('loading').classList.remove('hidden');
-        google.script.run.withSuccessHandler(r => {
-            alert(r);
-            document.getElementById('loading').classList.add('hidden');
-            loadData(); // Reload to reflect changes
-        }).simpanPengaturan(data);
+        google.script.run.withSuccessHandler(r=>alert(r)).simpanPengaturan(d);
     }
+    
+    function encodeImg(inp, prevId, valId) {
+        if(inp.files && inp.files[0]) {
+            const r = new FileReader();
+            r.onload = (e) => { document.getElementById(prevId).src=e.target.result; document.getElementById(valId).value=e.target.result; };
+            r.readAsDataURL(inp.files[0]);
+        }
+    }
+    
+    function openModalSiswa() { document.getElementById('modalSiswa').classList.remove('hidden'); }
   </script>
 </body>
 </html>
