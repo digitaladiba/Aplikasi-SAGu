@@ -3,580 +3,457 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Guru Pro</title>
+  <title>Admin Guru Pro V2</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script> 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+    body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
     
-    /* Loading */
-    #loading { position: fixed; inset: 0; z-index: 60; background: rgba(255,255,255,0.95); display: none; justify-content: center; align-items: center; flex-direction: column; }
-    .loader { width: 48px; height: 48px; border: 5px solid #3b82f6; border-bottom-color: transparent; border-radius: 50%; animation: rotation 1s linear infinite; }
-    @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .loader { border: 4px solid #f3f3f3; border-radius: 50%; border-top: 4px solid #3b82f6; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-
-    /* PRINT SETUP - F4 LANDSCAPE */
+    /* Print Styling */
     @media print {
-      @page { size: 330mm 215mm; margin: 10mm; } /* Ukuran F4 Landscape */
-      body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .no-print, #sidebar, header, .filter-bar, #login-screen { display: none !important; }
-      .print-area { display: block !important; width: 100%; position: absolute; top: 0; left: 0; }
-      
-      table { width: 100%; border-collapse: collapse; font-size: 9pt; }
-      th, td { border: 1px solid #000; padding: 4px; page-break-inside: avoid; }
-      th { background-color: #e2e8f0 !important; text-align: center; font-weight: bold; }
-      
-      /* Libur / Minggu di Print */
-      .bg-red-200 { background-color: #fee2e2 !important; color: #991b1b !important; }
-      
-      /* Footer Tanda Tangan */
-      .signature-footer { margin-top: 30px; display: flex; justify-content: space-between; padding: 0 40px; page-break-inside: avoid; }
-      .sig-box { text-align: center; width: 220px; position: relative; height: 100px; }
-      .stamp { width: 70px; position: absolute; bottom: 20px; left: 10px; opacity: 0.8; transform: rotate(-10deg); }
-      .sig-img { height: 60px; position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); z-index: -1; }
+      @page { size: landscape; margin: 10mm; }
+      body * { visibility: hidden; }
+      .print-area, .print-area * { visibility: visible; }
+      .print-area { position: absolute; left: 0; top: 0; width: 100%; }
+      .no-print { display: none !important; }
+      table { border-collapse: collapse; width: 100%; font-size: 11px; }
+      th, td { border: 1px solid black !important; padding: 4px; }
+      th { background-color: #e2e8f0 !important; -webkit-print-color-adjust: exact; }
     }
-    .print-area { display: none; }
-    .holiday-col { background-color: #fee2e2; }
   </style>
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800">
 
-  <!-- LOADING -->
-  <div id="loading"><span class="loader mb-3"></span><p class="font-bold text-slate-600 animate-pulse">Memproses Data...</p></div>
-
-  <!-- LOGIN -->
-  <div id="login-screen" class="fixed inset-0 z-50 bg-slate-900 flex justify-center items-center">
-      <div class="bg-white p-8 rounded-2xl shadow-2xl w-96 text-center border-t-8 border-blue-600">
-          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600 text-3xl"><i class="fa-solid fa-shield-halved"></i></div>
-          <h2 class="text-2xl font-bold mb-1 text-slate-800">Login Admin</h2>
-          <p class="text-xs text-slate-500 mb-6">Sistem Administrasi Guru Terpadu</p>
-          <form onsubmit="handleLogin(event)" class="space-y-4 text-left">
-              <input type="text" id="username" class="w-full border border-slate-300 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Username">
-              <input type="password" id="password" class="w-full border border-slate-300 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Password">
-              <button type="submit" class="w-full bg-blue-600 text-white py-2.5 rounded-lg font-bold hover:bg-blue-700 transition shadow-lg">MASUK APLIKASI</button>
-          </form>
-          <p class="text-[10px] text-slate-400 mt-4 text-center">Gunakan akun admin yang terdaftar di Database</p>
-      </div>
+  <div id="loading" class="fixed inset-0 bg-white/90 z-50 flex flex-col items-center justify-center hidden">
+    <div class="loader mb-2"></div>
+    <p class="text-sm font-bold text-blue-600">Menyimpan ke Database...</p>
   </div>
 
-  <!-- SIDEBAR -->
-  <aside id="sidebar" class="bg-slate-900 text-white w-64 flex flex-col hidden md:flex z-20 shadow-xl transition-all">
-    <div class="p-6 border-b border-slate-700 text-center bg-slate-800">
-      <div class="w-12 h-12 bg-blue-600 rounded-full mx-auto mb-2 flex items-center justify-center shadow-lg"><i class="fa-solid fa-graduation-cap text-xl"></i></div>
-      <h2 class="font-bold tracking-wide text-sm" id="sideSchoolName">ADMIN GURU</h2>
-      <p class="text-[10px] text-blue-200">Kurikulum Merdeka</p>
+  <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-2xl z-20">
+    <div class="p-5 border-b border-slate-700 text-center">
+      <h1 class="text-xl font-bold tracking-wider">GURU PRO <span class="text-blue-400">V2</span></h1>
+      <p class="text-[10px] text-slate-400 mt-1">Sistem Administrasi Terpadu</p>
     </div>
-    <nav class="flex-1 overflow-y-auto py-4 px-2 space-y-1 text-xs font-medium">
-      <button onclick="nav('dashboard')" class="w-full text-left px-4 py-3 rounded hover:bg-slate-800 flex items-center gap-3 transition"><i class="fa-solid fa-gauge w-5 text-center text-blue-400"></i> Dashboard</button>
+    
+    <nav class="flex-1 overflow-y-auto p-2 space-y-1 text-xs">
+      <div class="px-3 py-2 text-slate-500 font-bold uppercase text-[10px]">Utama</div>
+      <button onclick="nav('dashboard')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-home w-4"></i> Dashboard</button>
+      <button onclick="nav('kelas')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-chalkboard w-4"></i> Data Kelas</button>
+      <button onclick="nav('siswa')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-users w-4"></i> Data Siswa</button>
       
-      <div class="px-4 py-2 text-[10px] font-bold text-slate-500 mt-2 uppercase tracking-wider">Data & Jadwal</div>
-      <button onclick="nav('siswa')" class="w-full text-left px-4 py-3 rounded hover:bg-slate-800 flex items-center gap-3 transition"><i class="fa-solid fa-address-card w-5 text-center text-green-400"></i> Data Siswa</button>
-      <button onclick="nav('jadwal')" class="w-full text-left px-4 py-3 rounded hover:bg-slate-800 flex items-center gap-3 transition"><i class="fa-solid fa-calendar-days w-5 text-center text-yellow-400"></i> Jadwal Pelajaran</button>
-      
-      <div class="px-4 py-2 text-[10px] font-bold text-slate-500 mt-2 uppercase tracking-wider">Administrasi</div>
-      <button onclick="nav('jurnal')" class="w-full text-left px-4 py-3 rounded hover:bg-slate-800 flex items-center gap-3 transition"><i class="fa-solid fa-book-open-reader w-5 text-center text-purple-400"></i> Jurnal Mengajar</button>
-      <button onclick="nav('absen')" class="w-full text-left px-4 py-3 rounded hover:bg-slate-800 flex items-center gap-3 transition"><i class="fa-solid fa-clipboard-user w-5 text-center text-pink-400"></i> Absensi Siswa</button>
-      <button onclick="nav('prota')" class="w-full text-left px-4 py-3 rounded hover:bg-slate-800 flex items-center gap-3 transition"><i class="fa-solid fa-list-check w-5 text-center text-orange-400"></i> Prota & Prosem</button>
-      
-      <div class="px-4 py-2 text-[10px] font-bold text-slate-500 mt-2 uppercase tracking-wider">Penilaian</div>
-      <button onclick="nav('nilai')" class="w-full text-left px-4 py-3 rounded hover:bg-slate-800 flex items-center gap-3 transition"><i class="fa-solid fa-marker w-5 text-center text-red-400"></i> Nilai Akademik</button>
-      <button onclick="nav('sikap')" class="w-full text-left px-4 py-3 rounded hover:bg-slate-800 flex items-center gap-3 transition"><i class="fa-solid fa-heart w-5 text-center text-cyan-400"></i> Profil Lulusan (8 Dim)</button>
+      <div class="px-3 py-2 text-slate-500 font-bold uppercase text-[10px] mt-2">Administrasi</div>
+      <button onclick="nav('absen')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-regular fa-calendar-check w-4"></i> Absensi Harian</button>
+      <button onclick="nav('jurnal')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-book w-4"></i> Jurnal Mengajar</button>
+      <button onclick="nav('prota')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-list w-4"></i> Prota & Prosem</button>
+
+      <div class="px-3 py-2 text-slate-500 font-bold uppercase text-[10px] mt-2">Penilaian</div>
+      <button onclick="nav('nilai')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-marker w-4"></i> Input Nilai</button>
+      <button onclick="nav('rekap_nilai')" class="nav-btn w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-print w-4"></i> Rekap & Rapor</button>
     </nav>
-    <!-- Hamburger/Settings Bottom -->
-    <div class="p-4 border-t border-slate-700">
-        <button onclick="nav('settings')" class="w-full text-left px-4 py-3 rounded bg-blue-900 hover:bg-blue-800 flex items-center gap-3 mb-2"><i class="fa-solid fa-gear w-5 text-center"></i> Pengaturan</button>
-        <button onclick="location.reload()" class="w-full text-left px-4 py-2 text-red-300 hover:text-red-100 flex items-center gap-3 text-xs"><i class="fa-solid fa-power-off w-5 text-center"></i> Logout</button>
-    </div>
   </aside>
 
-  <!-- CONTENT -->
-  <main class="flex-1 flex flex-col h-full bg-slate-50 overflow-hidden hidden" id="main-app">
-    <header class="bg-white shadow-sm h-16 flex items-center px-8 justify-between z-10">
-      <div>
-        <h1 class="font-bold text-slate-800 text-xl" id="pageTitle">DASHBOARD</h1>
-        <p class="text-xs text-slate-400" id="currentDate">Senin, 1 Januari 2024</p>
-      </div>
-      <div class="text-right">
-          <p class="font-bold text-sm text-slate-800" id="headGuru">Guru</p>
-          <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full" id="headNIP">NIP. -</span>
+  <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50">
+    <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6 z-10">
+      <h2 id="page-title" class="text-lg font-bold text-slate-700">DASHBOARD</h2>
+      <div class="flex items-center gap-4">
+        <select id="globalKelasFilter" onchange="applyGlobalFilter()" class="border rounded p-1 text-xs bg-slate-50">
+          <option value="all">Semua Kelas</option>
+        </select>
+        <div class="text-right">
+          <p class="text-xs font-bold">Admin Guru</p>
+          <p class="text-[10px] text-slate-400">Online</p>
+        </div>
       </div>
     </header>
 
-    <div class="flex-1 overflow-auto p-8" id="content-area">
-        
-        <!-- 1. DASHBOARD -->
-        <div id="view-dashboard" class="view-sec">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-blue-500">
-                    <p class="text-xs text-slate-400 font-bold uppercase">Total Siswa</p>
-                    <p class="text-3xl font-bold text-slate-800 mt-1" id="dashSiswa">0</p>
-                </div>
-                <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-purple-500">
-                    <p class="text-xs text-slate-400 font-bold uppercase">Jurnal</p>
-                    <p class="text-3xl font-bold text-slate-800 mt-1" id="dashJurnal">0</p>
-                </div>
-                <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-green-500">
-                    <p class="text-xs text-slate-400 font-bold uppercase">Kelas Aktif</p>
-                    <p class="text-xl font-bold text-slate-800 mt-1" id="dashKelas">-</p>
-                </div>
-                <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-orange-500">
-                    <p class="text-xs text-slate-400 font-bold uppercase">Semester</p>
-                    <p class="text-xl font-bold text-slate-800 mt-1" id="dashTahun">-</p>
-                </div>
+    <div id="content-area" class="flex-1 overflow-auto p-6 relative">
+      
+      <div id="view-dashboard" class="page-view">
+        <div class="grid grid-cols-4 gap-4 mb-6">
+          <div class="bg-blue-600 text-white p-4 rounded-xl shadow-lg">
+            <h3 class="text-2xl font-bold" id="dash-siswa-count">0</h3>
+            <p class="text-xs opacity-80">Total Siswa</p>
+          </div>
+          <div class="bg-green-600 text-white p-4 rounded-xl shadow-lg">
+            <h3 class="text-2xl font-bold" id="dash-kelas-count">0</h3>
+            <p class="text-xs opacity-80">Kelas Aktif</p>
+          </div>
+        </div>
+        <div class="bg-white p-6 rounded-xl border">
+          <h3 class="font-bold mb-2">Status Sistem</h3>
+          <p class="text-sm text-slate-600">Database terhubung. Gunakan menu di samping untuk mengelola data.</p>
+        </div>
+      </div>
+
+      <div id="view-kelas" class="page-view hidden">
+        <div class="bg-white p-6 rounded-xl shadow-sm border mb-4">
+          <h3 class="font-bold mb-4 border-b pb-2">Buat Kelas Baru</h3>
+          <form onsubmit="handleNewClass(event)" class="flex gap-4 items-end">
+            <div class="flex-1">
+              <label class="text-xs font-bold text-slate-500">Nama Kelas</label>
+              <input type="text" id="newClassName" class="w-full border p-2 rounded text-sm" placeholder="Contoh: IV-A" required>
             </div>
-            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-8 rounded-2xl shadow-lg">
-                <h2 class="text-2xl font-bold mb-2">Selamat Datang di Administrasi Guru!</h2>
-                <p class="opacity-90">Sistem ini telah dikonfigurasi untuk Kurikulum Merdeka. Silakan mulai dengan melengkapi data di menu <strong>Pengaturan</strong>.</p>
+            <div class="flex-1">
+              <label class="text-xs font-bold text-slate-500">Tahun Ajaran</label>
+              <input type="text" id="newClassYear" class="w-full border p-2 rounded text-sm" value="2024/2025" required>
             </div>
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">SIMPAN</button>
+          </form>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border">
+            <h3 class="font-bold mb-2">Daftar Kelas</h3>
+            <table class="w-full text-sm text-left"><thead class="bg-slate-100"><tr><th class="p-2">Kelas</th><th class="p-2">Tahun</th><th class="p-2">Jml Siswa</th></tr></thead><tbody id="tbody-kelas"></tbody></table>
+        </div>
+      </div>
+
+      <div id="view-siswa" class="page-view hidden">
+        <div class="flex justify-between mb-4">
+           <button onclick="openModalSiswa()" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold shadow">+ Tambah Siswa</button>
+           <button onclick="downloadExcel('tblSiswa', 'Data_Siswa')" class="bg-green-600 text-white px-4 py-2 rounded text-xs font-bold shadow"><i class="fa-solid fa-file-excel mr-1"></i> Download Excel</button>
+        </div>
+        <div class="bg-white rounded-lg shadow border overflow-x-auto print-area">
+          <div class="p-4 border-b bg-slate-50 flex justify-between items-center">
+             <div class="flex items-center gap-4">
+               <img src="https://via.placeholder.com/50" class="h-12 w-12 object-contain hidden" id="logo-print-siswa"> 
+               <div>
+                 <h2 class="text-lg font-bold uppercase" id="kop-sekolah-siswa">NAMA SEKOLAH</h2>
+                 <p class="text-xs">Data Peserta Didik</p>
+               </div>
+             </div>
+          </div>
+          <table id="tblSiswa" class="w-full text-xs text-left whitespace-nowrap">
+            <thead class="bg-slate-100 font-bold text-slate-700">
+              <tr>
+                <th class="p-2 border">No</th>
+                <th class="p-2 border">NIS/NISN</th>
+                <th class="p-2 border">Nama Siswa</th>
+                <th class="p-2 border">L/P</th>
+                <th class="p-2 border">Kelas</th>
+                <th class="p-2 border">Data Ayah (Nama/Kerja/Pendidikan)</th>
+                <th class="p-2 border">Data Ibu (Nama/Kerja/Pendidikan)</th>
+                <th class="p-2 border no-print">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-siswa" class="divide-y"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="view-absen" class="page-view hidden">
+        <div class="bg-white p-6 rounded-xl shadow-sm border">
+          <div class="flex gap-4 mb-6 border-b pb-4 items-end">
+            <div>
+              <label class="text-xs font-bold block mb-1">Tanggal Absen</label>
+              <input type="date" id="absenDate" class="border p-2 rounded text-sm bg-slate-50" onchange="loadAbsenForm()">
+            </div>
+            <div class="text-xs text-red-500 italic">* Pilih tanggal untuk memuat siswa</div>
+          </div>
+          
+          <form onsubmit="submitAbsen(event)">
+            <table class="w-full text-sm border">
+              <thead class="bg-slate-100 text-center">
+                <tr>
+                  <th class="p-2 border w-10">No</th>
+                  <th class="p-2 border text-left">Nama Siswa</th>
+                  <th class="p-2 border w-16 bg-green-50">Hadir</th>
+                  <th class="p-2 border w-16 bg-blue-50">Sakit</th>
+                  <th class="p-2 border w-16 bg-yellow-50">Ijin</th>
+                  <th class="p-2 border w-16 bg-red-50">Alpha</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-absen-input">
+                <tr><td colspan="6" class="p-4 text-center text-slate-400">Pilih Tanggal & Kelas Terlebih Dahulu</td></tr>
+              </tbody>
+            </table>
+            <button type="submit" class="mt-4 w-full bg-blue-600 text-white py-3 rounded font-bold hover:bg-blue-700">SIMPAN ABSENSI</button>
+          </form>
+        </div>
+      </div>
+
+      <div id="view-nilai" class="page-view hidden">
+        <div class="bg-white p-4 rounded-xl shadow border mb-4">
+           <div class="grid grid-cols-4 gap-4 text-xs">
+              <select id="nMapel" class="border p-2 rounded"><option>Matematika</option><option>Bahasa Indonesia</option></select>
+              <select id="nLingkup" class="border p-2 rounded"><option value="LM1">Lingkup Materi 1</option><option value="LM2">Lingkup Materi 2</option></select>
+           </div>
         </div>
 
-        <!-- 2. DATA SISWA -->
-        <div id="view-siswa" class="view-sec hidden">
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                <div class="flex justify-between items-center mb-6 filter-bar">
-                    <h3 class="font-bold text-slate-700 text-lg">Data Peserta Didik Detail</h3>
-                    <button onclick="printLaporan('DATA PESERTA DIDIK', 'tblSiswa')" class="bg-slate-800 text-white text-xs px-4 py-2 rounded-lg font-bold hover:bg-black transition"><i class="fa-solid fa-print mr-2"></i> Cetak Data</button>
-                </div>
-                <div class="overflow-x-auto rounded-lg border">
-                    <table class="w-full text-xs text-left" id="tblSiswa">
-                        <thead class="bg-slate-100 font-bold uppercase text-slate-600">
-                            <tr>
-                                <th class="p-3 border-b text-center">No</th>
-                                <th class="p-3 border-b">Identitas (NIS/NISN)</th>
-                                <th class="p-3 border-b">Nama Lengkap & L/P</th>
-                                <th class="p-3 border-b">TTL & Usia</th>
-                                <th class="p-3 border-b w-48">Alamat</th>
-                                <th class="p-3 border-b">Data Orang Tua (Ayah/Ibu)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbodySiswa" class="divide-y"></tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="bg-white rounded-xl shadow border overflow-x-auto">
+          <form onsubmit="submitNilai(event)">
+             <table class="w-full text-xs text-center">
+               <thead class="bg-slate-100 font-bold">
+                 <tr>
+                   <th rowspan="2" class="p-2 border w-8">No</th>
+                   <th rowspan="2" class="p-2 border text-left w-48">Nama</th>
+                   <th colspan="5" class="p-2 border bg-blue-50">Formatif (4 TP)</th>
+                   <th colspan="2" class="p-2 border bg-yellow-50">Sumatif</th>
+                   <th rowspan="2" class="p-2 border bg-green-50 w-16">SAS</th>
+                   <th rowspan="2" class="p-2 border bg-gray-100 w-16">Rapor</th>
+                 </tr>
+                 <tr>
+                    <th class="border p-1">TP1</th><th class="border p-1">TP2</th><th class="border p-1">TP3</th><th class="border p-1">TP4</th><th class="border p-1 bg-blue-100">Rata</th>
+                    <th class="border p-1">Nilai LM</th><th class="border p-1 bg-yellow-100">Rata Sum</th>
+                 </tr>
+               </thead>
+               <tbody id="tbody-nilai-input"></tbody>
+             </table>
+             <div class="p-4 text-right">
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded font-bold shadow">SIMPAN NILAI</button>
+             </div>
+          </form>
         </div>
-
-        <!-- 3. ABSENSI (REKAP 1 BULAN) -->
-        <div id="view-absen" class="view-sec hidden">
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                <div class="flex justify-between items-center mb-4 filter-bar">
-                    <div class="flex gap-3 items-center">
-                        <h3 class="font-bold text-slate-700">Rekap Absensi</h3>
-                        <select id="absenBulan" class="border p-1.5 rounded text-xs bg-slate-50" onchange="renderAbsenTable()"><option value="0">Januari</option><option value="1">Februari</option><option value="2">Maret</option><option value="3">April</option><option value="4">Mei</option><option value="5">Juni</option><option value="6">Juli</option><option value="7">Agustus</option><option value="8">September</option><option value="9">Oktober</option><option value="10">November</option><option value="11">Desember</option></select>
-                    </div>
-                    <button onclick="printLaporan('REKAPITULASI ABSENSI SISWA', 'tblAbsen')" class="bg-slate-800 text-white text-xs px-4 py-2 rounded-lg font-bold"><i class="fa-solid fa-print mr-2"></i> Cetak Absen</button>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-[10px] text-center border-collapse" id="tblAbsen">
-                        <thead class="bg-slate-100 font-bold text-slate-700">
-                            <tr>
-                                <th rowspan="2" class="border p-1 w-8">No</th>
-                                <th rowspan="2" class="border p-1 w-32 text-left">Nama Siswa</th>
-                                <th colspan="31" class="border p-1 bg-blue-50">Tanggal</th>
-                                <th colspan="5" class="border p-1 bg-yellow-50">Rekap</th>
-                            </tr>
-                            <tr id="absenHeaderDates">
-                                <!-- Generated by JS -->
-                            </tr>
-                        </thead>
-                        <tbody id="tbodyAbsen"></tbody>
-                    </table>
-                </div>
-                <p class="text-[10px] text-red-500 mt-2 italic">* Kolom Merah = Hari Minggu (Tidak dihitung dalam persentase)</p>
-            </div>
-        </div>
-
-        <!-- 4. JURNAL MENGAJAR -->
-        <div id="view-jurnal" class="view-sec hidden">
-            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                <!-- Form -->
-                <div class="xl:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit sticky top-6">
-                    <h3 class="font-bold border-b pb-3 mb-4 flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-blue-600"></i> Input Jurnal</h3>
-                    <form onsubmit="addJurnal(event)" class="space-y-3">
-                        <input type="date" id="jTgl" class="w-full border p-2 rounded text-xs bg-slate-50" required>
-                        <select id="jMapel" class="w-full border p-2 rounded text-xs font-bold text-blue-800" onchange="loadTP(this.value)">
-                            <option value="">-- Pilih Mata Pelajaran --</option>
-                            <option>Pendidikan Pancasila</option><option>Bahasa Indonesia</option><option>Matematika</option><option>IPAS</option><option>Bahasa Inggris</option><option>PJOK</option><option>Seni Rupa</option><option>Seni Musik</option><option>Seni Tari</option>
-                        </select>
-                        <select id="jTP" class="w-full border p-2 rounded text-xs bg-slate-50"><option value="">-- TP (Pilih Mapel Dulu) --</option></select>
-                        <textarea id="jKeg" rows="2" class="w-full border p-2 rounded text-xs" placeholder="Kegiatan Pembelajaran"></textarea>
-                        <textarea id="jRef" rows="2" class="w-full border p-2 rounded text-xs" placeholder="Refleksi (Manual)"></textarea>
-                        <select id="jTL" class="w-full border p-2 rounded text-xs font-bold text-green-700 bg-green-50">
-                            <option value="">-- Pilih Tindak Lanjut --</option>
-                            <option>Melanjutkan Materi</option><option>Remedial Teaching</option><option>Program Pengayaan</option><option>Konseling</option><option>Perbaikan Nilai</option>
-                        </select>
-                        <button type="submit" class="w-full bg-blue-600 text-white py-2.5 rounded-lg text-xs font-bold hover:bg-blue-700 shadow-md">SIMPAN JURNAL</button>
-                    </form>
-                </div>
-                <!-- Table -->
-                <div class="xl:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                    <div class="flex justify-between items-center mb-4 filter-bar">
-                         <h3 class="font-bold text-slate-700">Rekap Jurnal</h3>
-                         <button onclick="printLaporan('JURNAL PEMBELAJARAN', 'tblJurnal')" class="bg-slate-800 text-white text-xs px-3 py-2 rounded-lg font-bold">Cetak</button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-left border" id="tblJurnal">
-                            <thead class="bg-slate-100 font-bold text-slate-600"><tr><th class="p-2 border">Tgl</th><th class="p-2 border">Mapel & TP</th><th class="p-2 border">Kegiatan</th><th class="p-2 border">Refleksi & TL</th></tr></thead>
-                            <tbody id="tbodyJurnal" class="divide-y"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. NILAI AKADEMIK -->
-        <div id="view-nilai" class="view-sec hidden">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <div class="flex justify-between items-center mb-4 filter-bar">
-                    <div class="flex gap-2">
-                        <select id="nMapel" class="border p-2 rounded text-xs"><option>Matematika</option><option>IPAS</option><option>Bahasa Indonesia</option></select>
-                        <select id="nSem" class="border p-2 rounded text-xs"><option>Ganjil</option><option>Genap</option></select>
-                    </div>
-                    <button onclick="printLaporan('REKAP NILAI AKADEMIK', 'tblNilai')" class="bg-slate-800 text-white text-xs px-4 py-2 rounded-lg font-bold">Cetak Nilai</button>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs text-center border-collapse" id="tblNilai">
-                        <thead class="bg-slate-50 font-bold text-slate-700">
-                            <tr>
-                                <th rowspan="3" class="border p-2 w-8">No</th>
-                                <th rowspan="3" class="border p-2 w-48 text-left">Nama Siswa</th>
-                                <th colspan="4" class="border p-2 bg-blue-50 text-blue-800">Formatif (TP)</th>
-                                <th colspan="4" class="border p-2 bg-yellow-50 text-yellow-800">Sumatif (Lingkup Materi)</th>
-                                <th rowspan="3" class="border p-2 bg-red-50 text-red-800 w-16">SAS</th>
-                                <th rowspan="3" class="border p-2 bg-gray-100 w-16">Akhir</th>
-                            </tr>
-                            <tr>
-                                <th class="border p-1 text-[10px]">TP1</th><th class="border p-1 text-[10px]">TP2</th><th class="border p-1 text-[10px]">TP3</th><th class="border p-1 text-[10px]">Rata</th>
-                                <th class="border p-1 text-[10px]">LM1</th><th class="border p-1 text-[10px]">LM2</th><th class="border p-1 text-[10px]">LM3</th><th class="border p-1 text-[10px]">Rata</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbodyNilai" contenteditable="true" class="bg-white divide-y"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- 6. NILAI SIKAP (8 DIMENSI) -->
-        <div id="view-sikap" class="view-sec hidden">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <div class="flex justify-between items-center mb-4 filter-bar">
-                    <h3 class="font-bold text-slate-700">Profil Lulusan (8 Dimensi)</h3>
-                    <button onclick="printLaporan('REKAP NILAI SIKAP', 'tblSikap')" class="bg-slate-800 text-white text-xs px-4 py-2 rounded-lg font-bold">Cetak</button>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs text-center border-collapse" id="tblSikap">
-                        <thead class="bg-purple-50 font-bold text-purple-900">
-                            <tr>
-                                <th rowspan="2" class="border p-2 w-8">No</th>
-                                <th rowspan="2" class="border p-2 w-48 text-left">Nama Siswa</th>
-                                <th colspan="8" class="border p-2 bg-purple-100">8 Dimensi Profil Lulusan</th>
-                            </tr>
-                            <tr class="text-[9px]">
-                                <th class="border p-1 w-12" contenteditable="true">Beriman</th><th class="border p-1 w-12" contenteditable="true">Kebinekaan</th>
-                                <th class="border p-1 w-12" contenteditable="true">Gotong Royong</th><th class="border p-1 w-12" contenteditable="true">Mandiri</th>
-                                <th class="border p-1 w-12" contenteditable="true">Kritis</th><th class="border p-1 w-12" contenteditable="true">Kreatif</th>
-                                <th class="border p-1 w-12" contenteditable="true">Dimensi 7</th><th class="border p-1 w-12" contenteditable="true">Dimensi 8</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbodySikap" contenteditable="true" class="bg-white divide-y"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- 7. PENGATURAN -->
-        <div id="view-settings" class="view-sec hidden">
-            <div class="bg-white p-8 rounded-xl shadow-lg max-w-4xl mx-auto border border-slate-200">
-                <h3 class="font-bold border-b pb-4 mb-6 text-xl">Pengaturan Sekolah & Guru</h3>
-                <form onsubmit="saveSettings(event)" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="space-y-4">
-                        <input type="text" id="setSekolah" class="w-full border p-2.5 rounded text-xs bg-slate-50" placeholder="Nama Sekolah">
-                        <textarea id="setAlamat" rows="2" class="w-full border p-2.5 rounded text-xs bg-slate-50" placeholder="Alamat"></textarea>
-                        <div class="flex gap-4"><input type="text" id="setTahun" class="w-full border p-2.5 rounded text-xs bg-slate-50" placeholder="Tahun Ajar"><input type="text" id="setKelas" class="w-full border p-2.5 rounded text-xs bg-slate-50" placeholder="Kelas"></div>
-                        <input type="text" id="setGuru" class="w-full border p-2.5 rounded text-xs" placeholder="Nama Guru">
-                        <input type="text" id="setNipGuru" class="w-full border p-2.5 rounded text-xs" placeholder="NIP Guru">
-                        <input type="text" id="setKS" class="w-full border p-2.5 rounded text-xs" placeholder="Nama KS">
-                        <input type="text" id="setNipKS" class="w-full border p-2.5 rounded text-xs" placeholder="NIP KS">
-                    </div>
-                    <div class="space-y-4">
-                        <div class="border p-3 text-center rounded bg-slate-50"><p class="text-xs font-bold mb-2">TTD Guru</p><input type="file" onchange="prevImg(this,'imgGuru')" class="text-[10px] w-full"><img id="imgGuru" class="h-10 mx-auto mt-2 hidden"></div>
-                        <div class="border p-3 text-center rounded bg-slate-50"><p class="text-xs font-bold mb-2">TTD KS</p><input type="file" onchange="prevImg(this,'imgKS')" class="text-[10px] w-full"><img id="imgKS" class="h-10 mx-auto mt-2 hidden"></div>
-                        <div class="border p-3 text-center rounded bg-slate-50"><p class="text-xs font-bold mb-2">Stempel</p><input type="file" onchange="prevImg(this,'imgStempel')" class="text-[10px] w-full"><img id="imgStempel" class="h-10 mx-auto mt-2 hidden"></div>
-                        <div class="border p-3 text-center rounded bg-slate-50"><p class="text-xs font-bold mb-2">Logo</p><input type="file" onchange="prevImg(this,'imgLogo')" class="text-[10px] w-full"><img id="imgLogo" class="h-10 mx-auto mt-2 hidden"></div>
-                        <button type="submit" class="w-full bg-slate-800 text-white py-3 rounded-lg font-bold shadow-lg hover:bg-black transition">SIMPAN</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+      </div>
 
     </div>
   </main>
-  
-  <!-- PRINT TEMPLATE (F4 LANDSCAPE) -->
-  <div class="print-area font-serif">
-      <div class="flex items-center border-b-4 border-double border-black pb-2 mb-4 relative" style="height: 100px;">
-          <img id="printLogo" class="absolute left-0 top-0 h-20 w-20 object-contain hidden">
-          <div class="w-full text-center">
-              <h3 class="text-sm font-bold">PEMERINTAH KABUPATEN/KOTA</h3>
-              <h3 class="text-sm font-bold">DINAS PENDIDIKAN DAN KEBUDAYAAN</h3>
-              <h1 class="text-xl font-bold uppercase tracking-wider" id="printSekolah">NAMA SEKOLAH</h1>
-              <p class="text-xs" id="printAlamat">Alamat Sekolah...</p>
-          </div>
-      </div>
-      <div class="text-center mb-6">
-          <h2 class="text-lg font-bold underline uppercase mb-1" id="printJudul">JUDUL</h2>
-          <table class="mx-auto text-xs font-bold border-none"><tr><td class="border-0 px-2">Kelas: <span id="printKelas"></span></td><td class="border-0 px-2">|</td><td class="border-0 px-2">Tahun: <span id="printTahun"></span></td></tr></table>
-      </div>
-      <div id="printContent"></div>
-      <div class="signature-footer">
-          <div class="sig-box"><p>Mengetahui,<br>Kepala Sekolah</p><div style="height: 60px; position:relative;"><img id="printImgStempel" class="stamp hidden"><img id="printImgKS" class="sig-img hidden"></div><p class="font-bold underline" id="printNamaKS">KS</p><p>NIP. <span id="printNipKS"></span></p></div>
-          <div class="sig-box"><p id="printTgl">Semarang, ...</p><p>Guru Kelas</p><div style="height: 60px; position:relative;"><img id="printImgGuru" class="sig-img hidden"></div><p class="font-bold underline" id="printNamaGuru">Guru</p><p>NIP. <span id="printNipGuru"></span></p></div>
-      </div>
+
+  <div id="modalSiswa" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 overflow-y-auto">
+    <div class="bg-white p-6 rounded-lg w-[600px] my-10 shadow-2xl">
+       <h3 class="font-bold text-lg mb-4 border-b">Form Data Siswa</h3>
+       <form onsubmit="submitSiswa(event)" class="space-y-3 text-xs">
+         <div class="grid grid-cols-2 gap-4">
+            <input id="sNama" placeholder="Nama Lengkap" class="border p-2 rounded col-span-2" required>
+            <input id="sNIS" placeholder="NIS" class="border p-2 rounded">
+            <input id="sNISN" placeholder="NISN" class="border p-2 rounded">
+            <select id="sLP" class="border p-2 rounded"><option>L</option><option>P</option></select>
+            <select id="sKelas" class="border p-2 rounded"></select> <input id="sTmp" placeholder="Tempat Lahir" class="border p-2 rounded">
+            <input id="sTgl" type="date" class="border p-2 rounded">
+            <textarea id="sAlamat" placeholder="Alamat" class="border p-2 rounded col-span-2"></textarea>
+         </div>
+         <div class="bg-slate-50 p-3 rounded border">
+            <p class="font-bold mb-2">Data Ayah</p>
+            <div class="grid grid-cols-3 gap-2">
+               <input id="sAyah" placeholder="Nama Ayah" class="border p-2 rounded">
+               <input id="sKerjaAyah" placeholder="Pekerjaan" class="border p-2 rounded">
+               <input id="sDidikAyah" placeholder="Pendidikan" class="border p-2 rounded">
+            </div>
+         </div>
+         <div class="bg-slate-50 p-3 rounded border">
+            <p class="font-bold mb-2">Data Ibu</p>
+            <div class="grid grid-cols-3 gap-2">
+               <input id="sIbu" placeholder="Nama Ibu" class="border p-2 rounded">
+               <input id="sKerjaIbu" placeholder="Pekerjaan" class="border p-2 rounded">
+               <input id="sDidikIbu" placeholder="Pendidikan" class="border p-2 rounded">
+            </div>
+         </div>
+         <div class="flex justify-end gap-2 mt-4">
+            <button type="button" onclick="document.getElementById('modalSiswa').classList.add('hidden')" class="px-4 py-2 bg-slate-200 rounded">Batal</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded font-bold">Simpan</button>
+         </div>
+       </form>
+    </div>
   </div>
 
   <script>
-    // --- MOCKUP API (Untuk Preview) ---
-    // Di lingkungan GAS asli, objek 'google' sudah ada. Ini hanya fallback.
-    if (typeof google === 'undefined') {
-      console.log("Mode Preview: Menggunakan Mock API");
-      var google = { script: { run: { withSuccessHandler: function(cb) { return {
-        loginUser: (u,p) => { setTimeout(()=>cb({status:u==='admin'&&p==='admin123', nama:'Admin'}),500); },
-        getAllData: () => { setTimeout(()=>cb(db),500); },
-        saveSettings: (d) => { setTimeout(()=>cb("Tersimpan"),500); },
-        saveData: (s,d) => { setTimeout(()=>cb("Data Tersimpan"),500); }
-      }}}}} 
-    }
+    // --- STATE MANAGEMENT ---
+    let db = {};
+    let currentFilterKelas = 'all';
 
-    // DATA STATE
-    let db = {
-        settings: { sekolah: "SDN CONTOH", alamat: "Jl. Pendidikan", guru: "Budi", nipGuru: "123", ks: "Siti", nipKs: "456", tahun:"2024/2025", kelas:"IV" },
-        siswa: [
-            { No:1, NIS:"101", NISN:"001", "Nama Lengkap":"Adit", "L/P":"L", "Tanggal Lahir":"2015-05-12", Alamat:"Jl. A", "Nama Ayah":"Budi", "Pekerjaan Ayah":"Wiraswasta", "Pendidikan Ayah":"SMA" },
-            { No:2, NIS:"102", NISN:"002", "Nama Lengkap":"Bunga", "L/P":"P", "Tanggal Lahir":"2015-08-20", Alamat:"Jl. B", "Nama Ayah":"Joko", "Pekerjaan Ayah":"PNS", "Pendidikan Ayah":"S1" }
-        ],
-        jurnal: [],
-        absen: [],
-        mapel_db: [
-            { "Mata Pelajaran": "Matematika", "Tujuan Pembelajaran": "Bilangan Cacah" },
-            { "Mata Pelajaran": "IPAS", "Tujuan Pembelajaran": "Wujud Zat" }
-        ]
+    // --- INIT ---
+    window.onload = function() {
+       refreshData();
+       // Set Date Input to Today
+       document.getElementById('absenDate').valueAsDate = new Date();
     };
 
-    // --- LOGIC ---
-    function handleLogin(e) {
-        e.preventDefault();
-        const u = document.getElementById('username').value;
-        const p = document.getElementById('password').value;
-        document.getElementById('loading').style.display = 'flex';
-        google.script.run.withSuccessHandler(res => {
-            if(res.status) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('sidebar').classList.remove('hidden');
-                document.getElementById('main-app').classList.remove('hidden');
-                fetchData();
-            } else { document.getElementById('loading').style.display = 'none'; alert(res.message); }
-        }).loginUser(u, p);
+    function refreshData() {
+       toggleLoad(true);
+       google.script.run.withSuccessHandler(data => {
+         db = data;
+         initDropdowns();
+         renderAll();
+         toggleLoad(false);
+       }).getAllData();
     }
 
-    function fetchData() {
-        google.script.run.withSuccessHandler(serverDb => {
-            if(serverDb) db = serverDb;
-            document.getElementById('loading').style.display = 'none';
-            renderAll();
-        }).getAllData();
+    function toggleLoad(show) {
+       document.getElementById('loading').style.display = show ? 'flex' : 'none';
     }
 
-    function nav(id) {
-        document.querySelectorAll('.view-sec').forEach(el => el.classList.add('hidden'));
-        document.getElementById('view-' + id).classList.remove('hidden');
-        document.getElementById('pageTitle').innerText = id === 'sikap' ? 'Profil Lulusan (8 Dimensi)' : id.toUpperCase();
-        if(id === 'absen') renderAbsenTable();
+    function nav(viewId) {
+       document.querySelectorAll('.page-view').forEach(el => el.classList.add('hidden'));
+       document.getElementById('view-' + viewId).classList.remove('hidden');
+       document.getElementById('page-title').innerText = viewId.toUpperCase().replace('_', ' ');
     }
 
+    // --- DROPDOWNS & FILTER ---
+    function initDropdowns() {
+       const selK = document.getElementById('globalKelasFilter');
+       const selSK = document.getElementById('sKelas'); // Modal
+       
+       selK.innerHTML = '<option value="all">Semua Kelas</option>';
+       selSK.innerHTML = '';
+       
+       if(db.kelas) db.kelas.forEach(k => {
+          selK.innerHTML += `<option value="${k['Nama Kelas']}">${k['Nama Kelas']}</option>`;
+          selSK.innerHTML += `<option value="${k['Nama Kelas']}">${k['Nama Kelas']}</option>`;
+       });
+    }
+
+    function applyGlobalFilter() {
+       currentFilterKelas = document.getElementById('globalKelasFilter').value;
+       renderAll();
+    }
+
+    function getFilteredSiswa() {
+       if(!db.siswa) return [];
+       if(currentFilterKelas === 'all') return db.siswa;
+       return db.siswa.filter(s => s.Kelas === currentFilterKelas);
+    }
+
+    // --- RENDER FUNCTIONS ---
     function renderAll() {
-        const s = db.settings || {};
-        const setVal = (id, v) => document.getElementById(id).value = v || "";
-        const setTxt = (id, v) => document.getElementById(id).innerText = v || "-";
-        
-        setTxt('sideSchoolName', s.sekolah); setTxt('headGuru', s.nama_guru || s.guru); setTxt('headNIP', "NIP. "+(s.nipGuru||"-"));
-        setTxt('dashSiswa', db.siswa ? db.siswa.length : 0);
-        setTxt('dashJurnal', db.jurnal ? db.jurnal.length : 0);
-        setTxt('dashKelas', s.kelas); setTxt('dashTahun', s.tahun);
+       document.getElementById('dash-siswa-count').innerText = db.siswa ? db.siswa.length : 0;
+       document.getElementById('dash-kelas-count').innerText = db.kelas ? db.kelas.length : 0;
 
-        setVal('setSekolah', s.sekolah); setVal('setAlamat', s.alamat); setVal('setTahun', s.tahun);
-        setVal('setKelas', s.kelas); setVal('setGuru', s.guru); setVal('setNipGuru', s.nipGuru);
-        setVal('setKS', s.ks); setVal('setNipKS', s.nipKs);
-
-        renderSiswa(); renderJurnal(); renderNilai(); renderSikap();
+       renderSiswaTable();
+       renderKelasTable();
+       if(!document.getElementById('view-absen').classList.contains('hidden')) loadAbsenForm();
     }
 
-    // SISWA
-    function getAge(dob) {
-        if(!dob) return "-";
-        const diff = Date.now() - new Date(dob).getTime();
-        return Math.abs(new Date(diff).getUTCFullYear() - 1970) + " Thn";
-    }
-    function renderSiswa() {
-        const tb = document.getElementById('tbodySiswa'); tb.innerHTML = '';
-        if(db.siswa) db.siswa.forEach(s => {
-            tb.innerHTML += `<tr class="hover:bg-slate-50 transition"><td class="p-2 border-b text-center">${s.No||''}</td><td class="p-2 border-b font-bold">${s.NIS||''}<br><span class="text-[10px] font-normal">${s.NISN||''}</span></td><td class="p-2 border-b font-bold text-blue-900">${s['Nama Lengkap']||''}<br><span class="text-[10px] text-gray-500">${s['L/P']||''}</span></td><td class="p-2 border-b text-xs">${s['Tempat Lahir']||''}, ${s['Tanggal Lahir']||''}<br><span class="font-bold text-green-600">(${getAge(s['Tanggal Lahir'])})</span></td><td class="p-2 border-b truncate max-w-[150px]">${s.Alamat||''}</td><td class="p-2 border-b text-[10px]">Ayah: ${s['Nama Ayah']||'-'} (${s['Pekerjaan Ayah']||'-'})<br>Ibu: ${s['Nama Ibu']||'-'}</td></tr>`;
-        });
+    function renderKelasTable() {
+       const tb = document.getElementById('tbody-kelas'); tb.innerHTML = '';
+       if(db.kelas) db.kelas.forEach(k => {
+          tb.innerHTML += `<tr class="border-b hover:bg-slate-50"><td class="p-2 font-bold">${k['Nama Kelas']}</td><td class="p-2">${k['Tahun Ajaran']}</td><td class="p-2">-</td></tr>`;
+       });
     }
 
-    // ABSENSI CERDAS
-    function renderAbsenTable() {
-        const month = parseInt(document.getElementById('absenBulan').value);
-        const year = new Date().getFullYear();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        
-        // Header Tanggal
-        const headRow = document.getElementById('absenHeaderDates');
-        headRow.innerHTML = '';
-        let holidays = [];
-        for(let i=1; i<=31; i++) {
-            if(i <= daysInMonth) {
-                const date = new Date(year, month, i);
-                const isSun = date.getDay() === 0;
-                holidays[i] = isSun;
-                const cls = isSun ? 'bg-red-200 text-red-800' : 'bg-blue-50';
-                headRow.innerHTML += `<th class="border p-1 text-[9px] w-6 ${cls}">${i}</th>`;
-            } else {
-                headRow.innerHTML += `<th class="border p-1 bg-gray-200"></th>`;
-                holidays[i] = true; // Anggap libur
-            }
-        }
-        headRow.innerHTML += `<th class="border p-1 bg-green-100">H</th><th class="border p-1 bg-blue-100">S</th><th class="border p-1 bg-yellow-100">I</th><th class="border p-1 bg-red-100">A</th><th class="border p-1 bg-gray-100">%</th>`;
-
-        // Body
-        const tb = document.getElementById('tbodyAbsen'); tb.innerHTML = '';
-        if(db.siswa) db.siswa.forEach((s, idx) => {
-            let row = `<tr><td class="border p-1">${idx+1}</td><td class="border p-1 text-left whitespace-nowrap">${s['Nama Lengkap']||''}</td>`;
-            let h=0, sk=0, ij=0, al=0, activeDays=0;
-            
-            for(let i=1; i<=31; i++) {
-                if(i <= daysInMonth) {
-                    if(holidays[i]) {
-                        row += `<td class="border p-0 bg-red-50 holiday-col"></td>`;
-                    } else {
-                        activeDays++;
-                        // Input cell - ID: abs-IDX-DATE
-                        row += `<td class="border p-0"><input type="text" onchange="calcAbsen(this)" class="w-full text-center text-[10px] uppercase font-bold focus:bg-blue-100" maxlength="1"></td>`;
-                    }
-                } else {
-                    row += `<td class="border p-0 bg-gray-100"></td>`;
-                }
-            }
-            row += `<td class="border p-1 font-bold bg-green-50 val-h">0</td><td class="border p-1 font-bold bg-blue-50 val-s">0</td><td class="border p-1 font-bold bg-yellow-50 val-i">0</td><td class="border p-1 font-bold bg-red-50 val-a">0</td><td class="border p-1 font-bold val-p">0%</td></tr>`;
-            tb.innerHTML += row;
-        });
+    function renderSiswaTable() {
+       const tb = document.getElementById('tbody-siswa'); tb.innerHTML = '';
+       const data = getFilteredSiswa();
+       data.forEach((s, idx) => {
+          tb.innerHTML += `
+            <tr class="hover:bg-slate-50 border-b">
+              <td class="p-2 text-center border">${idx+1}</td>
+              <td class="p-2 border font-bold">${s.NIS}<br><span class="text-gray-400 font-normal">${s.NISN}</span></td>
+              <td class="p-2 border font-bold text-blue-900">${s['Nama Lengkap']}</td>
+              <td class="p-2 border text-center">${s['L/P']}</td>
+              <td class="p-2 border text-center font-bold bg-yellow-50">${s.Kelas}</td>
+              <td class="p-2 border text-[10px]">${s['Nama Ayah']}<br>${s['Pekerjaan Ayah']} | ${s['Pendidikan Ayah']}</td>
+              <td class="p-2 border text-[10px]">${s['Nama Ibu']}<br>${s['Pekerjaan Ibu']} | ${s['Pendidikan Ibu']}</td>
+              <td class="p-2 border text-center no-print"><button class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-edit"></i></button></td>
+            </tr>`;
+       });
     }
 
-    function calcAbsen(inp) {
-        const row = inp.closest('tr');
-        const inputs = row.querySelectorAll('input');
-        let h=0, s=0, i=0, a=0;
-        let filled = 0;
-        
-        // Hitung hari efektif (jumlah input box yang ada)
-        const totalEffective = inputs.length; 
+    // --- ABSENSI LOGIC ---
+    function loadAbsenForm() {
+       const tb = document.getElementById('tbody-absen-input');
+       const dateVal = document.getElementById('absenDate').value;
+       const data = getFilteredSiswa();
 
-        inputs.forEach(el => {
-            const v = el.value.toUpperCase();
-            if(v==='H' || v=='.') h++; // . counted as present
-            else if(v==='S') s++;
-            else if(v==='I') i++;
-            else if(v==='A') a++;
-            if(v) filled++;
-        });
-        
-        // Auto H jika kosong (Opsional, di sini kita hitung manual saja)
-        // Persentase: (Hadir / Total Hari Efektif) * 100
-        const present = h; // Or h + (totalEffective - filled) if assume present by default
-        const pct = totalEffective > 0 ? Math.round((present / totalEffective) * 100) : 0;
+       if(data.length === 0) {
+          tb.innerHTML = '<tr><td colspan="6" class="p-4 text-center">Pilih Kelas yang memiliki siswa</td></tr>';
+          return;
+       }
 
-        row.querySelector('.val-h').innerText = h;
-        row.querySelector('.val-s').innerText = s;
-        row.querySelector('.val-i').innerText = i;
-        row.querySelector('.val-a').innerText = a;
-        row.querySelector('.val-p').innerText = pct + '%';
+       // Cek Hari Minggu
+       const day = new Date(dateVal).getDay();
+       if(day === 0) {
+          tb.innerHTML = '<tr><td colspan="6" class="p-4 text-center bg-red-100 text-red-600 font-bold">HARI MINGGU / LIBUR</td></tr>';
+          return;
+       }
+
+       tb.innerHTML = '';
+       data.forEach((s, i) => {
+          tb.innerHTML += `
+          <tr class="border-b hover:bg-slate-50" data-id="${s.ID}" data-nama="${s['Nama Lengkap']}">
+            <td class="p-2 text-center">${i+1}</td>
+            <td class="p-2 font-bold text-left">${s['Nama Lengkap']}</td>
+            <td class="p-2 text-center bg-green-50"><input type="radio" name="abs_${i}" value="H" checked class="w-4 h-4 cursor-pointer"></td>
+            <td class="p-2 text-center bg-blue-50"><input type="radio" name="abs_${i}" value="S" class="w-4 h-4 cursor-pointer"></td>
+            <td class="p-2 text-center bg-yellow-50"><input type="radio" name="abs_${i}" value="I" class="w-4 h-4 cursor-pointer"></td>
+            <td class="p-2 text-center bg-red-50"><input type="radio" name="abs_${i}" value="A" class="w-4 h-4 cursor-pointer"></td>
+          </tr>`;
+       });
     }
 
-    // JURNAL
-    function renderJurnal() {
-        const tb = document.getElementById('tbodyJurnal'); tb.innerHTML = '';
-        if(db.jurnal) db.jurnal.forEach(j => {
-            tb.innerHTML += `<tr class="border-b"><td class="p-2 border whitespace-nowrap">${j.Tanggal||''}</td><td class="p-2 border"><div class="font-bold text-blue-800">${j.Mapel||''}</div><div class="text-[9px] bg-slate-100 p-1 mt-1 inline-block rounded">${j.TP||''}</div></td><td class="p-2 border text-slate-600">${j.Kegiatan||''}</td><td class="p-2 border text-[10px]"><span class="font-bold text-orange-600">Ref:</span> ${j.Refleksi||''}<br><span class="font-bold text-green-600">TL:</span> ${j['Tindak Lanjut']||''}</td></tr>`;
-        });
+    function submitAbsen(e) {
+       e.preventDefault();
+       toggleLoad(true);
+       const tgl = document.getElementById('absenDate').value;
+       const rows = document.querySelectorAll('#tbody-absen-input tr');
+       let payload = [];
+       
+       rows.forEach(r => {
+          if(r.dataset.id) {
+             const status = r.querySelector('input[type="radio"]:checked').value;
+             payload.push({
+               id: r.dataset.id,
+               nama: r.dataset.nama,
+               status: status
+             });
+          }
+       });
+
+       google.script.run.withSuccessHandler(res => {
+          alert(res);
+          toggleLoad(false);
+          refreshData(); // Refresh to update matrix view if exists
+       }).saveAbsensiHarian(tgl, currentFilterKelas, payload);
+    }
+
+    // --- CLASS MANAGEMENT ---
+    function handleNewClass(e) {
+       e.preventDefault();
+       const n = document.getElementById('newClassName').value;
+       const t = document.getElementById('newClassYear').value;
+       toggleLoad(true);
+       google.script.run.withSuccessHandler(res => {
+          alert(res); refreshData();
+       }).saveKelas(n, t);
+    }
+
+    // --- SISWA MANAGEMENT ---
+    function openModalSiswa() {
+       document.getElementById('modalSiswa').classList.remove('hidden');
     }
     
-    function loadTP(mapel) {
-        const sel = document.getElementById('jTP'); sel.innerHTML = '<option value="">-- TP Otomatis --</option>';
-        if(db.db_mapel) db.db_mapel.filter(i => i['Mata Pelajaran'] === mapel).forEach(i => sel.innerHTML += `<option value="${i['Tujuan Pembelajaran']}">${i['Tujuan Pembelajaran']}</option>`);
+    function submitSiswa(e) {
+      e.preventDefault();
+      // Collect Data
+      const obj = {
+         nama: document.getElementById('sNama').value,
+         nis: document.getElementById('sNIS').value,
+         nisn: document.getElementById('sNISN').value,
+         lp: document.getElementById('sLP').value,
+         kelas: document.getElementById('sKelas').value,
+         tmplahir: document.getElementById('sTmp').value,
+         tgllahir: document.getElementById('sTgl').value,
+         alamat: document.getElementById('sAlamat').value,
+         ayah: document.getElementById('sAyah').value,
+         payah: document.getElementById('sKerjaAyah').value,
+         pdayah: document.getElementById('sDidikAyah').value,
+         ibu: document.getElementById('sIbu').value,
+         pibu: document.getElementById('sKerjaIbu').value,
+         pdibu: document.getElementById('sDidikIbu').value,
+      };
+      
+      toggleLoad(true);
+      google.script.run.withSuccessHandler(res => {
+         alert(res);
+         document.getElementById('modalSiswa').classList.add('hidden');
+         refreshData();
+      }).saveSiswa(obj);
     }
 
-    function addJurnal(e) {
-        e.preventDefault();
-        const d = [ document.getElementById('jTgl').value, "", document.getElementById('jMapel').value, "", document.getElementById('jTP').value, document.getElementById('jKeg').value, document.getElementById('jRef').value, document.getElementById('jTL').value ];
-        google.script.run.withSuccessHandler(()=>{ 
-            alert('Jurnal Disimpan!'); fetchData(); 
-        }).saveData('Jurnal', d); // Array format for appendRow
-        e.target.reset();
-    }
-
-    // NILAI & SIKAP (RENDER MOCKUP/EDITABLE)
-    function renderNilai() {
-        const tb = document.getElementById('tbodyNilai'); tb.innerHTML = '';
-        if(db.siswa) db.siswa.forEach(s => {
-            tb.innerHTML += `<tr><td class="border p-2 bg-slate-50">${s.No||''}</td><td class="border p-2 text-left bg-slate-50 font-bold">${s['Nama Lengkap']||''}</td><td class="border p-2" contenteditable="true"></td><td class="border p-2" contenteditable="true"></td><td class="border p-2" contenteditable="true"></td><td class="border p-2 bg-blue-50 font-bold"></td><td class="border p-2" contenteditable="true"></td><td class="border p-2" contenteditable="true"></td><td class="border p-2" contenteditable="true"></td><td class="border p-2 bg-yellow-50 font-bold"></td><td class="border p-2" contenteditable="true"></td><td class="border p-2 bg-gray-100 font-bold"></td></tr>`;
-        });
-    }
-
-    function renderSikap() {
-        const tb = document.getElementById('tbodySikap'); tb.innerHTML = '';
-        if(db.siswa) db.siswa.forEach(s => {
-            tb.innerHTML += `<tr><td class="border p-2 bg-slate-50">${s.No||''}</td><td class="border p-2 text-left bg-slate-50 font-bold">${s['Nama Lengkap']||''}</td><td class="border p-2" contenteditable="true">SB</td><td class="border p-2" contenteditable="true">BSH</td><td class="border p-2" contenteditable="true">MB</td><td class="border p-2" contenteditable="true">SB</td><td class="border p-2" contenteditable="true">BSH</td><td class="border p-2" contenteditable="true">SB</td><td class="border p-2" contenteditable="true"></td><td class="border p-2" contenteditable="true"></td></tr>`;
-        });
-    }
-
-    // SETTINGS & PRINT
-    function saveSettings(e) {
-        e.preventDefault();
-        const data = { sekolah: document.getElementById('setSekolah').value, alamat: document.getElementById('setAlamat').value, guru: document.getElementById('setGuru').value, nipGuru: document.getElementById('setNipGuru').value, ks: document.getElementById('setKS').value, nipKs: document.getElementById('setNipKS').value, tahun: document.getElementById('setTahun').value, kelas: document.getElementById('setKelas').value };
-        google.script.run.withSuccessHandler(()=>alert('Tersimpan!')).saveSettings(data);
-    }
+    // --- NILAI LOGIC (AUTO CALC) ---
+    // Placeholder function: Di implementasi penuh perlu render form input nilai 
+    // dengan event listener 'input' yang menghitung (TP1+TP2+TP3+TP4)/4 secara realtime
+    // lalu menghitung (70% * RataSumatif) + (30% * SAS)
     
-    function prevImg(input, id) {
-        if(input.files[0]) {
-            const r = new FileReader();
-            r.onload = e => { document.getElementById(id).src = e.target.result; document.getElementById(id).classList.remove('hidden'); if(!db.settings) db.settings={}; db.settings[id]=e.target.result; };
-            r.readAsDataURL(input.files[0]);
-        }
+    // --- EXPORT TO EXCEL FUNCTION ---
+    function downloadExcel(tableId, fileName) {
+       const table = document.getElementById(tableId);
+       const wb = XLSX.utils.table_to_book(table, {sheet: "Sheet1"});
+       XLSX.writeFile(wb, fileName + ".xlsx");
     }
 
-    function printLaporan(judul, tableId) {
-        const s = db.settings || {};
-        document.getElementById('printSekolah').innerText = s.sekolah||''; document.getElementById('printAlamat').innerText = s.alamat||'';
-        document.getElementById('printJudul').innerText = judul; document.getElementById('printKelas').innerText = s.kelas||''; document.getElementById('printTahun').innerText = s.tahun||'';
-        document.getElementById('printNamaGuru').innerText = s.guru||''; document.getElementById('printNipGuru').innerText = "NIP. "+(s.nipGuru||'');
-        document.getElementById('printNamaKS').innerText = s.ks||''; document.getElementById('printNipKS').innerText = "NIP. "+(s.nipKs||'');
-        
-        // Handle Absen Input to Text conversion for Print
-        const content = document.getElementById('printContent'); content.innerHTML = '';
-        const tblClone = document.getElementById(tableId).cloneNode(true);
-        if(tableId === 'tblAbsen') {
-            tblClone.querySelectorAll('input').forEach(inp => { const sp = document.createElement('span'); sp.innerText = inp.value; inp.replaceWith(sp); });
-        }
-        content.appendChild(tblClone);
-
-        const d = new Date(); document.getElementById('printTgl').innerText = `Semarang, ${d.getDate()} ${d.toLocaleString('id-ID',{month:'long'})} ${d.getFullYear()}`;
-        const img = (id, src) => { const el = document.getElementById(id); if(src){el.src=src; el.classList.remove('hidden');} else {el.classList.add('hidden');} };
-        img('printLogo', s.logo); img('printImgGuru', s.imgGuru); img('printImgKS', s.imgKS); img('printImgStempel', s.imgStempel);
-        
-        window.print();
-    }
   </script>
 </body>
 </html>
