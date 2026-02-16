@@ -3,314 +3,477 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Administrasi Guru</title>
+  <title>Sistem Administrasi Guru Pro</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome & Google Fonts -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+    body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
     
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #f1f1f1; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-    .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.3s ease; }
-    .card:hover { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-    
-    .sidebar-link { transition: all 0.2s; border-left: 3px solid transparent; }
-    .sidebar-link.active { background-color: #eff6ff; color: #2563eb; border-left-color: #2563eb; }
-    .sidebar-link:hover:not(.active) { background-color: #f8fafc; }
-
-    .loader-container { position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 50; display: flex; justify-content: center; align-items: center; flex-direction: column; }
-    .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
+    /* Loader & Animations */
+    .loader-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Table Styling */
+    .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0; }
+    th { background-color: #f8fafc; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; color: #64748b; letter-spacing: 0.05em; white-space: nowrap; }
+    td { white-space: nowrap; font-size: 0.875rem; color: #334155; }
+    tr:hover td { background-color: #f8fafc; }
+    
+    /* Sidebar Active State */
+    .nav-item.active { background-color: #eff6ff; color: #2563eb; border-right: 3px solid #2563eb; }
+    .nav-item { border-right: 3px solid transparent; transition: all 0.2s; }
   </style>
 </head>
-<body class="text-slate-800">
+<body class="flex h-screen overflow-hidden text-slate-800">
 
-  <!-- Loader -->
-  <div id="loader" class="loader-container">
+  <!-- LOADER -->
+  <div id="loader" class="loader-overlay">
     <div class="spinner mb-4"></div>
-    <p class="text-slate-600 font-medium">Memuat Data Database...</p>
-    <p class="text-xs text-slate-400 mt-2">Sinkronisasi Spreadsheet</p>
+    <h2 class="text-xl font-bold text-slate-700">Memuat Data Sekolah...</h2>
+    <p class="text-slate-500 text-sm">Menghubungkan ke Database</p>
   </div>
 
-  <div class="flex h-screen overflow-hidden">
-    <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r border-slate-200 flex-shrink-0 hidden md:flex flex-col">
-      <div class="p-6 border-b border-slate-100">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-            <i class="fa-solid fa-graduation-cap"></i>
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col z-10">
+    <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+      <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-200">
+        <i class="fa-solid fa-graduation-cap text-lg"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-lg leading-tight">SiAdmin</h1>
+        <p class="text-xs text-slate-500">Guru Profesional</p>
+      </div>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto py-4">
+      <p class="px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Menu Utama</p>
+      <a href="#" onclick="nav('dashboard')" id="menu-dashboard" class="nav-item active flex items-center px-6 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600">
+        <i class="fa-solid fa-chart-pie w-6"></i> Dashboard
+      </a>
+      <a href="#" onclick="nav('siswa')" id="menu-siswa" class="nav-item flex items-center px-6 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600">
+        <i class="fa-solid fa-users w-6"></i> Data Siswa
+      </a>
+      <a href="#" onclick="nav('absensi')" id="menu-absensi" class="nav-item flex items-center px-6 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600">
+        <i class="fa-regular fa-calendar-check w-6"></i> Absensi
+      </a>
+      <a href="#" onclick="nav('jurnal')" id="menu-jurnal" class="nav-item flex items-center px-6 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600">
+        <i class="fa-solid fa-book-open w-6"></i> Jurnal Mengajar
+      </a>
+      <a href="#" onclick="nav('nilai')" id="menu-nilai" class="nav-item flex items-center px-6 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600">
+        <i class="fa-solid fa-star w-6"></i> Data Nilai
+      </a>
+    </nav>
+
+    <div class="p-4 border-t border-slate-100">
+      <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 flex items-center gap-3">
+        <div class="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-slate-500">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="overflow-hidden">
+          <p class="text-sm font-bold truncate" id="user-name">Guru Kelas</p>
+          <p class="text-xs text-green-600 flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full"></span> Online</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50 relative">
+    
+    <!-- Header Mobile -->
+    <header class="bg-white border-b border-slate-200 p-4 flex md:hidden justify-between items-center z-20 shadow-sm">
+      <h1 class="font-bold text-lg text-slate-800">SiAdmin Guru</h1>
+      <button class="text-slate-500 hover:text-blue-600"><i class="fa-solid fa-bars text-xl"></i></button>
+    </header>
+
+    <!-- CONTENT AREA -->
+    <div id="content-area" class="flex-1 overflow-y-auto p-4 md:p-8">
+      
+      <!-- 1. DASHBOARD PAGE -->
+      <div id="page-dashboard" class="page-section">
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold text-slate-800">Ringkasan Akademik</h2>
+          <p class="text-slate-500 text-sm mt-1" id="current-date">Senin, 1 Januari 2024</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <!-- Stat Card 1 -->
+          <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
+            <div class="flex justify-between items-start z-10 relative">
+              <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase">Total Siswa</p>
+                <h3 class="text-3xl font-bold text-slate-800 mt-2" id="stat-siswa">0</h3>
+              </div>
+              <div class="p-2 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition">
+                <i class="fa-solid fa-users text-xl"></i>
+              </div>
+            </div>
           </div>
+          <!-- Stat Card 2 -->
+          <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
+            <div class="flex justify-between items-start z-10 relative">
+              <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase">Jurnal Terisi</p>
+                <h3 class="text-3xl font-bold text-slate-800 mt-2" id="stat-jurnal">0</h3>
+              </div>
+              <div class="p-2 bg-purple-50 text-purple-600 rounded-lg group-hover:bg-purple-600 group-hover:text-white transition">
+                <i class="fa-solid fa-book text-xl"></i>
+              </div>
+            </div>
+          </div>
+          <!-- Stat Card 3 -->
+          <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
+            <div class="flex justify-between items-start z-10 relative">
+              <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase">Rata-rata Kehadiran</p>
+                <h3 class="text-3xl font-bold text-slate-800 mt-2" id="stat-hadir">0%</h3>
+              </div>
+              <div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg group-hover:bg-emerald-600 group-hover:text-white transition">
+                <i class="fa-regular fa-calendar-check text-xl"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+            <h3 class="font-bold text-slate-700">Jurnal Mengajar Terbaru</h3>
+            <button onclick="nav('jurnal')" class="text-sm text-blue-600 hover:underline">Lihat Semua</button>
+          </div>
+          <div class="table-container border-0">
+            <table class="w-full text-left">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th class="px-6 py-4">Tanggal</th>
+                  <th class="px-6 py-4">Mapel</th>
+                  <th class="px-6 py-4">Materi</th>
+                  <th class="px-6 py-4">Kegiatan</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-dashboard-jurnal">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. DATA SISWA PAGE -->
+      <div id="page-siswa" class="page-section hidden">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
           <div>
-            <h1 class="font-bold text-lg text-slate-800">SiAdmin</h1>
-            <p class="text-xs text-slate-500">Guru Profesional</p>
+            <h2 class="text-2xl font-bold text-slate-800">Data Siswa</h2>
+            <p class="text-slate-500 text-sm">Daftar lengkap peserta didik</p>
           </div>
+          <input type="text" onkeyup="searchTable('tbody-siswa', this.value)" placeholder="Cari Siswa..." class="px-4 py-2 border border-slate-300 rounded-lg text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 table-container">
+          <table class="w-full text-left">
+            <thead class="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th class="px-6 py-4">NIS / NISN</th>
+                <th class="px-6 py-4">Nama Lengkap</th>
+                <th class="px-6 py-4">L/P</th>
+                <th class="px-6 py-4">Kelas</th>
+                <th class="px-6 py-4">TTL</th>
+                <th class="px-6 py-4">Orang Tua (Ayah)</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-siswa" class="divide-y divide-slate-100"></tbody>
+          </table>
         </div>
       </div>
 
-      <nav class="flex-1 overflow-y-auto p-4 space-y-1">
-        <a href="#" onclick="showPage('dashboard')" id="nav-dashboard" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600">
-          <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
-        </a>
-        <a href="#" onclick="showPage('siswa')" id="nav-siswa" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600">
-          <i class="fa-solid fa-users w-5"></i> Data Siswa
-        </a>
-        <a href="#" onclick="showPage('jurnal')" id="nav-jurnal" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600">
-          <i class="fa-solid fa-book-open w-5"></i> Jurnal Mengajar
-        </a>
-        <a href="#" onclick="showPage('nilai')" id="nav-nilai" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600">
-          <i class="fa-solid fa-star w-5"></i> Input Nilai
-        </a>
-      </nav>
-
-      <div class="p-4 border-t border-slate-100">
-        <div class="bg-slate-50 p-3 rounded-lg flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500">
-            <i class="fa-solid fa-user"></i>
-          </div>
-          <div class="overflow-hidden">
-            <p class="text-sm font-medium text-slate-700 truncate" id="user-display">Admin Guru</p>
-            <p class="text-xs text-slate-500">Online</p>
-          </div>
+      <!-- 3. ABSENSI PAGE -->
+      <div id="page-absensi" class="page-section hidden">
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold text-slate-800">Rekap Absensi</h2>
+          <p class="text-slate-500 text-sm">Data kehadiran siswa per bulan</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 table-container">
+          <table class="w-full text-left">
+            <thead>
+              <tr>
+                <th class="px-6 py-4 sticky left-0 bg-slate-50 z-10 shadow-sm">Nama Siswa</th>
+                <th class="px-4 py-4 text-center">Hadir (H)</th>
+                <th class="px-4 py-4 text-center">Sakit (S)</th>
+                <th class="px-4 py-4 text-center">Ijin (I)</th>
+                <th class="px-4 py-4 text-center">Alpha (A)</th>
+                <th class="px-4 py-4 text-center">Persentase</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-absensi" class="divide-y divide-slate-100"></tbody>
+          </table>
         </div>
       </div>
-    </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto bg-slate-50 relative">
-      <!-- Header Mobile -->
-      <div class="md:hidden bg-white p-4 flex items-center justify-between border-b sticky top-0 z-20">
-        <h1 class="font-bold text-lg">SiAdmin</h1>
-        <button class="text-slate-600"><i class="fa-solid fa-bars text-xl"></i></button>
+      <!-- 4. JURNAL PAGE -->
+      <div id="page-jurnal" class="page-section hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-slate-800">Jurnal Mengajar</h2>
+          <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 shadow-sm flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Isi Jurnal
+          </button>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 table-container">
+          <table class="w-full text-left">
+            <thead>
+              <tr>
+                <th class="px-6 py-4">Tgl</th>
+                <th class="px-6 py-4">Jam</th>
+                <th class="px-6 py-4">Mapel</th>
+                <th class="px-6 py-4">Lingkup Materi</th>
+                <th class="px-6 py-4">Kegiatan</th>
+                <th class="px-6 py-4">Tindak Lanjut</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-jurnal" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
       </div>
 
-      <!-- PAGES -->
-      <div class="p-6 md:p-8 max-w-7xl mx-auto">
-        
-        <!-- 1. DASHBOARD -->
-        <div id="page-dashboard" class="page-content">
-          <header class="mb-8">
-            <h2 class="text-2xl font-bold text-slate-800">Ringkasan Akademik</h2>
-            <p class="text-slate-500" id="current-date">Senin, 16 Februari 2026</p>
-          </header>
-
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="card p-5 border-l-4 border-blue-500">
-              <div class="flex justify-between items-start">
-                <div>
-                  <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Siswa</p>
-                  <h3 class="text-3xl font-bold text-slate-800 mt-1" id="stat-siswa">0</h3>
-                </div>
-                <div class="p-2 bg-blue-50 rounded-lg text-blue-600"><i class="fa-solid fa-users"></i></div>
-              </div>
-            </div>
-            <div class="card p-5 border-l-4 border-emerald-500">
-              <div class="flex justify-between items-start">
-                <div>
-                  <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Hadir Hari Ini</p>
-                  <h3 class="text-3xl font-bold text-slate-800 mt-1" id="stat-hadir">0</h3>
-                </div>
-                <div class="p-2 bg-emerald-50 rounded-lg text-emerald-600"><i class="fa-solid fa-check"></i></div>
-              </div>
-            </div>
-             <div class="card p-5 border-l-4 border-purple-500">
-              <div class="flex justify-between items-start">
-                <div>
-                  <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Jurnal Bulan Ini</p>
-                  <h3 class="text-3xl font-bold text-slate-800 mt-1" id="stat-jurnal">0</h3>
-                </div>
-                <div class="p-2 bg-purple-50 rounded-lg text-purple-600"><i class="fa-solid fa-book"></i></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Quick Debug Status -->
-          <div class="card p-6" id="debug-panel">
-            <h3 class="font-bold text-slate-700 mb-4">Status Koneksi Database</h3>
-            <div id="db-status" class="text-sm p-3 bg-slate-100 rounded font-mono text-slate-600">
-              Menunggu respon server...
-            </div>
-          </div>
+      <!-- 5. NILAI PAGE -->
+      <div id="page-nilai" class="page-section hidden">
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold text-slate-800">Data Nilai</h2>
+          <p class="text-slate-500 text-sm">Rekapitulasi nilai formatif dan sumatif</p>
         </div>
-
-        <!-- 2. DATA SISWA -->
-        <div id="page-siswa" class="page-content hidden">
-          <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-            <div>
-              <h2 class="text-2xl font-bold text-slate-800">Data Siswa</h2>
-              <p class="text-slate-500 text-sm">Manajemen data peserta didik</p>
-            </div>
-            <div class="flex gap-2">
-              <input type="text" id="search-siswa" onkeyup="filterSiswa()" placeholder="Cari Siswa..." class="px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <button onclick="refreshData()" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm hover:bg-slate-900"><i class="fa-solid fa-rotate"></i></button>
-            </div>
-          </div>
-
-          <div class="card overflow-hidden">
-            <div class="overflow-x-auto">
-              <table class="w-full text-sm text-left text-slate-600">
-                <thead class="text-xs text-slate-700 uppercase bg-slate-50 border-b">
-                  <tr>
-                    <th class="px-6 py-4">NIS / NISN</th>
-                    <th class="px-6 py-4">Nama Lengkap</th>
-                    <th class="px-6 py-4">L/P</th>
-                    <th class="px-6 py-4">Kelas</th>
-                    <th class="px-6 py-4">Tempat, Tgl Lahir</th>
-                    <th class="px-6 py-4">Nama Ayah</th>
-                  </tr>
-                </thead>
-                <tbody id="tbody-siswa">
-                  <tr><td colspan="6" class="px-6 py-4 text-center">Memuat data...</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 table-container">
+          <table class="w-full text-left">
+            <thead>
+              <tr>
+                <th class="px-6 py-4 sticky left-0 bg-slate-50 z-10">Nama Siswa</th>
+                <th class="px-6 py-4">Mapel</th>
+                <th class="px-6 py-4 text-center bg-blue-50">LM 1</th>
+                <th class="px-6 py-4 text-center bg-blue-50">LM 2</th>
+                <th class="px-6 py-4 text-center bg-blue-50">LM 3</th>
+                <th class="px-6 py-4 text-center bg-amber-50">Sumatif 1</th>
+                <th class="px-6 py-4 text-center bg-amber-50">SAS</th>
+                <th class="px-6 py-4 text-center font-bold">Rapor</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-nilai" class="divide-y divide-slate-100"></tbody>
+          </table>
         </div>
-
-        <!-- 3. JURNAL -->
-        <div id="page-jurnal" class="page-content hidden">
-          <h2 class="text-2xl font-bold text-slate-800 mb-6">Jurnal Pembelajaran</h2>
-          <div class="card p-6">
-            <p class="text-slate-500">Fitur Jurnal akan menampilkan data dari sheet 'Jurnal'.</p>
-          </div>
-        </div>
-
-         <!-- 4. NILAI -->
-        <div id="page-nilai" class="page-content hidden">
-          <h2 class="text-2xl font-bold text-slate-800 mb-6">Input Nilai</h2>
-          <div class="card p-6">
-             <p class="text-slate-500">Fitur Nilai akan menampilkan data dari sheet 'Nilai'.</p>
-          </div>
-        </div>
-
       </div>
-    </main>
-  </div>
+
+    </div>
+  </main>
 
   <script>
-    // GLOBAL STATE
+    // --- STATE MANAGEMENT ---
     let DB = {
       siswa: [],
+      absensi: [],
       jurnal: [],
+      nilai: [],
       settings: {}
     };
 
-    // INIT
+    // --- INITIALIZATION ---
     window.onload = function() {
-      refreshData();
-      updateDate();
+      // Set Date
+      const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', dateOptions);
+      
+      // Load Data
+      loadData();
     };
 
-    function updateDate() {
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', options);
-    }
-
-    function refreshData() {
-      document.getElementById('loader').style.display = 'flex';
-      // Panggil fungsi Server
+    function loadData() {
       google.script.run
-        .withSuccessHandler(handleDataSuccess)
-        .withFailureHandler(handleDataError)
+        .withSuccessHandler(onDataLoaded)
+        .withFailureHandler(onError)
         .getData();
     }
 
-    function handleDataSuccess(res) {
-      document.getElementById('loader').style.display = 'none';
-      DB = res;
+    function onDataLoaded(data) {
+      DB = data;
+      console.log("Data Loaded:", DB); // Debugging
       
-      // Update Debug Info
-      const statusEl = document.getElementById('db-status');
-      statusEl.innerHTML = `
-        <span class="text-emerald-600 font-bold">Terhubung!</span><br>
-        Siswa: ${res.siswa.length} data<br>
-        Jurnal: ${res.jurnal.length} data<br>
-        Settings: ${JSON.stringify(res.settings)}
-      `;
-
-      // Render Dashboard Stats
-      document.getElementById('stat-siswa').innerText = res.siswa.length;
-      document.getElementById('stat-jurnal').innerText = res.jurnal.length;
-
-      // Render Data Siswa
-      renderSiswaTable(res.siswa);
-    }
-
-    function handleDataError(err) {
+      // Hide Loader
       document.getElementById('loader').style.display = 'none';
-      document.getElementById('db-status').innerHTML = `<span class="text-red-600 font-bold">Error:</span> ${err.message}`;
-      alert("Gagal mengambil data dari Spreadsheet. Pastikan nama Sheet sesuai.");
+
+      // Render All Sections
+      renderDashboard();
+      renderSiswa();
+      renderAbsensi();
+      renderJurnal();
+      renderNilai();
+      
+      // Set User Info
+      if(DB.user && DB.user.length > 0) {
+         document.getElementById('user-name').innerText = DB.user[0]['Nama Guru'] || 'Administrator';
+      }
     }
 
-    // RENDER SISWA TABLE
-    function renderSiswaTable(data) {
+    function onError(error) {
+      document.getElementById('loader').innerHTML = `
+        <div class="text-red-500 text-center">
+          <i class="fa-solid fa-triangle-exclamation text-4xl mb-4"></i>
+          <h3 class="font-bold">Gagal Memuat Data</h3>
+          <p class="text-sm">${error.message}</p>
+          <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-slate-800 text-white rounded">Coba Lagi</button>
+        </div>
+      `;
+    }
+
+    // --- RENDERING FUNCTIONS ---
+
+    function renderDashboard() {
+      document.getElementById('stat-siswa').innerText = DB.siswa.length;
+      document.getElementById('stat-jurnal').innerText = DB.jurnal.length;
+      
+      // Hitung Rata-rata Kehadiran Global (Contoh sederhana)
+      let totalP = 0;
+      let count = 0;
+      DB.absensi.forEach(a => {
+        let p = parseFloat(a['Persentase']);
+        if(!isNaN(p)) {
+          totalP += p;
+          count++;
+        }
+      });
+      let avg = count > 0 ? Math.round(totalP / count) : 0;
+      document.getElementById('stat-hadir').innerText = avg + "%";
+
+      // Render Mini Jurnal (Top 5)
+      const tbody = document.getElementById('tbody-dashboard-jurnal');
+      tbody.innerHTML = '';
+      DB.jurnal.slice(0, 5).forEach(j => {
+        tbody.innerHTML += `
+          <tr class="border-b border-slate-50 last:border-0">
+            <td class="px-6 py-3 font-medium text-slate-700">${j['Tanggal']}</td>
+            <td class="px-6 py-3 text-blue-600 font-bold">${j['Mapel']}</td>
+            <td class="px-6 py-3 truncate max-w-xs text-slate-500">${j['Lingkup Materi']}</td>
+            <td class="px-6 py-3 truncate max-w-xs text-slate-500">${j['Kegiatan']}</td>
+          </tr>
+        `;
+      });
+    }
+
+    function renderSiswa() {
       const tbody = document.getElementById('tbody-siswa');
       tbody.innerHTML = '';
-
-      if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-slate-400">Tidak ada data siswa ditemukan. Cek nama Sheet 'Siswa' di Spreadsheet.</td></tr>`;
-        return;
-      }
-
-      data.forEach(s => {
-        // MENGGUNAKAN KEY DARI CSV ANDA: 'Nama Lengkap', 'Kelas', dll.
-        // Fallback ke string kosong jika undefined
-        const nis = s['NIS'] || '-';
-        const nisn = s['NISN'] || '-';
-        const nama = s['Nama Lengkap'] || s['Nama'] || 'Tanpa Nama'; // Coba dua kemungkinan key
-        const lp = s['L/P'] || '-';
-        const kelas = s['Kelas'] || '-';
-        const tmpLahir = s['Tempat Lahir'] || '';
-        const tglLahir = s['Tanggal Lahir'] || '';
+      
+      DB.siswa.forEach(s => {
+        // Handling Undefined
+        const nama = s['Nama Lengkap'] || '-';
+        const nis = s['NIS'] || '';
+        const nisn = s['NISN'] || '';
+        const lp = s['L/P'] || '';
+        const kelas = s['Kelas'] || '';
+        const ttl = (s['Tempat Lahir'] || '') + ', ' + (s['Tanggal Lahir'] || '');
         const ayah = s['Nama Ayah'] || '-';
 
-        const tr = document.createElement('tr');
-        tr.className = "bg-white border-b hover:bg-slate-50 transition-colors";
-        tr.innerHTML = `
-          <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">
-            <div class="flex flex-col">
-              <span>${nis}</span>
-              <span class="text-xs text-slate-400">${nisn}</span>
-            </div>
-          </td>
-          <td class="px-6 py-4 font-bold text-blue-600">${nama}</td>
-          <td class="px-6 py-4"><span class="px-2 py-1 bg-slate-100 rounded text-xs font-bold">${lp}</span></td>
-          <td class="px-6 py-4">${kelas}</td>
-          <td class="px-6 py-4 text-xs">
-            ${tmpLahir}, ${tglLahir}
-          </td>
-          <td class="px-6 py-4 text-slate-500">${ayah}</td>
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="px-6 py-4">
+              <div class="font-bold text-slate-700">${nis}</div>
+              <div class="text-xs text-slate-400">${nisn}</div>
+            </td>
+            <td class="px-6 py-4 font-semibold text-blue-700">${nama}</td>
+            <td class="px-6 py-4"><span class="bg-slate-100 px-2 py-1 rounded text-xs font-bold">${lp}</span></td>
+            <td class="px-6 py-4 text-slate-600">${kelas}</td>
+            <td class="px-6 py-4 text-sm text-slate-500">${ttl}</td>
+            <td class="px-6 py-4 text-sm text-slate-500">${ayah}</td>
+          </tr>
         `;
-        tbody.appendChild(tr);
       });
     }
 
-    // SEARCH FILTER
-    function filterSiswa() {
-      const term = document.getElementById('search-siswa').value.toLowerCase();
-      const filtered = DB.siswa.filter(s => {
-        const nama = (s['Nama Lengkap'] || '').toLowerCase();
-        const nis = String(s['NIS'] || '');
-        return nama.includes(term) || nis.includes(term);
+    function renderAbsensi() {
+      const tbody = document.getElementById('tbody-absensi');
+      tbody.innerHTML = '';
+      
+      DB.absensi.forEach(row => {
+        tbody.innerHTML += `
+          <tr>
+            <td class="px-6 py-4 font-medium text-slate-800 sticky left-0 bg-white border-r border-slate-100">${row['Nama']}</td>
+            <td class="px-4 py-4 text-center font-bold text-green-600 bg-green-50 rounded-lg m-1">${row['Total_H'] || 0}</td>
+            <td class="px-4 py-4 text-center text-yellow-600">${row['Total_S'] || 0}</td>
+            <td class="px-4 py-4 text-center text-blue-600">${row['Total_I'] || 0}</td>
+            <td class="px-4 py-4 text-center text-red-600 font-bold">${row['Total_A'] || 0}</td>
+            <td class="px-4 py-4 text-center font-bold text-slate-700">${row['Persentase'] || '0%'}</td>
+          </tr>
+        `;
       });
-      renderSiswaTable(filtered);
     }
 
-    // NAVIGATION
-    window.showPage = function(pageId) {
-      // Hide all pages
-      document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+    function renderJurnal() {
+      const tbody = document.getElementById('tbody-jurnal');
+      tbody.innerHTML = '';
+      
+      DB.jurnal.forEach(j => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="px-6 py-4 whitespace-nowrap font-medium">${j['Tanggal']}</td>
+            <td class="px-6 py-4 text-center bg-slate-50 rounded text-xs font-bold">${j['Jam Ke']}</td>
+            <td class="px-6 py-4 text-blue-600 font-bold">${j['Mapel']}</td>
+            <td class="px-6 py-4 max-w-xs truncate" title="${j['Lingkup Materi']}">${j['Lingkup Materi']}</td>
+            <td class="px-6 py-4 max-w-xs truncate">${j['Kegiatan']}</td>
+            <td class="px-6 py-4 text-slate-500 italic text-sm truncate">${j['Tindak Lanjut']}</td>
+          </tr>
+        `;
+      });
+    }
 
-      // Show target
+    function renderNilai() {
+      const tbody = document.getElementById('tbody-nilai');
+      tbody.innerHTML = '';
+      
+      DB.nilai.forEach(n => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="px-6 py-4 sticky left-0 bg-white font-medium text-slate-800 border-r border-slate-100">
+              ${n['Nama']}
+              <div class="text-xs text-slate-400 font-normal">${n['Mapel']}</div>
+            </td>
+            <td class="px-6 py-4 text-xs font-bold uppercase text-slate-500">${n['Mapel']}</td>
+            <td class="px-6 py-4 text-center bg-blue-50/50">${n['F_LM1'] || '-'}</td>
+            <td class="px-6 py-4 text-center bg-blue-50/50">${n['F_LM2'] || '-'}</td>
+            <td class="px-6 py-4 text-center bg-blue-50/50">${n['F_LM3'] || '-'}</td>
+            <td class="px-6 py-4 text-center bg-amber-50/50 font-medium">${n['S_LM1'] || '-'}</td>
+            <td class="px-6 py-4 text-center bg-amber-50/50 font-medium">${n['SAS'] || '-'}</td>
+            <td class="px-6 py-4 text-center font-bold text-blue-700 bg-slate-100">${n['Rapor'] || '-'}</td>
+          </tr>
+        `;
+      });
+    }
+
+    // --- UTILITIES ---
+    
+    function nav(pageId) {
+      // 1. Hide all pages
+      document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden'));
+      // 2. Remove active class from nav
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      
+      // 3. Show target
       document.getElementById('page-' + pageId).classList.remove('hidden');
-      document.getElementById('nav-' + pageId).classList.add('active');
+      document.getElementById('menu-' + pageId).classList.add('active');
+    }
+
+    function searchTable(tbodyId, term) {
+      const tbody = document.getElementById(tbodyId);
+      const rows = tbody.getElementsByTagName('tr');
+      term = term.toLowerCase();
+
+      for (let i = 0; i < rows.length; i++) {
+        const rowText = rows[i].textContent.toLowerCase();
+        if (rowText.includes(term)) {
+          rows[i].style.display = "";
+        } else {
+          rows[i].style.display = "none";
+        }
+      }
     }
   </script>
 </body>
