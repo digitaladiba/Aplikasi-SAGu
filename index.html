@@ -10,16 +10,30 @@
   
   <style>
     body { font-family: 'Inter', sans-serif; background: #f8fafc; }
-    /* Loader & Styles tetap sama */
+    
+    /* Loader */
     .loader-overlay { position: fixed; inset: 0; background: white; z-index: 50; display: flex; justify-content: center; align-items: center; flex-direction: column; }
     .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    
+    /* Menu Grid Hover Effect */
+    .menu-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #f1f5f9; }
+    .menu-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-color: #e2e8f0; }
+    
+    /* Nav Sidebar */
     .nav-item { transition: all 0.2s; border-radius: 0.5rem; margin-bottom: 0.25rem; cursor: pointer; }
     .nav-item:hover { background-color: #eff6ff; color: #2563eb; }
-    .nav-item.active { background-color: #2563eb; color: white; shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
-    .table-container { overflow-x: auto; border-radius: 0.5rem; border: 1px solid #e2e8f0; background: white; }
-    th { background: #f1f5f9; color: #64748b; font-size: 0.75rem; text-transform: uppercase; padding: 0.75rem 1.5rem; white-space: nowrap; }
-    td { padding: 0.75rem 1.5rem; font-size: 0.875rem; color: #334155; white-space: nowrap; border-bottom: 1px solid #f1f5f9; }
+    .nav-item.active { background-color: #2563eb; color: white; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
+
+    /* Table */
+    .table-container { overflow-x: auto; border-radius: 0.75rem; border: 1px solid #e2e8f0; background: white; }
+    th { background: #f8fafc; color: #475569; font-size: 0.75rem; text-transform: uppercase; padding: 1rem; white-space: nowrap; font-weight: 600; letter-spacing: 0.05em; }
+    td { padding: 1rem; font-size: 0.875rem; color: #334155; white-space: nowrap; border-bottom: 1px solid #f1f5f9; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: #f8fafc; }
   </style>
@@ -30,85 +44,195 @@
   <div id="loader" class="loader-overlay">
     <div class="spinner mb-4"></div>
     <h2 class="text-xl font-bold text-slate-800">SiAdmin</h2>
-    <p class="text-slate-500 text-sm mt-1">Menghubungkan ke API Google...</p>
+    <p class="text-slate-500 text-sm mt-1">Memuat Menu & Data...</p>
     <p class="text-xs text-red-500 mt-4 hidden" id="api-warning">API URL belum disetting!</p>
   </div>
 
-  <!-- SIDEBAR -->
-  <aside class="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col z-20">
+  <!-- SIDEBAR (Desktop) -->
+  <aside class="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col z-20 shadow-sm">
     <div class="p-6 border-b border-slate-100 flex items-center gap-3">
-      <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+      <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-md shadow-blue-200">
         <i class="fa-solid fa-graduation-cap"></i>
       </div>
-      <span class="font-bold text-lg">SiAdmin</span>
+      <div>
+        <h1 class="font-bold text-lg leading-tight">SiAdmin</h1>
+        <p class="text-[10px] text-slate-400 font-medium tracking-wide">VERSI 2.0</p>
+      </div>
     </div>
     
-    <nav class="flex-1 p-4 overflow-y-auto">
-      <div onclick="nav('dashboard')" id="btn-dashboard" class="nav-item active w-full flex items-center px-4 py-3 text-sm font-medium">
-        <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+    <nav class="flex-1 p-4 overflow-y-auto space-y-1">
+      <div onclick="nav('dashboard')" id="nav-dashboard" class="nav-item active w-full flex items-center px-4 py-3 text-sm font-medium">
+        <i class="fa-solid fa-grid-2 w-6 text-center"></i> Menu Utama
       </div>
-      <div onclick="nav('siswa')" id="btn-siswa" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
-        <i class="fa-solid fa-users w-5"></i> Data Siswa
+      
+      <p class="px-4 pt-4 pb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">Administrasi</p>
+      
+      <div onclick="nav('siswa')" id="nav-siswa" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
+        <i class="fa-solid fa-users w-6 text-center"></i> Data Siswa
       </div>
-      <div onclick="nav('jurnal')" id="btn-jurnal" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
-        <i class="fa-solid fa-book-open w-5"></i> Jurnal
+      <div onclick="nav('absensi')" id="nav-absensi" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
+        <i class="fa-regular fa-calendar-check w-6 text-center"></i> Absensi
       </div>
-      <div onclick="nav('nilai')" id="btn-nilai" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
-        <i class="fa-solid fa-star w-5"></i> Nilai
+      <div onclick="nav('jurnal')" id="nav-jurnal" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
+        <i class="fa-solid fa-book-open w-6 text-center"></i> Jurnal
       </div>
-      <div onclick="nav('absensi')" id="btn-absensi" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
-        <i class="fa-regular fa-calendar-check w-5"></i> Absensi
+      
+      <p class="px-4 pt-4 pb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">Penilaian</p>
+      
+      <div onclick="nav('nilai')" id="nav-nilai" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
+        <i class="fa-solid fa-star w-6 text-center"></i> Data Nilai
+      </div>
+      <div onclick="nav('sikap')" id="nav-sikap" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
+        <i class="fa-solid fa-heart w-6 text-center"></i> Sikap & Karakter
+      </div>
+
+      <p class="px-4 pt-4 pb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">Perangkat</p>
+
+      <div onclick="nav('jadwal')" id="nav-jadwal" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
+        <i class="fa-solid fa-clock w-6 text-center"></i> Jadwal Pelajaran
+      </div>
+      <div onclick="nav('perangkat')" id="nav-perangkat" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
+        <i class="fa-solid fa-folder-open w-6 text-center"></i> Prota & Prosem
       </div>
     </nav>
-
-    <div class="p-4 border-t border-slate-100">
-      <div class="flex items-center gap-3 p-2 rounded-lg bg-slate-50">
-        <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500">
-          <i class="fa-solid fa-user"></i>
-        </div>
-        <div>
-          <p class="text-xs font-bold" id="user-display">Guru Kelas</p>
-          <p class="text-[10px] text-green-600 font-medium">● Online Vercel</p>
-        </div>
-      </div>
-    </div>
   </aside>
 
   <!-- MAIN CONTENT -->
   <main class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50 relative">
-    <div class="md:hidden bg-white p-4 flex justify-between items-center border-b">
-      <span class="font-bold">SiAdmin</span>
-      <button onclick="alert('Gunakan Mode Desktop')" class="text-slate-500"><i class="fa-solid fa-bars"></i></button>
-    </div>
+    
+    <!-- Mobile Header -->
+    <header class="md:hidden bg-white p-4 flex justify-between items-center border-b sticky top-0 z-30">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white text-sm"><i class="fa-solid fa-graduation-cap"></i></div>
+        <span class="font-bold text-slate-800">SiAdmin</span>
+      </div>
+      <button onclick="alert('Gunakan Mode Desktop untuk pengalaman terbaik')" class="text-slate-500"><i class="fa-solid fa-bars text-xl"></i></button>
+    </header>
 
-    <div class="flex-1 overflow-y-auto p-6 md:p-8">
+    <div class="flex-1 overflow-y-auto p-4 md:p-8">
       
-      <!-- PAGE: DASHBOARD -->
-      <div id="page-dashboard" class="page-section">
-        <header class="mb-8">
-          <h1 class="text-2xl font-bold text-slate-800">Ringkasan Akademik</h1>
-          <p class="text-slate-500 text-sm" id="current-date">...</p>
-        </header>
+      <!-- ================= PAGE: DASHBOARD (MENU REKAPAN) ================= -->
+      <div id="page-dashboard" class="page-section animate-fade-in">
+        
+        <!-- Welcome Section -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-6 md:p-10 text-white shadow-xl mb-8 relative overflow-hidden">
+          <div class="absolute top-0 right-0 opacity-10 transform translate-x-10 -translate-y-10">
+            <i class="fa-solid fa-graduation-cap text-9xl"></i>
+          </div>
+          <div class="relative z-10">
+            <h1 class="text-2xl md:text-3xl font-bold mb-2">Selamat Datang, <span id="dash-guru-name">Guru Hebat</span>!</h1>
+            <p class="text-blue-100 opacity-90 text-sm md:text-base mb-6">Berikut adalah rekapan administrasi kelas Anda untuk Tahun Ajaran <span id="dash-tahun">2025/2026</span>.</p>
+            <div class="inline-flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg text-sm">
+              <i class="fa-regular fa-calendar mr-2"></i> <span id="current-date">Senin, 1 Januari 2024</span>
+            </div>
+          </div>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <p class="text-xs font-bold text-slate-400 uppercase">Total Siswa</p>
-            <h3 class="text-3xl font-bold text-slate-800 mt-2" id="stat-siswa">0</h3>
+        <!-- MENU GRID -->
+        <h2 class="text-lg font-bold text-slate-700 mb-4 px-1">Menu Utama & Rekapan</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+          
+          <!-- Card Siswa -->
+          <div onclick="nav('siswa')" class="menu-card bg-white p-5 rounded-xl cursor-pointer group">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <i class="fa-solid fa-users"></i>
+              </div>
+              <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-full" id="count-siswa">0</span>
+            </div>
+            <h3 class="font-bold text-slate-800">Data Siswa</h3>
+            <p class="text-xs text-slate-500 mt-1">Database Peserta Didik</p>
           </div>
-          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <p class="text-xs font-bold text-slate-400 uppercase">Jurnal</p>
-            <h3 class="text-3xl font-bold text-slate-800 mt-2" id="stat-jurnal">0</h3>
+
+          <!-- Card Absensi -->
+          <div onclick="nav('absensi')" class="menu-card bg-white p-5 rounded-xl cursor-pointer group">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                <i class="fa-regular fa-calendar-check"></i>
+              </div>
+              <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-full" id="count-absen">0%</span>
+            </div>
+            <h3 class="font-bold text-slate-800">Absensi</h3>
+            <p class="text-xs text-slate-500 mt-1">Kehadiran Siswa</p>
           </div>
-          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <p class="text-xs font-bold text-slate-400 uppercase">Nilai Masuk</p>
-            <h3 class="text-3xl font-bold text-slate-800 mt-2" id="stat-nilai">0</h3>
+
+          <!-- Card Jurnal -->
+          <div onclick="nav('jurnal')" class="menu-card bg-white p-5 rounded-xl cursor-pointer group">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                <i class="fa-solid fa-book-open"></i>
+              </div>
+              <span class="bg-purple-100 text-purple-700 text-xs font-bold px-2 py-1 rounded-full" id="count-jurnal">0</span>
+            </div>
+            <h3 class="font-bold text-slate-800">Jurnal Mengajar</h3>
+            <p class="text-xs text-slate-500 mt-1">Catatan Harian Guru</p>
           </div>
+
+          <!-- Card Nilai -->
+          <div onclick="nav('nilai')" class="menu-card bg-white p-5 rounded-xl cursor-pointer group">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                <i class="fa-solid fa-star"></i>
+              </div>
+              <span class="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-full" id="count-nilai">0</span>
+            </div>
+            <h3 class="font-bold text-slate-800">Data Nilai</h3>
+            <p class="text-xs text-slate-500 mt-1">Formatif & Sumatif</p>
+          </div>
+
+          <!-- Card Sikap -->
+          <div onclick="nav('sikap')" class="menu-card bg-white p-5 rounded-xl cursor-pointer group">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-12 h-12 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xl group-hover:bg-pink-600 group-hover:text-white transition-colors">
+                <i class="fa-solid fa-heart"></i>
+              </div>
+              <span class="bg-pink-100 text-pink-700 text-xs font-bold px-2 py-1 rounded-full" id="count-sikap">0</span>
+            </div>
+            <h3 class="font-bold text-slate-800">Sikap (P5)</h3>
+            <p class="text-xs text-slate-500 mt-1">Observasi Karakter</p>
+          </div>
+
+          <!-- Card Jadwal -->
+          <div onclick="nav('jadwal')" class="menu-card bg-white p-5 rounded-xl cursor-pointer group">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-12 h-12 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-xl group-hover:bg-cyan-600 group-hover:text-white transition-colors">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+              <span class="bg-cyan-100 text-cyan-700 text-xs font-bold px-2 py-1 rounded-full">JP</span>
+            </div>
+            <h3 class="font-bold text-slate-800">Jadwal</h3>
+            <p class="text-xs text-slate-500 mt-1">Jadwal Pelajaran</p>
+          </div>
+
+          <!-- Card Prota/Prosem -->
+          <div onclick="nav('perangkat')" class="menu-card bg-white p-5 rounded-xl cursor-pointer group">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                <i class="fa-solid fa-folder-open"></i>
+              </div>
+              <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-1 rounded-full" id="count-perangkat">0</span>
+            </div>
+            <h3 class="font-bold text-slate-800">Perangkat</h3>
+            <p class="text-xs text-slate-500 mt-1">Prota & Prosem</p>
+          </div>
+          
+           <!-- Card Pengaturan -->
+          <div class="menu-card bg-white p-5 rounded-xl cursor-not-allowed opacity-70 group">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-gear"></i>
+              </div>
+            </div>
+            <h3 class="font-bold text-slate-800">Pengaturan</h3>
+            <p class="text-xs text-slate-500 mt-1">Identitas Sekolah</p>
+          </div>
+
         </div>
       </div>
 
-      <!-- PAGE: SISWA -->
+      <!-- ================= PAGE: SISWA ================= -->
       <div id="page-siswa" class="page-section hidden">
-        <h2 class="text-2xl font-bold mb-6">Data Siswa</h2>
+        <h2 class="text-2xl font-bold mb-6 text-slate-800">Data Siswa</h2>
         <div class="table-container shadow-sm">
           <table class="w-full text-left">
             <thead>
@@ -119,41 +243,95 @@
         </div>
       </div>
 
-      <!-- PAGE: JURNAL -->
+      <!-- ================= PAGE: JURNAL ================= -->
       <div id="page-jurnal" class="page-section hidden">
-        <h2 class="text-2xl font-bold mb-6">Jurnal</h2>
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-slate-800">Jurnal Mengajar</h2>
+          <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm shadow hover:bg-blue-700 transition">
+             <i class="fa-solid fa-plus mr-2"></i> Tambah Jurnal
+          </button>
+        </div>
         <div class="table-container shadow-sm">
           <table class="w-full text-left">
             <thead>
-              <tr><th>Tanggal</th><th>Mapel</th><th>Materi</th><th>Kegiatan</th></tr>
+              <tr><th>Tanggal</th><th>Mapel</th><th>Materi</th><th>Kegiatan</th><th>Refleksi</th></tr>
             </thead>
             <tbody id="tbody-jurnal"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- PAGE: NILAI -->
+      <!-- ================= PAGE: NILAI ================= -->
       <div id="page-nilai" class="page-section hidden">
-        <h2 class="text-2xl font-bold mb-6">Nilai</h2>
+        <h2 class="text-2xl font-bold mb-6 text-slate-800">Rekap Nilai</h2>
         <div class="table-container shadow-sm">
           <table class="w-full text-left">
             <thead>
-              <tr><th>Nama Siswa</th><th>Mapel</th><th>LM 1</th><th>LM 2</th><th>Sumatif</th><th>Rapor</th></tr>
+              <tr><th>Nama</th><th>Mapel</th><th>LM 1</th><th>LM 2</th><th>Sumatif</th><th>Rapor</th></tr>
             </thead>
             <tbody id="tbody-nilai"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- PAGE: ABSENSI -->
+      <!-- ================= PAGE: ABSENSI ================= -->
       <div id="page-absensi" class="page-section hidden">
-        <h2 class="text-2xl font-bold mb-6">Absensi</h2>
+        <h2 class="text-2xl font-bold mb-6 text-slate-800">Rekap Absensi</h2>
         <div class="table-container shadow-sm">
           <table class="w-full text-left">
             <thead>
-              <tr><th>Nama Siswa</th><th>H</th><th>S</th><th>I</th><th>A</th><th>%</th></tr>
+              <tr><th>Nama Siswa</th><th>H</th><th>S</th><th>I</th><th>A</th><th>% Kehadiran</th></tr>
             </thead>
             <tbody id="tbody-absensi"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================= PAGE: SIKAP ================= -->
+      <div id="page-sikap" class="page-section hidden">
+        <h2 class="text-2xl font-bold mb-6 text-slate-800">Penilaian Sikap (P5)</h2>
+        <div class="table-container shadow-sm">
+          <table class="w-full text-left">
+            <thead>
+              <tr><th>Nama Siswa</th><th>Dimensi 1</th><th>Dimensi 2</th><th>Dimensi 3</th><th>Catatan Guru</th></tr>
+            </thead>
+            <tbody id="tbody-sikap"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================= PAGE: JADWAL ================= -->
+      <div id="page-jadwal" class="page-section hidden">
+        <h2 class="text-2xl font-bold mb-6 text-slate-800">Jadwal Pelajaran</h2>
+        <div class="table-container shadow-sm">
+          <table class="w-full text-left">
+            <thead>
+              <tr><th>Jam</th><th>Waktu</th><th>Senin</th><th>Selasa</th><th>Rabu</th><th>Kamis</th><th>Jumat</th></tr>
+            </thead>
+            <tbody id="tbody-jadwal"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================= PAGE: PERANGKAT (PROTA/PROSEM) ================= -->
+      <div id="page-perangkat" class="page-section hidden">
+        <h2 class="text-2xl font-bold mb-4 text-slate-800">Program Tahunan (Prota)</h2>
+        <div class="table-container shadow-sm mb-8">
+          <table class="w-full text-left">
+            <thead>
+              <tr><th>Mapel</th><th>Semester</th><th>TP / Materi</th><th>Alokasi Waktu</th><th>Keterangan</th></tr>
+            </thead>
+            <tbody id="tbody-prota"></tbody>
+          </table>
+        </div>
+        
+        <h2 class="text-2xl font-bold mb-4 text-slate-800">Program Semester (Prosem)</h2>
+        <div class="table-container shadow-sm">
+          <table class="w-full text-left">
+            <thead>
+              <tr><th>Mapel</th><th>Semester</th><th>TP / Materi</th><th>JP</th><th>Bulan 1</th><th>Bulan 2</th></tr>
+            </thead>
+            <tbody id="tbody-prosem"></tbody>
           </table>
         </div>
       </div>
@@ -162,123 +340,178 @@
   </main>
 
   <script>
-    // ==========================================
-    // KONFIGURASI PENTING
-    // ==========================================
-    // Masukkan URL Web App Script Google Anda di sini
-    // Akhiran harus /exec
+    // ⚠️ WAJIB: GANTI URL INI DENGAN HASIL DEPLOY TERBARU ANDA
     const API_URL = "https://script.google.com/macros/s/AKfycbx1NwJ4SQ5ZyZAEAjKrgwfz-0gZpz2LluVl044y9d7b8YcO6kL4a3tu_U-dvSPdHmE-7g/exec";
 
-    let DB = { siswa: [], jurnal: [], nilai: [], absensi: [] };
+    let DB = {};
 
     window.onload = async function() {
-      // Set tanggal
       const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
       document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', opts);
 
-      if(API_URL === "" || API_URL.includes("GANTI")) {
+      if(API_URL.includes("exec")) {
+        await fetchData();
+      } else {
         document.getElementById('api-warning').classList.remove('hidden');
-        alert("Harap isi API_URL di dalam file index.html sebelum deploy!");
-        return;
       }
-
-      await fetchData();
     };
 
     async function fetchData() {
       try {
-        // Fetch ke Google Script
-        // Mode 'no-cors' tidak bisa dipakai jika ingin baca JSON response
-        // Kita gunakan standar fetch, Google akan handle redirect 302
         const response = await fetch(API_URL + "?action=getData");
-        
-        if (!response.ok) throw new Error("Gagal mengambil data");
-        
         const data = await response.json();
         
         if(!data.success) throw new Error(data.message);
 
         DB = data;
         renderApp();
-
       } catch (error) {
-        console.error(error);
-        document.getElementById('loader').innerHTML = `
-          <div class="text-center text-red-500">
-            <p class="font-bold text-lg">Gagal Terhubung ke API</p>
-            <p class="text-sm mb-4">${error.message}</p>
-            <p class="text-xs text-slate-500">Pastikan Deploy Apps Script sebagai 'Anyone' (Siapa Saja)</p>
-          </div>
-        `;
+        document.getElementById('loader').innerHTML = `<p class="text-red-500 font-bold">Gagal: ${error.message}</p>`;
       }
     }
 
     function renderApp() {
       document.getElementById('loader').classList.add('hidden');
       
-      // Stats
-      document.getElementById('stat-siswa').innerText = DB.siswa.length;
-      document.getElementById('stat-jurnal').innerText = DB.jurnal.length;
-      document.getElementById('stat-nilai').innerText = DB.nilai.length;
+      // 1. ISI REKAPAN DASHBOARD (GRID MENU)
+      document.getElementById('count-siswa').innerText = (DB.siswa || []).length;
+      document.getElementById('count-jurnal').innerText = (DB.jurnal || []).length;
+      document.getElementById('count-nilai').innerText = (DB.nilai || []).length;
+      document.getElementById('count-sikap').innerText = (DB.sikap || []).length;
+      
+      const protaCount = (DB.prota || []).length;
+      const prosemCount = (DB.prosem || []).length;
+      document.getElementById('count-perangkat').innerText = protaCount + prosemCount;
 
-      // Tables
-      renderTable('tbody-siswa', DB.siswa, (item) => `
-        <tr>
-          <td>${item['NIS'] || '-'}</td>
-          <td class="font-bold text-blue-600">${item['Nama Lengkap'] || '-'}</td>
-          <td>${item['L/P'] || '-'}</td>
-          <td>${item['Kelas'] || '-'}</td>
-          <td>${item['Tempat Lahir'] || ''}</td>
-          <td>${item['Nama Ayah'] || '-'}</td>
-        </tr>
-      `);
+      // Hitung % Kehadiran rata-rata
+      let totalPersen = 0, countP = 0;
+      (DB.absensi || []).forEach(a => {
+        let p = parseFloat(a['Persentase']);
+        if(!isNaN(p)) { totalPersen += p; countP++; }
+      });
+      let avgAbsen = countP > 0 ? Math.round(totalPersen/countP) : 0;
+      document.getElementById('count-absen').innerText = avgAbsen + "%";
 
-      renderTable('tbody-jurnal', DB.jurnal, (item) => `
-        <tr>
-          <td>${item['Tanggal']}</td>
-          <td class="font-bold">${item['Mapel']}</td>
-          <td class="truncate max-w-xs">${item['Lingkup Materi']}</td>
-          <td class="truncate max-w-xs">${item['Kegiatan']}</td>
-        </tr>
-      `);
+      // Isi Nama Guru & Tahun jika ada di Settings
+      if(DB.settings) {
+        if(DB.settings['guru']) document.getElementById('dash-guru-name').innerText = DB.settings['guru'];
+        if(DB.settings['tahun']) document.getElementById('dash-tahun').innerText = DB.settings['tahun'];
+      }
 
-      renderTable('tbody-nilai', DB.nilai, (item) => `
+      // 2. RENDER TABEL-TABEL HALAMAN LAIN
+      
+      // Siswa
+      renderTable('tbody-siswa', DB.siswa, row => `
         <tr>
-          <td>${item['Nama']}</td>
-          <td>${item['Mapel']}</td>
-          <td>${item['F_LM1'] || '-'}</td>
-          <td>${item['F_LM2'] || '-'}</td>
-          <td>${item['SAS'] || '-'}</td>
-          <td class="font-bold text-blue-700">${item['Rapor'] || '-'}</td>
-        </tr>
-      `);
+          <td>${row['NIS']||'-'}</td>
+          <td class="font-bold text-blue-600">${row['Nama Lengkap']||row['Nama']||'-'}</td>
+          <td>${row['L/P']||'-'}</td>
+          <td>${row['Kelas']||'-'}</td>
+          <td>${row['Tempat Lahir']||''}, ${row['Tanggal Lahir']||''}</td>
+          <td>${row['Nama Ayah']||'-'}</td>
+        </tr>`);
 
-      renderTable('tbody-absensi', DB.absensi, (item) => `
+      // Jurnal
+      renderTable('tbody-jurnal', DB.jurnal, row => `
         <tr>
-          <td>${item['Nama']}</td>
-          <td class="text-green-600 font-bold">${item['Total_H']}</td>
-          <td class="text-yellow-600">${item['Total_S']}</td>
-          <td class="text-blue-600">${item['Total_I']}</td>
-          <td class="text-red-600 font-bold">${item['Total_A']}</td>
-          <td>${item['Persentase']}</td>
-        </tr>
-      `);
+          <td>${row['Tanggal']||'-'}</td>
+          <td class="font-bold">${row['Mapel']||'-'}</td>
+          <td class="truncate max-w-xs">${row['Lingkup Materi']||'-'}</td>
+          <td class="truncate max-w-xs">${row['Kegiatan']||'-'}</td>
+          <td class="italic text-slate-500">${row['Refleksi']||'-'}</td>
+        </tr>`);
+
+      // Nilai
+      renderTable('tbody-nilai', DB.nilai, row => `
+        <tr>
+          <td class="font-medium">${row['Nama']||'-'}</td>
+          <td>${row['Mapel']||'-'}</td>
+          <td class="text-center bg-blue-50">${row['F_LM1']||'-'}</td>
+          <td class="text-center bg-blue-50">${row['F_LM2']||'-'}</td>
+          <td class="text-center bg-amber-50">${row['SAS']||'-'}</td>
+          <td class="text-center font-bold text-blue-700">${row['Rapor']||'-'}</td>
+        </tr>`);
+
+      // Absensi
+      renderTable('tbody-absensi', DB.absensi, row => `
+        <tr>
+          <td class="font-medium">${row['Nama']||'-'}</td>
+          <td class="text-center font-bold text-green-600">${row['Total_H']||0}</td>
+          <td class="text-center text-yellow-600">${row['Total_S']||0}</td>
+          <td class="text-center text-blue-600">${row['Total_I']||0}</td>
+          <td class="text-center text-red-600 font-bold">${row['Total_A']||0}</td>
+          <td class="text-center font-bold text-slate-700">${row['Persentase']||'0%'}</td>
+        </tr>`);
+
+      // Sikap
+      renderTable('tbody-sikap', DB.sikap, row => `
+        <tr>
+          <td class="font-medium">${row['Nama']||'-'}</td>
+          <td class="text-center">${row['Dimensi 1']||'-'}</td>
+          <td class="text-center">${row['Dimensi 2']||'-'}</td>
+          <td class="text-center">${row['Dimensi 3']||'-'}</td>
+          <td class="italic text-slate-500 text-xs truncate max-w-xs">${row['Catatan']||'-'}</td>
+        </tr>`);
+
+      // Jadwal
+      renderTable('tbody-jadwal', DB.jadwal, row => `
+        <tr>
+          <td class="text-center font-bold bg-slate-50">${row['Jam Ke']||'-'}</td>
+          <td class="text-xs text-slate-500">${row['Waktu']||'-'}</td>
+          <td>${row['Senin']||'-'}</td>
+          <td>${row['Selasa']||'-'}</td>
+          <td>${row['Rabu']||'-'}</td>
+          <td>${row['Kamis']||'-'}</td>
+          <td>${row['Jumat']||'-'}</td>
+        </tr>`);
+
+      // Prota & Prosem
+      renderTable('tbody-prota', DB.prota, row => `
+        <tr>
+          <td class="font-bold text-blue-600">${row['Mapel']||'-'}</td>
+          <td>${row['Semester']||'-'}</td>
+          <td class="truncate max-w-xs">${row['TP_Materi']||'-'}</td>
+          <td class="text-center">${row['Alokasi_Waktu']||'-'}</td>
+          <td>${row['Keterangan']||'-'}</td>
+        </tr>`);
+        
+      renderTable('tbody-prosem', DB.prosem, row => `
+        <tr>
+          <td class="font-bold text-blue-600">${row['Mapel']||'-'}</td>
+          <td>${row['Semester']||'-'}</td>
+          <td class="truncate max-w-xs">${row['TP_Materi']||'-'}</td>
+          <td class="text-center font-bold">${row['Jml_JP']||'-'}</td>
+          <td>${row['Bulan_1']||'-'}</td>
+          <td>${row['Bulan_2']||'-'}</td>
+        </tr>`);
     }
 
-    function renderTable(id, data, rowTemplate) {
+    function renderTable(id, data, templateFn) {
       const tbody = document.getElementById(id);
-      if(data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-slate-400">Data Kosong</td></tr>`;
+      if(!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-slate-400 italic">Data belum tersedia.</td></tr>`;
       } else {
-        tbody.innerHTML = data.map(rowTemplate).join('');
+        tbody.innerHTML = data.map(templateFn).join('');
       }
     }
 
     window.nav = function(pageId) {
+      // Sembunyikan semua halaman
       document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden'));
+      // Hapus active dari semua nav
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      document.getElementById('page-' + pageId).classList.remove('hidden');
-      document.getElementById('btn-' + pageId).classList.add('active');
+      
+      // Tampilkan target
+      const targetPage = document.getElementById('page-' + pageId);
+      if(targetPage) targetPage.classList.remove('hidden');
+      
+      const targetNav = document.getElementById('nav-' + pageId);
+      if(targetNav) targetNav.classList.add('active');
+      
+      // Khusus untuk 'perangkat', tombol nav-nya berbeda ID
+      if(pageId === 'perangkat' && document.getElementById('nav-perangkat')) {
+        document.getElementById('nav-perangkat').classList.add('active');
+      }
     }
   </script>
 </body>
