@@ -3,83 +3,150 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SiAdmin Guru</title>
+  <title>SiAdmin Guru Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
-    body { font-family: sans-serif; background: #f1f5f9; }
+    body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+    
+    /* Loader */
     .loader-overlay { position: fixed; inset: 0; background: white; z-index: 50; display: flex; justify-content: center; align-items: center; flex-direction: column; }
-    .hidden { display: none !important; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Nav Item */
+    .nav-item { transition: all 0.2s; border-radius: 0.5rem; margin-bottom: 0.25rem; }
+    .nav-item:hover { background-color: #eff6ff; color: #2563eb; }
+    .nav-item.active { background-color: #2563eb; color: white; shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
+    
+    /* Table */
+    .table-container { overflow-x: auto; border-radius: 0.5rem; border: 1px solid #e2e8f0; background: white; }
+    th { background: #f1f5f9; color: #64748b; font-size: 0.75rem; text-transform: uppercase; padding: 0.75rem 1.5rem; white-space: nowrap; }
+    td { padding: 0.75rem 1.5rem; font-size: 0.875rem; color: #334155; white-space: nowrap; border-bottom: 1px solid #f1f5f9; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8fafc; }
   </style>
 </head>
-<body class="text-slate-800">
+<body class="flex h-screen overflow-hidden text-slate-800">
 
-  <!-- LOADER & ERROR SCREEN -->
+  <!-- LOADER -->
   <div id="loader" class="loader-overlay">
-    <div id="loader-spinner" class="flex flex-col items-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-      <h2 class="text-xl font-bold">Menghubungkan Database...</h2>
-      <p class="text-slate-500 text-sm mt-2" id="loader-msg">Mohon tunggu sebentar</p>
-    </div>
-    
-    <!-- Error Container (Hidden by default) -->
-    <div id="error-container" class="hidden text-center max-w-lg p-6 bg-red-50 rounded-xl border border-red-200">
-      <i class="fa-solid fa-triangle-exclamation text-4xl text-red-500 mb-4"></i>
-      <h3 class="text-lg font-bold text-red-700">Gagal Terhubung</h3>
-      <p class="text-sm text-red-600 mb-4" id="error-text">Koneksi timeout.</p>
-      
-      <div class="text-left bg-white p-4 rounded border text-xs font-mono text-slate-600 mb-4 overflow-x-auto">
-        <strong>Saran Perbaikan:</strong>
-        <ul class="list-disc pl-4 mt-2 space-y-1">
-          <li>Pastikan <b>SPREADSHEET_ID</b> di Code.gs sudah diganti dengan ID Anda.</li>
-          <li>Pastikan sudah melakukan <b>Deploy > New Deployment</b> setelah edit kode.</li>
-          <li>Pastikan Sheet "Siswa", "Jurnal", dll sudah dibuat (Jalankan fungsi setupDatabase).</li>
-        </ul>
-      </div>
-      <button onclick="location.reload()" class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">Coba Lagi</button>
-    </div>
+    <div class="spinner mb-4"></div>
+    <h2 class="text-xl font-bold text-slate-800">SiAdmin</h2>
+    <p class="text-slate-500 text-sm mt-1">Menyiapkan Dashboard...</p>
   </div>
 
-  <!-- MAIN APP -->
-  <div id="app" class="hidden flex h-screen">
-    <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r hidden md:flex flex-col">
-      <div class="p-6 border-b"><h1 class="font-bold text-xl text-blue-600">SiAdmin</h1></div>
-      <nav class="p-4 space-y-1">
-        <button onclick="view('dashboard')" class="w-full text-left px-4 py-3 rounded hover:bg-slate-50 text-slate-700 font-medium"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
-        <button onclick="view('siswa')" class="w-full text-left px-4 py-3 rounded hover:bg-slate-50 text-slate-700 font-medium"><i class="fa-solid fa-users w-6"></i> Data Siswa</button>
-      </nav>
-    </aside>
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col z-20">
+    <div class="p-6 border-b border-slate-100">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <span class="font-bold text-lg">SiAdmin</span>
+      </div>
+    </div>
+    
+    <nav class="flex-1 p-4 overflow-y-auto">
+      <button onclick="nav('dashboard')" id="btn-dashboard" class="nav-item active w-full flex items-center px-4 py-3 text-sm font-medium">
+        <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+      </button>
+      <button onclick="nav('siswa')" id="btn-siswa" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
+        <i class="fa-solid fa-users w-5"></i> Data Siswa
+      </button>
+      <button onclick="nav('jurnal')" id="btn-jurnal" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
+        <i class="fa-solid fa-book-open w-5"></i> Jurnal
+      </button>
+      <button onclick="nav('nilai')" id="btn-nilai" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
+        <i class="fa-solid fa-star w-5"></i> Nilai
+      </button>
+      <button onclick="nav('absensi')" id="btn-absensi" class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium">
+        <i class="fa-regular fa-calendar-check w-5"></i> Absensi
+      </button>
+    </nav>
 
-    <!-- Content -->
-    <main class="flex-1 overflow-y-auto p-8">
+    <div class="p-4 border-t border-slate-100">
+      <div class="flex items-center gap-3 p-2 rounded-lg bg-slate-50">
+        <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <div>
+          <p class="text-xs font-bold" id="user-display">Guru Kelas</p>
+          <p class="text-[10px] text-green-600 font-medium">● Online</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50 relative">
+    <!-- Header Mobile -->
+    <div class="md:hidden bg-white p-4 flex justify-between items-center border-b">
+      <span class="font-bold">SiAdmin</span>
+      <button onclick="alert('Gunakan Mode Desktop untuk fitur lengkap')" class="text-slate-500"><i class="fa-solid fa-bars"></i></button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-6 md:p-8">
       
-      <!-- Dashboard -->
-      <div id="page-dashboard">
-        <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
-            <p class="text-xs text-slate-400 uppercase">Total Siswa</p>
-            <p class="text-3xl font-bold mt-2" id="stat-siswa">0</p>
+      <!-- PAGE: DASHBOARD -->
+      <div id="page-dashboard" class="page-section">
+        <header class="mb-8">
+          <h1 class="text-2xl font-bold text-slate-800">Ringkasan Akademik</h1>
+          <p class="text-slate-500 text-sm" id="current-date">...</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <!-- Card 1 -->
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs font-bold text-slate-400 uppercase">Total Siswa</p>
+                <h3 class="text-3xl font-bold text-slate-800 mt-2" id="stat-siswa">0</h3>
+              </div>
+              <div class="p-2 bg-blue-50 text-blue-600 rounded-lg"><i class="fa-solid fa-users text-xl"></i></div>
+            </div>
           </div>
-          <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-emerald-500">
-            <p class="text-xs text-slate-400 uppercase">Status File</p>
-            <p class="text-lg font-bold mt-2 truncate" id="stat-file">-</p>
+          <!-- Card 2 -->
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs font-bold text-slate-400 uppercase">Jurnal Mengajar</p>
+                <h3 class="text-3xl font-bold text-slate-800 mt-2" id="stat-jurnal">0</h3>
+              </div>
+              <div class="p-2 bg-purple-50 text-purple-600 rounded-lg"><i class="fa-solid fa-book text-xl"></i></div>
+            </div>
+          </div>
+           <!-- Card 3 -->
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs font-bold text-slate-400 uppercase">Input Nilai</p>
+                <h3 class="text-3xl font-bold text-slate-800 mt-2" id="stat-nilai">0</h3>
+              </div>
+              <div class="p-2 bg-amber-50 text-amber-600 rounded-lg"><i class="fa-solid fa-star text-xl"></i></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Siswa -->
-      <div id="page-siswa" class="hidden">
-        <h2 class="text-2xl font-bold mb-6">Data Siswa</h2>
-        <div class="bg-white rounded-lg shadow border overflow-hidden">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-slate-50 border-b">
+      <!-- PAGE: SISWA -->
+      <div id="page-siswa" class="page-section hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold">Data Siswa</h2>
+          <input type="text" onkeyup="searchTable('tbody-siswa', this.value)" placeholder="Cari nama/NIS..." class="bg-white border px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+        </div>
+        <div class="table-container shadow-sm">
+          <table class="w-full text-left">
+            <thead>
               <tr>
-                <th class="px-6 py-3">NIS</th>
-                <th class="px-6 py-3">Nama Lengkap</th>
-                <th class="px-6 py-3">Kelas</th>
-                <th class="px-6 py-3">L/P</th>
+                <th>NIS</th>
+                <th>Nama Lengkap</th>
+                <th>L/P</th>
+                <th>Kelas</th>
+                <th>TTL</th>
+                <th>Nama Ayah</th>
               </tr>
             </thead>
             <tbody id="tbody-siswa"></tbody>
@@ -87,70 +154,185 @@
         </div>
       </div>
 
-    </main>
-  </div>
+      <!-- PAGE: JURNAL -->
+      <div id="page-jurnal" class="page-section hidden">
+        <div class="mb-6"><h2 class="text-2xl font-bold">Jurnal Pembelajaran</h2></div>
+        <div class="table-container shadow-sm">
+          <table class="w-full text-left">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Mapel</th>
+                <th>Materi</th>
+                <th>Kegiatan</th>
+                <th>Tindak Lanjut</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-jurnal"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PAGE: NILAI -->
+      <div id="page-nilai" class="page-section hidden">
+        <div class="mb-6"><h2 class="text-2xl font-bold">Rekap Nilai</h2></div>
+        <div class="table-container shadow-sm">
+          <table class="w-full text-left">
+            <thead>
+              <tr>
+                <th class="sticky left-0 bg-slate-50 z-10">Nama Siswa</th>
+                <th>Mapel</th>
+                <th class="text-center">LM 1</th>
+                <th class="text-center">LM 2</th>
+                <th class="text-center">Sumatif 1</th>
+                <th class="text-center">SAS</th>
+                <th class="text-center font-bold">Rapor</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-nilai"></tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- PAGE: ABSENSI -->
+      <div id="page-absensi" class="page-section hidden">
+        <div class="mb-6"><h2 class="text-2xl font-bold">Rekap Absensi</h2></div>
+        <div class="table-container shadow-sm">
+          <table class="w-full text-left">
+            <thead>
+              <tr>
+                <th class="sticky left-0 bg-slate-50 z-10">Nama Siswa</th>
+                <th class="text-center">Hadir</th>
+                <th class="text-center">Sakit</th>
+                <th class="text-center">Ijin</th>
+                <th class="text-center">Alpha</th>
+                <th class="text-center">Persentase</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-absensi"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
 
   <script>
-    // Timeout check 10 detik
-    const timeout = setTimeout(() => {
-      showError("Waktu koneksi habis (10 detik). Server tidak merespon.");
-    }, 10000);
+    // --- APP STATE ---
+    let DB = { siswa: [], jurnal: [], nilai: [], absensi: [] };
 
+    // --- INIT ---
     window.onload = function() {
-      // Panggil Server
+      const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', opts);
+      
       google.script.run
         .withSuccessHandler(renderApp)
-        .withFailureHandler(failApp)
+        .withFailureHandler(err => {
+          document.getElementById('loader').innerHTML = `<p class='text-red-500 font-bold'>Error: ${err.message}</p>`;
+        })
         .getData();
     };
 
-    function renderApp(res) {
-      clearTimeout(timeout); // Hapus timer error
-      
-      if (!res.success) {
-        showError("Server Error: " + res.message);
+    function renderApp(data) {
+      if(!data.success) {
+        alert("Gagal load data: " + data.message);
         return;
       }
-
-      // Hide Loader, Show App
+      DB = data;
       document.getElementById('loader').classList.add('hidden');
-      document.getElementById('app').classList.remove('hidden');
-
-      // Isi Data Dashboard
-      document.getElementById('stat-siswa').innerText = res.siswa.length;
-      document.getElementById('stat-file').innerText = res.info.nama_file;
-
-      // Isi Tabel Siswa
-      const tbody = document.getElementById('tbody-siswa');
-      if (res.siswa.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-slate-400">Data Kosong. Cek Sheet "Siswa".</td></tr>';
-      } else {
-        tbody.innerHTML = res.siswa.map(s => `
-          <tr class="border-b hover:bg-slate-50">
-            <td class="px-6 py-3">${s['NIS'] || '-'}</td>
-            <td class="px-6 py-3 font-bold text-blue-600">${s['Nama Lengkap'] || s['Nama'] || '-'}</td>
-            <td class="px-6 py-3">${s['Kelas'] || '-'}</td>
-            <td class="px-6 py-3">${s['L/P'] || '-'}</td>
-          </tr>
-        `).join('');
+      
+      // Update Stats
+      document.getElementById('stat-siswa').innerText = DB.siswa.length;
+      document.getElementById('stat-jurnal').innerText = DB.jurnal.length;
+      document.getElementById('stat-nilai').innerText = DB.nilai.length;
+      
+      if(DB.user && DB.user.length > 0) {
+        document.getElementById('user-display').innerText = DB.user[0]['Nama Guru'] || 'Admin';
       }
+
+      // Render Tables
+      renderSiswa();
+      renderJurnal();
+      renderNilai();
+      renderAbsensi();
     }
 
-    function failApp(err) {
-      clearTimeout(timeout);
-      showError(err.message);
+    // --- RENDER FUNCTIONS ---
+    function renderSiswa() {
+      const tbody = document.getElementById('tbody-siswa');
+      if(DB.siswa.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-slate-400">Data Kosong. Silakan Copy-Paste CSV ke Sheet 'Siswa'.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = DB.siswa.map(s => `
+        <tr>
+          <td class="font-medium">${s['NIS'] || '-'}</td>
+          <td class="font-bold text-blue-600">${s['Nama Lengkap'] || '-'}</td>
+          <td>${s['L/P'] || '-'}</td>
+          <td>${s['Kelas'] || '-'}</td>
+          <td class="text-xs text-slate-500">${s['Tempat Lahir'] || ''}, ${s['Tanggal Lahir'] || ''}</td>
+          <td>${s['Nama Ayah'] || '-'}</td>
+        </tr>
+      `).join('');
     }
 
-    function showError(msg) {
-      document.getElementById('loader-spinner').classList.add('hidden');
-      document.getElementById('error-container').classList.remove('hidden');
-      document.getElementById('error-text').innerText = msg;
+    function renderJurnal() {
+      const tbody = document.getElementById('tbody-jurnal');
+      tbody.innerHTML = DB.jurnal.map(j => `
+        <tr>
+          <td>${j['Tanggal']}</td>
+          <td class="font-bold text-slate-700">${j['Mapel']}</td>
+          <td class="max-w-xs truncate" title="${j['Lingkup Materi']}">${j['Lingkup Materi']}</td>
+          <td class="max-w-xs truncate">${j['Kegiatan']}</td>
+          <td class="italic text-slate-500">${j['Tindak Lanjut']}</td>
+        </tr>
+      `).join('');
     }
 
-    window.view = function(id) {
-      document.getElementById('page-dashboard').classList.add('hidden');
-      document.getElementById('page-siswa').classList.add('hidden');
-      document.getElementById('page-' + id).classList.remove('hidden');
+    function renderNilai() {
+      const tbody = document.getElementById('tbody-nilai');
+      tbody.innerHTML = DB.nilai.map(n => `
+        <tr>
+          <td class="sticky left-0 bg-white font-medium border-r border-slate-100">${n['Nama']}</td>
+          <td class="text-xs font-bold uppercase text-slate-500">${n['Mapel']}</td>
+          <td class="text-center">${n['F_LM1'] || '-'}</td>
+          <td class="text-center">${n['F_LM2'] || '-'}</td>
+          <td class="text-center bg-amber-50">${n['S_LM1'] || '-'}</td>
+          <td class="text-center bg-amber-50">${n['SAS'] || '-'}</td>
+          <td class="text-center font-bold text-blue-700">${n['Rapor'] || '-'}</td>
+        </tr>
+      `).join('');
+    }
+    
+    function renderAbsensi() {
+      const tbody = document.getElementById('tbody-absensi');
+      tbody.innerHTML = DB.absensi.map(a => `
+        <tr>
+          <td class="sticky left-0 bg-white font-medium border-r border-slate-100">${a['Nama']}</td>
+          <td class="text-center font-bold text-green-600">${a['Total_H'] || 0}</td>
+          <td class="text-center text-yellow-600">${a['Total_S'] || 0}</td>
+          <td class="text-center text-blue-600">${a['Total_I'] || 0}</td>
+          <td class="text-center text-red-600 font-bold">${a['Total_A'] || 0}</td>
+          <td class="text-center font-bold text-slate-700">${a['Persentase'] || '0%'}</td>
+        </tr>
+      `).join('');
+    }
+
+    // --- NAVIGATION ---
+    window.nav = function(pageId) {
+      document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.getElementById('page-' + pageId).classList.remove('hidden');
+      document.getElementById('btn-' + pageId).classList.add('active');
+    }
+
+    window.searchTable = function(tbodyId, term) {
+      const rows = document.getElementById(tbodyId).getElementsByTagName('tr');
+      term = term.toLowerCase();
+      for(let row of rows) {
+        row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none';
+      }
     }
   </script>
 </body>
