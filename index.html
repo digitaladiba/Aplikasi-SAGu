@@ -64,8 +64,46 @@
 </head>
 <body class="text-slate-800 h-screen overflow-hidden flex">
 
+    <!-- LOGIN OVERLAY -->
+    <div id="login-overlay" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center no-print transition-opacity duration-300">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm transform transition-all mx-4">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 mb-4 shadow-inner">
+                    <i data-lucide="shield-check" class="w-8 h-8"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">SiGuru Kelas V2</h2>
+                <p class="text-sm text-slate-500 mt-1">Sistem Administrasi Guru Pintar</p>
+            </div>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wider">Username</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="absolute left-3 top-3 w-5 h-5 text-slate-400"></i>
+                        <input type="text" id="login-user" class="w-full border border-slate-300 rounded-lg pl-10 pr-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition font-medium" placeholder="Masukkan username" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wider">Password</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="absolute left-3 top-3 w-5 h-5 text-slate-400"></i>
+                        <input type="password" id="login-pass" class="w-full border border-slate-300 rounded-lg pl-10 pr-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition font-medium" placeholder="Masukkan password" required>
+                    </div>
+                </div>
+                <div id="login-error" class="hidden text-red-500 text-sm font-medium text-center bg-red-50 border border-red-100 py-2.5 rounded-lg flex items-center justify-center">
+                    <i data-lucide="alert-circle" class="w-4 h-4 mr-2"></i> Kredensial tidak valid!
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold rounded-lg px-4 py-3 hover:bg-blue-700 active:bg-blue-800 transition duration-200 shadow-md hover:shadow-lg flex justify-center items-center">
+                    Masuk Aplikasi <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+                </button>
+            </form>
+            <div class="mt-6 text-center text-xs text-slate-400">
+                &copy; 2026 Hak Cipta Dilindungi
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Overlay Terkoneksi DB -->
-    <div id="loading-overlay" class="fixed inset-0 bg-blue-900 bg-opacity-95 z-[100] flex flex-col items-center justify-center text-white transition-opacity duration-500">
+    <div id="loading-overlay" class="fixed inset-0 bg-blue-900 bg-opacity-95 z-[100] flex flex-col items-center justify-center text-white transition-opacity duration-500 hidden">
         <div class="loader-spinner mb-4"></div>
         <h2 class="text-xl font-bold mb-1">Menyinkronkan Database...</h2>
         <p class="text-sm text-blue-200">Mengambil data terbaru dari Google Sheets Anda</p>
@@ -76,7 +114,7 @@
         <div class="h-16 flex items-center px-5 border-b border-slate-800 bg-slate-950 justify-between">
             <div class="flex items-center space-x-2">
                 <i data-lucide="layout-template" class="w-6 h-6 text-blue-400"></i>
-                <span class="text-lg font-bold tracking-tight">SiGuru V2.2</span>
+                <span class="text-lg font-bold tracking-tight">SiGuru V2.3</span>
             </div>
             <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
@@ -138,7 +176,7 @@
         </div>
         <!-- Status Koneksi -->
         <div class="p-4 border-t border-slate-800 bg-slate-950 flex items-center justify-between">
-            <span class="text-xs font-semibold text-slate-400">Status DB:</span>
+            <button onclick="handleLogout()" class="text-xs font-semibold text-red-400 hover:text-red-300 transition flex items-center"><i data-lucide="log-out" class="w-3 h-3 mr-1"></i> Logout</button>
             <div id="db-status-indicator" class="flex items-center text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">
                 <div class="w-2 h-2 rounded-full bg-emerald-500 mr-1 animate-pulse"></div> Live
             </div>
@@ -278,15 +316,19 @@
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-medium">
                             <tr>
-                                <th rowspan="2" class="px-2 py-2 border-r border-slate-300 w-6">No</th>
-                                <th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 shadow-[1px_0_0_0_#cbd5e1]">Nama Murid</th>
-                                <th rowspan="2" class="px-1 py-2 border-r border-slate-300 w-6">L/P</th>
+                                <th rowspan="3" class="px-2 py-2 border-r border-slate-300 w-6">No</th>
+                                <th rowspan="3" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 shadow-[1px_0_0_0_#cbd5e1]">Nama Murid</th>
+                                <th rowspan="3" class="px-1 py-2 border-r border-slate-300 w-6">L/P</th>
                                 <th id="th-colspan-absen" colspan="31" class="py-1 border-r border-slate-300 border-b">Tanggal (Bulan Berjalan)</th>
                                 <th colspan="4" class="py-1 border-b border-slate-300 bg-blue-50">Total</th>
-                                <th rowspan="2" class="px-1 py-2 border-l border-slate-300 bg-blue-50 text-blue-800">%</th>
+                                <th rowspan="3" class="px-1 py-2 border-l border-slate-300 bg-blue-50 text-blue-800">%</th>
+                            </tr>
+                            <tr>
+                                <!-- Sub Header for Totals -->
+                                <th colspan="31" class="hidden"></th> <!-- Placeholder required for correct rendering if needed, but we structure differently -->
                             </tr>
                             <tr id="head-tanggal-absen">
-                                <!-- JS Generated -->
+                                <!-- JS Generated Dates & H,S,I,A Headers -->
                             </tr>
                         </thead>
                         <tbody id="tb-input-absen-bulan" class="divide-y divide-slate-200 text-slate-600 font-medium">
@@ -321,11 +363,11 @@
                                 <th rowspan="2" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48">Nama Murid</th>
                                 <th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-6">L/P</th>
                                 <th id="th-colspan-rekap" colspan="31" class="py-1 border-r border-slate-300 border-b">Tanggal Pelaksanaan</th>
-                                <th colspan="4" class="py-1 border-b border-r border-slate-300 bg-blue-50">Total</th>
-                                <th rowspan="2" class="px-1 py-1 bg-blue-50 text-blue-800 border-slate-300">%</th>
+                                <th colspan="4" class="py-1 border-b border-slate-300 bg-slate-200">TOTAL</th>
+                                <th rowspan="2" class="px-1 py-1 bg-blue-50 text-blue-800 border-l border-slate-300">%</th>
                             </tr>
                             <tr id="head-tanggal-rekap">
-                                <!-- JS Generated -->
+                                <!-- JS Generated Dates & H,S,I,A Headers -->
                             </tr>
                         </thead>
                         <tbody id="tb-rekap-bulan" class="divide-y divide-slate-200 text-slate-600">
@@ -592,6 +634,41 @@
         let globalSiswa = [];
         let listJurnal = [];
 
+        // Session & Login Management
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-user').value;
+            const p = document.getElementById('login-pass').value;
+            
+            if(u === 'sdn04taman' && p === 'bayuprahastian') {
+                sessionStorage.setItem('siguru_logged_in', 'true');
+                document.getElementById('login-error').classList.add('hidden');
+                
+                // Hide login UI and start App
+                document.getElementById('login-overlay').classList.add('opacity-0');
+                setTimeout(() => {
+                    document.getElementById('login-overlay').classList.add('hidden');
+                    sinkronisasiDB(true); 
+                }, 300);
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            if(confirm("Apakah Anda yakin ingin keluar?")) {
+                sessionStorage.removeItem('siguru_logged_in');
+                window.location.reload();
+            }
+        }
+
+        function checkAuth() {
+            if(sessionStorage.getItem('siguru_logged_in') === 'true') {
+                document.getElementById('login-overlay').classList.add('hidden');
+                sinkronisasiDB(true);
+            }
+        }
+
         // Loading Screen Management
         const loader = document.getElementById('loading-overlay');
         const dbStatus = document.getElementById('db-status-indicator');
@@ -600,15 +677,11 @@
             if(isManual) loader.classList.remove('hidden', 'opacity-0');
             
             try {
-                // Fetch Master Siswa
                 const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
                 if(resSiswa.status === 'success' && resSiswa.data.length > 0) {
                     globalSiswa = resSiswa.data;
-                } else {
-                    globalSiswa = mockSiswaFallback; // fallback jika kosong
-                }
+                } else { globalSiswa = mockSiswaFallback; }
 
-                // Fetch Identitas (Opsional jika API sdh mendukung update)
                 const resId = await fetch(`${API_URL}?action=getIdentitas`).then(r => r.json());
                 if(resId.status === 'success') {
                     const d = resId.data;
@@ -623,13 +696,9 @@
                     document.getElementById('inp-kelas').value = d.kelas || 'IV B';
                 }
 
-                // Fetch Jurnal
                 const resJurnal = await fetch(`${API_URL}?action=getJurnal`).then(r => r.json());
-                if(resJurnal.status === 'success') {
-                    listJurnal = resJurnal.data.reverse(); // Terbaru di atas
-                } else {
-                    listJurnal = mockJurnalFallback;
-                }
+                if(resJurnal.status === 'success') listJurnal = resJurnal.data.reverse(); 
+                else listJurnal = mockJurnalFallback;
 
                 // Inisiasi Semua Data dengan Data Asli API
                 document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
@@ -643,7 +712,6 @@
                 updateJurnalMapel();
                 renderTabelJurnal();
 
-                // UI Success
                 dbStatus.innerHTML = `<div class="w-2 h-2 rounded-full bg-emerald-500 mr-1 animate-pulse"></div> Live`;
                 dbStatus.className = "flex items-center text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded";
 
@@ -656,7 +724,6 @@
                 initDataNilai(); initMockAbsen(); renderInputAbsenBulan(); renderRekapBulanan();
                 syncGlobalData(); initDropdownMapel(); renderLegger(); updateJurnalMapel(); renderTabelJurnal();
 
-                // UI Error
                 dbStatus.innerHTML = `<div class="w-2 h-2 rounded-full bg-amber-500 mr-1"></div> Mode Lokal`;
                 dbStatus.className = "flex items-center text-xs font-bold text-amber-500 bg-amber-500/10 px-2 py-1 rounded";
             } finally {
@@ -665,7 +732,7 @@
             }
         }
 
-        // --- DATA FALLBACK JIKA API GAGAL ---
+        // --- DATA FALLBACK ---
         const mockSiswaFallback = [
             {nis: "2520", nama: "ADE TRISTAN ABDILLAH", jk: "L"}, {nis: "2713", nama: "AISYAH ANINDITA MYESHA ZAHRA", jk: "P"},
             {nis: "2527", nama: "ALESA AMELIA AFWA", jk: "P"}, {nis: "2530", nama: "ANINDITA AZAHRA", jk: "P"},
@@ -689,30 +756,21 @@
             { tanggal: "14/01/2026", tglFormat: "Rabu,<br>14 Jan 2026", jam: "4-5", mapel: "Bahasa Indonesia", lingkupMateri: "Teks Persuasi", tujuanPembelajaran: "membuat kalimat ajakan (persuasi)", kegiatan: "Membaca contoh teks persuasi, menemukan kalimat ajakan, dan mempraktikkan menulis satu paragraf.", refleksi: "-" }
         ];
 
-        // TARGET LM & TP DEFAULT
         let mapelData = {
-            "Pendidikan Pancasila": {
-                lm: ["Pengenalan Perangkat TIK", "Pengoperasian dasar komputer", "Manajemen File dan Folder"],
-                tp: [{ nama: "menjelaskan pengertian TIK serta peranannya", k1: "Pemahaman", k2: "Penerapan" }, { nama: "mengidentifikasi perangkat keras komputer", k1: "Identifikasi", k2: "Fungsi" }]
-            },
-            "Bahasa Indonesia": {
-                lm: ["Teks Persuasi", "Teks Deskripsi"],
-                tp: [{ nama: "membuat kalimat ajakan (persuasi)", k1: "Kosakata", k2: "Struktur" }, { nama: "mendeskripsikan benda di sekitar", k1: "Pengamatan", k2: "Penulisan" }]
-            },
-            "Matematika": { lm: ["Bilangan Cacah", "Pecahan", "Bangun Datar"], tp: [{ nama: "membaca dan menulis bilangan cacah", k1: "Membaca", k2: "Menulis" }, { nama: "membandingkan dua pecahan", k1: "Analisis", k2: "Hitung" }] },
-            "IPAS": { lm: ["Tumbuhan, Sumber Kehidupan"], tp: [{nama: "mengidentifikasi bagian tumbuhan", k1: "K1", k2: "K2"}] },
-            "Seni Rupa": { lm: ["Menggambar Bentuk", "Mewarnai"], tp: [{nama: "menggambar bentuk 2 dimensi", k1: "K1", k2: "K2"}] },
-            "Bahasa Inggris": { lm: ["Greetings", "My Family"], tp: [{nama: "menyebutkan sapaan", k1: "K1", k2: "K2"}] }
+            "Pendidikan Pancasila": { lm: ["Pengenalan Perangkat TIK", "Pengoperasian dasar komputer"], tp: [{ nama: "menjelaskan pengertian TIK", k1: "Pemahaman", k2: "Penerapan" }] },
+            "Bahasa Indonesia": { lm: ["Teks Persuasi", "Teks Deskripsi"], tp: [{ nama: "membuat kalimat ajakan", k1: "Kosakata", k2: "Struktur" }] },
+            "Matematika": { lm: ["Bilangan Cacah", "Pecahan"], tp: [{ nama: "membaca bilangan cacah", k1: "Membaca", k2: "Menulis" }] },
+            "IPAS": { lm: ["Tumbuhan"], tp: [{nama: "mengidentifikasi bagian tumbuhan", k1: "K1", k2: "K2"}] },
+            "Seni Rupa": { lm: ["Menggambar Bentuk"], tp: [{nama: "menggambar bentuk 2 dimensi", k1: "K1", k2: "K2"}] },
+            "Bahasa Inggris": { lm: ["Greetings"], tp: [{nama: "menyebutkan sapaan", k1: "K1", k2: "K2"}] }
         };
         let currentSettingMapel = "Pendidikan Pancasila";
-
-        // NILAI SISWA STATE
         let nilaiSiswa = {};
+
         function initDataNilai() {
             globalSiswa.forEach((s, i) => {
                 nilaiSiswa[i] = {
-                    formatif: {}, // Mapel -> array of TP
-                    sumatif: {},  // Mapel -> { lm:[], sts, sas }
+                    formatif: {}, sumatif: {},
                     sikap: { dsk: 80 + Math.floor(Math.random()*15), ins: 80 + Math.floor(Math.random()*15), dsp: 80 + Math.floor(Math.random()*15), tgg: 80 + Math.floor(Math.random()*15) }
                 };
             });
@@ -734,7 +792,7 @@
             let judul = "Papan Utama";
             if(idHalaman === 'identitas') judul = "Identitas Kelas";
             if(idHalaman === 'target') { judul = "Target Pembelajaran"; loadMenuSettingMapel(); }
-            if(idHalaman.includes('siswa')) { judul = "Administrasi Kehadiran Siswa"; }
+            if(idHalaman.includes('siswa')) judul = "Administrasi Kehadiran Siswa";
             if(idHalaman.includes('nilai')) judul = "Pengolahan Nilai (Rapor)";
             if(idHalaman.includes('jurnal')) { judul = "Jurnal Mengajar"; renderTabelJurnal(); updateJurnalMapel(); }
             document.getElementById('judul-halaman').innerText = judul;
@@ -823,7 +881,7 @@
             document.querySelectorAll('[id^="print-tgl-"]').forEach(e => e.innerText = `${kota}, ${today}`);
         }
 
-        // --- KALENDER ABSENSI DAN RUMUS % ---
+        // --- KALENDER ABSENSI ---
         const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
         let currentAbsenData = {}; 
         
@@ -861,6 +919,12 @@
                 let sunday = isSunday(d, monthStr, activeYear);
                 thead += `<th class="border-r border-slate-300 w-4 ${sunday ? 'bg-red-100 text-red-500' : ''}">${d}</th>`;
             }
+            // Add Sub-Headers for Total H, S, I, A
+            thead += `<th class="border-r border-slate-300 bg-blue-50 text-blue-700 w-6 text-[10px]">H</th>
+                      <th class="border-r border-slate-300 bg-amber-50 text-amber-600 w-6 text-[10px]">S</th>
+                      <th class="border-r border-slate-300 bg-purple-50 text-purple-600 w-6 text-[10px]">I</th>
+                      <th class="bg-red-50 text-red-600 w-6 text-[10px] border-r border-slate-300">A</th>`;
+
             document.getElementById(targetThead).innerHTML = thead;
             document.getElementById(isInput ? 'th-colspan-absen' : 'th-colspan-rekap').colSpan = daysInMonth;
 
@@ -885,14 +949,13 @@
                     else if(val === "H") cls = "val-h"; else if(val === "S") cls = "val-s"; else if(val === "I") cls = "val-i"; else if(val === "A") cls = "val-a";
 
                     if(isInput) {
-                        cells += `<td class="border-r border-slate-200 cell-abs ${cls}" onclick="toggleAbsenCel(this, ${sunday}, ${i}, ${d})">${val}</td>`;
+                        cells += `<td class="border-r border-slate-200 text-center cell-abs ${cls}" onclick="toggleAbsenCel(this, ${sunday}, ${i}, ${d})">${val}</td>`;
                     } else {
-                        cells += `<td class="border-r border-slate-300 font-bold ${cls}">${val}</td>`;
+                        cells += `<td class="border-r border-slate-300 text-center font-bold text-[9pt] ${cls}">${val}</td>`;
                     }
                 }
                 
                 totKelasH+=th; totKelasS+=ts; totKelasI+=ti; totKelasA+=ta_abs;
-                // RUMUS: (Hadir / Hari Efektif) x 100
                 let indPct = hariEfektif > 0 ? Math.round((th / hariEfektif) * 100) : 0;
 
                 tbody += `
@@ -909,14 +972,13 @@
                 </tr>`;
             });
 
-            // TOTAL SEMUA SISWA
             if(!isInput) {
                 let totalMurid = globalSiswa.length;
                 let classPct = (hariEfektif > 0 && totalMurid > 0) ? Math.round((totKelasH / (hariEfektif * totalMurid)) * 100) : 0;
                 document.getElementById('dash-rata-hadir').innerText = classPct + '%'; 
                 tbody += `
                 <tr class="bg-slate-200 border-b border-slate-300">
-                    <td colspan="${3 + daysInMonth}" class="font-bold text-right pr-4 py-2 text-slate-800">TOTAL KESELURUHAN KELAS</td>
+                    <td colspan="${3 + daysInMonth}" class="font-bold text-right pr-4 py-2 text-slate-800">TOTAL KESELURUHAN KELAS (HARI EFEKTIF: ${hariEfektif})</td>
                     <td class="border-r border-slate-300 font-bold text-blue-700">${totKelasH}</td>
                     <td class="border-r border-slate-300 font-bold text-amber-600">${totKelasS}</td>
                     <td class="border-r border-slate-300 font-bold text-purple-600">${totKelasI}</td>
@@ -974,7 +1036,7 @@
             document.getElementById(`pct-${pref}-${i}`).innerText = pct + "%";
         }
 
-        // --- PENILAIAN (INPUT & AUTO CALC) ---
+        // --- PENILAIAN ---
         function initDropdownMapel() {
             let opts = "";
             for(let m in mapelData) opts += `<option value="${m}">${m}</option>`;
@@ -1062,7 +1124,7 @@
                 rtLM = jml>0 ? Math.round(rtLM/jml) : 0;
                 let rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); 
                 
-                tb += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[12rem]">${s.nama}</td>
+                tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[12rem]">${s.nama}</td>
                 ${cells}
                 <td class="border-r border-slate-300 border-b bg-slate-50 font-bold" id="rtl-${i}">${rtLM}</td>
                 <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${smt.sts}" onchange="updSum(${i}, '${m}', 'sts', 0, this.value)"></td>
@@ -1111,7 +1173,6 @@
             document.getElementById(`pr-b-${sIdx}`).innerText = pr((d.dsp+d.tgg)/2);
         }
 
-        // --- LEGGER RAPOR (AUTO COMPILED) ---
         function renderLegger() {
             let tLeg = "";
             let mapelList = Object.keys(mapelData);
@@ -1208,7 +1269,6 @@
             document.getElementById('tb-jurnal').innerHTML = tbody;
         }
 
-        // --- CETAK (PRINT) F4 LANDSCAPE ---
         function cetakLaporan(tipe) {
             syncGlobalData(); 
             if(!document.getElementById('hal-nilai-legger').classList.contains('hidden')) renderLegger();
@@ -1218,8 +1278,7 @@
         // --- INIT APP ---
         window.onload = () => {
             pindahHalaman('dashboard', document.querySelector('[data-target="dashboard"]'));
-            // Jalankan Sinkronisasi API secara otomatis di awal
-            sinkronisasiDB(true);
+            checkAuth(); // Cek login & mulai sinkronisasi
         };
     </script>
 </body>
