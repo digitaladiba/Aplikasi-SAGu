@@ -20,12 +20,13 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
         
         /* Toggle Absen */
-        .btn-abs { cursor: pointer; transition: all 0.2s; border: 1px solid #e2e8f0; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 11px; background: white; color: #64748b; }
-        .btn-abs:hover { background-color: #f1f5f9; }
-        .btn-abs.active-h { background-color: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
-        .btn-abs.active-s { background-color: #fef3c7; color: #d97706; border-color: #fde68a; }
-        .btn-abs.active-i { background-color: #f3e8ff; color: #9333ea; border-color: #e9d5ff; }
-        .btn-abs.active-a { background-color: #fee2e2; color: #dc2626; border-color: #fecaca; }
+        .cell-abs { cursor: pointer; transition: all 0.1s; font-weight: bold; }
+        .cell-abs:hover { background-color: #e2e8f0; }
+        .val-h { color: #2563eb; }
+        .val-s { color: #d97706; background-color: #fef3c7; }
+        .val-i { color: #9333ea; background-color: #f3e8ff; }
+        .val-a { color: #dc2626; background-color: #fee2e2; }
+        .val-libur { background-color: #fca5a5 !important; cursor: not-allowed; color: #991b1b; }
 
         /* Print F4 Landscape Layouting */
         @media print {
@@ -37,6 +38,7 @@
             tr { page-break-inside: avoid; page-break-after: auto; }
             th, td { border: 1px solid #000 !important; padding: 3px 5px !important; color: black !important; }
             th { background-color: #e5e7eb !important; -webkit-print-color-adjust: exact; font-weight: bold; text-align: center; }
+            .val-libur { background-color: #fca5a5 !important; -webkit-print-color-adjust: exact; }
             
             /* Jeda Tanda Tangan */
             .print-signature { display: flex !important; justify-content: space-between; margin-top: 30px; page-break-inside: avoid; width: 100%; padding: 0 40px; }
@@ -67,7 +69,6 @@
             
             <div class="pt-4 pb-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Data Induk</div>
             
-            <!-- Identitas Terpisah -->
             <button onclick="pindahHalaman('identitas', this)" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white" data-target="identitas">
                 <i data-lucide="school" class="w-5 h-5"></i><span>Identitas Kelas</span>
             </button>
@@ -141,7 +142,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
                     <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm relative overflow-hidden">
                         <div class="flex justify-between items-start mb-4">
-                            <div><p class="text-sm font-medium text-slate-500">Total Murid</p><h3 class="text-3xl font-bold text-slate-800 mt-1">29</h3></div>
+                            <div><p class="text-sm font-medium text-slate-500">Total Murid</p><h3 class="text-3xl font-bold text-slate-800 mt-1" id="dash-total-siswa">29</h3></div>
                             <div class="p-2 bg-blue-100 text-blue-600 rounded-lg"><i data-lucide="users" class="w-5 h-5"></i></div>
                         </div>
                         <p class="text-xs text-slate-500">Berdasarkan data master</p>
@@ -155,7 +156,7 @@
                     </div>
                     <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm relative overflow-hidden">
                         <div class="flex justify-between items-start mb-4">
-                            <div><p class="text-sm font-medium text-slate-500">Jurnal Terisi</p><h3 class="text-3xl font-bold text-slate-800 mt-1">1</h3></div>
+                            <div><p class="text-sm font-medium text-slate-500">Jurnal Terisi</p><h3 class="text-3xl font-bold text-slate-800 mt-1" id="dash-total-jurnal">1</h3></div>
                             <div class="p-2 bg-amber-100 text-amber-600 rounded-lg"><i data-lucide="book-open" class="w-5 h-5"></i></div>
                         </div>
                         <p class="text-xs text-slate-500">Catatan kegiatan mengajar</p>
@@ -175,7 +176,7 @@
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden max-w-4xl">
                     <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                         <h2 class="font-bold text-slate-800">Identitas Sekolah & Guru</h2>
-                        <button class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 flex items-center shadow-sm" onclick="syncGlobalData()">
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 flex items-center shadow-sm" onclick="syncGlobalData(); alert('Identitas berhasil diperbarui!');">
                             <i data-lucide="save" class="w-4 h-4 mr-2"></i> Terapkan Identitas
                         </button>
                     </div>
@@ -206,7 +207,7 @@
                     <div class="w-full md:w-2/3 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="bg-slate-50 px-4 py-3 border-b border-slate-200 flex justify-between items-center">
                             <h3 class="font-bold text-sm text-slate-800">Pengaturan: <span id="setting-mapel-title" class="text-blue-600"></span></h3>
-                            <button onclick="simpanSettingMapel()" class="text-xs bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="check" class="w-3 h-3 mr-1"></i> Simpan</button>
+                            <button onclick="simpanSettingMapel()" class="text-xs bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="check" class="w-3 h-3 mr-1"></i> Simpan Target</button>
                         </div>
                         <div class="p-5">
                             <div class="mb-6">
@@ -228,69 +229,45 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: SISWA - INPUT ABSEN MUDAH -->
+            <!-- HALAMAN: SISWA - INPUT ABSEN DINAMIS -->
             <div id="hal-siswa-absen" class="halaman page-transition hidden w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-5 no-print gap-3">
                     <div>
                         <h2 class="text-xl font-bold text-slate-800">Input Kehadiran Siswa</h2>
-                        <p class="text-sm text-slate-500">Pilih tanggal, lalu klik tombol H/S/I/A untuk mengubah status.</p>
+                        <p class="text-sm text-slate-500">Klik tabel untuk ubah status (H/S/I/A). <span class="text-red-500 font-medium">Kolom merah adalah Hari Minggu (Libur).</span></p>
                     </div>
-                    <div class="flex space-x-2 bg-white p-1 rounded-lg shadow-sm border border-slate-200">
-                        <input type="date" id="tgl-input-absen" onchange="renderInputAbsen()" class="border-none px-3 py-1.5 text-sm outline-none font-medium text-slate-700 bg-transparent cursor-pointer">
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto pb-6">
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
-                            <tr>
-                                <th class="px-4 py-3 border-r border-slate-200 w-10 text-center">No</th>
-                                <th class="px-4 py-3 border-r border-slate-200">Nama Lengkap Murid</th>
-                                <th class="px-4 py-3 border-r border-slate-200 w-64 text-center">Status Kehadiran</th>
-                                <th class="px-4 py-3 w-64 text-center bg-blue-50 text-blue-800">Total Akumulasi Bulan Ini</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tb-input-absen-mudah" class="divide-y divide-slate-100 text-slate-700">
-                            <!-- Generated by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- HALAMAN: SISWA - REKAP BULANAN (READ ONLY) -->
-            <div id="hal-siswa-rekapbulan" class="halaman page-transition hidden w-full">
-                <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
-                    <div><h2 class="text-xl font-bold text-slate-800">Rekap Daftar Hadir Bulanan</h2></div>
                     <div class="flex space-x-2">
-                        <select id="filter-bulan-absen" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white shadow-sm font-medium">
-                            <option value="Januari">Januari 2026</option>
-                            <option value="Februari">Februari 2026</option>
-                            <option value="Maret">Maret 2026</option>
-                            <option value="April">April 2026</option>
-                            <option value="Mei">Mei 2026</option>
-                            <option value="Juni">Juni 2026</option>
+                        <select id="filter-bulan-absen-input" onchange="renderInputAbsenBulan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white shadow-sm font-medium">
+                            <option value="Januari">Januari</option><option value="Februari">Februari</option>
+                            <option value="Maret">Maret</option><option value="April">April</option>
+                            <option value="Mei">Mei</option><option value="Juni">Juni</option>
+                            <option value="Juli">Juli</option><option value="Agustus">Agustus</option>
+                            <option value="September">September</option><option value="Oktober">Oktober</option>
+                            <option value="November">November</option><option value="Desember">Desember</option>
                         </select>
-                        <button onclick="cetakLaporan('DAFTAR HADIR SISWA BULAN ' + document.getElementById('filter-bulan-absen').value.toUpperCase())" class="bg-slate-800 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> Cetak F4</button>
+                        <button onclick="alert('Data kehadiran bulan ini telah disimpan!');" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan</button>
+                        <button onclick="cetakLaporan('DAFTAR HADIR SISWA BULAN ' + document.getElementById('filter-bulan-absen-input').value.toUpperCase())" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center mb-4 pb-2 border-b-2 border-black pt-4">
-                        <h2 class="font-bold text-lg uppercase" id="judul-cetak-absen">DAFTAR HADIR SISWA BULAN JANUARI</h2>
+                        <h2 class="font-bold text-lg uppercase" id="judul-cetak-absen-input">DAFTAR HADIR SISWA BULAN JANUARI</h2>
                         <p class="text-sm print-sub-header">Tahun Ajaran 2025/2026 | Semester Genap</p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-medium">
                             <tr>
                                 <th rowspan="2" class="px-2 py-2 border-r border-slate-300 w-6">No</th>
-                                <th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48">Nama Murid</th>
+                                <th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 shadow-[1px_0_0_0_#cbd5e1]">Nama Murid</th>
                                 <th rowspan="2" class="px-1 py-2 border-r border-slate-300 w-6">L/P</th>
-                                <th colspan="31" class="py-1 border-r border-slate-300 border-b">Tanggal / Pertemuan Ke-</th>
+                                <th id="th-colspan-absen" colspan="31" class="py-1 border-r border-slate-300 border-b">Tanggal (Sesuai Kalender)</th>
                                 <th colspan="4" class="py-1 border-b border-slate-300 bg-blue-50">Total</th>
                             </tr>
-                            <tr id="head-tanggal-rekap">
-                                <!-- Generate 1..31 -->
+                            <tr id="head-tanggal-absen">
+                                <!-- JS Generated -->
                             </tr>
                         </thead>
-                        <tbody id="tb-rekap-bulan" class="divide-y divide-slate-200 text-slate-600">
+                        <tbody id="tb-input-absen-bulan" class="divide-y divide-slate-200 text-slate-600 font-medium">
                             <!-- JS Generated -->
                         </tbody>
                     </table>
@@ -302,32 +279,78 @@
                 </div>
             </div>
 
+            <!-- HALAMAN: SISWA - REKAP BULANAN (READ ONLY) -->
+            <div id="hal-siswa-rekapbulan" class="halaman page-transition hidden w-full">
+                <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
+                    <div><h2 class="text-xl font-bold text-slate-800">Rekap Daftar Hadir Bulanan</h2><p class="text-sm text-slate-500">Tampilan siap cetak (Read-only) menyesuaikan kalender bulan berjalan.</p></div>
+                    <div class="flex space-x-2">
+                        <select id="filter-bulan-rekap" onchange="renderRekapBulanan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white shadow-sm font-medium">
+                            <option value="Januari">Januari</option><option value="Februari">Februari</option>
+                            <option value="Maret">Maret</option><option value="April">April</option>
+                            <option value="Mei">Mei</option><option value="Juni">Juni</option>
+                            <option value="Juli">Juli</option><option value="Agustus">Agustus</option>
+                            <option value="September">September</option><option value="Oktober">Oktober</option>
+                            <option value="November">November</option><option value="Desember">Desember</option>
+                        </select>
+                        <button onclick="cetakLaporan('DAFTAR HADIR SISWA BULAN ' + document.getElementById('filter-bulan-rekap').value.toUpperCase())" class="bg-slate-800 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> Cetak F4</button>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
+                    <div class="print-only text-center mb-4 pb-2 border-b-2 border-black pt-4">
+                        <h2 class="font-bold text-lg uppercase" id="judul-cetak-rekap-bulan">DAFTAR HADIR SISWA BULAN JANUARI</h2>
+                        <p class="text-sm print-sub-header">Tahun Ajaran 2025/2026 | Semester Genap</p>
+                    </div>
+                    <table class="w-full text-center border-collapse text-[10px] sm:text-xs">
+                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-medium">
+                            <tr>
+                                <th rowspan="2" class="px-2 py-2 border-r border-slate-300 w-6">No</th>
+                                <th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 shadow-[1px_0_0_0_#cbd5e1]">Nama Murid</th>
+                                <th rowspan="2" class="px-1 py-2 border-r border-slate-300 w-6">L/P</th>
+                                <th id="th-colspan-rekap" colspan="31" class="py-1 border-r border-slate-300 border-b">Tanggal (Sesuai Kalender)</th>
+                                <th colspan="4" class="py-1 border-b border-slate-300 bg-blue-50">Total</th>
+                            </tr>
+                            <tr id="head-tanggal-rekap">
+                                <!-- JS Generated -->
+                            </tr>
+                        </thead>
+                        <tbody id="tb-rekap-bulan" class="divide-y divide-slate-200 text-slate-600">
+                            <!-- JS Generated -->
+                        </tbody>
+                    </table>
+                    <!-- Signature Block -->
+                    <div class="print-signature hidden">
+                        <div class="text-center"><p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p></div>
+                        <div class="text-center"><p id="print-tgl-rekap">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p></div>
+                    </div>
+                </div>
+            </div>
+
             <!-- HALAMAN: SISWA - REKAP SEMESTER -->
             <div id="hal-siswa-rekapsemester" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Akumulasi Kehadiran Semester</h2></div>
-                    <button onclick="cetakLaporan('REKAPITULASI DAFTAR HADIR SEMESTER GENAP')" class="bg-slate-800 text-white px-4 py-1.5 rounded-lg text-sm font-medium flex items-center shadow-sm"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> Cetak F4</button>
+                    <button onclick="cetakLaporan('REKAPITULASI DAFTAR HADIR SEMESTER')" class="bg-slate-800 text-white px-4 py-1.5 rounded-lg text-sm font-medium flex items-center shadow-sm"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> Cetak F4</button>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area">
                     <div class="print-only text-center mb-4 pb-2 border-b-2 border-black pt-4">
-                        <h2 class="font-bold text-lg">REKAPITULASI DAFTAR HADIR SEMESTER GENAP</h2>
+                        <h2 class="font-bold text-lg">REKAPITULASI DAFTAR HADIR SEMESTER</h2>
                         <p class="text-sm print-sub-header">Tahun Ajaran 2025/2026</p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-semibold">
                             <tr>
-                                <th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10">Nama Murid</th>
-                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Jan</th>
-                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Feb</th>
-                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Mar</th>
-                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Apr</th>
-                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Mei</th>
-                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Jun</th>
+                                <th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 shadow-[1px_0_0_0_#cbd5e1]">Nama Murid</th>
+                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 1</th>
+                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 2</th>
+                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 3</th>
+                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 4</th>
+                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 5</th>
+                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 6</th>
                                 <th colspan="4" class="px-2 py-1 border-r border-slate-300 border-b bg-blue-50 text-blue-800">TOTAL SEMESTER</th>
                                 <th rowspan="2" class="px-2 py-2 bg-blue-50 text-blue-800 border-l border-slate-300">% HADIR</th>
                             </tr>
                             <tr class="font-normal text-[9px] sm:text-[10px] text-slate-500">
-                                <!-- Jan-Jun -->
+                                <!-- Bulan 1-6 -->
                                 <th class="border-r border-slate-300">H</th><th class="border-r border-slate-300">S</th><th class="border-r border-slate-300">I</th><th class="border-r border-slate-300">A</th>
                                 <th class="border-r border-slate-300">H</th><th class="border-r border-slate-300">S</th><th class="border-r border-slate-300">I</th><th class="border-r border-slate-300">A</th>
                                 <th class="border-r border-slate-300">H</th><th class="border-r border-slate-300">S</th><th class="border-r border-slate-300">I</th><th class="border-r border-slate-300">A</th>
@@ -418,7 +441,7 @@
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
                         <thead class="bg-amber-50 border-b border-slate-300 text-amber-900 font-semibold">
                             <tr>
-                                <th rowspan="2" class="px-3 py-2 border-r border-slate-300 text-left sticky left-0 bg-amber-50 z-10">Nama Siswa</th>
+                                <th rowspan="2" class="px-3 py-2 border-r border-slate-300 text-left sticky left-0 bg-amber-50 z-10 shadow-[1px_0_0_0_#cbd5e1]">Nama Siswa</th>
                                 <th colspan="3" class="px-2 py-1 border-r border-slate-300 border-b">Nilai Keaktifan & Partisipasi</th>
                                 <th colspan="3" class="px-2 py-1 border-b border-slate-300">Nilai Sikap & Perilaku</th>
                             </tr>
@@ -451,7 +474,7 @@
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
                             <tr>
-                                <th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-40">NAMA MURID</th>
+                                <th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-40 shadow-[1px_0_0_0_#cbd5e1]">NAMA MURID</th>
                                 <th colspan="6" class="px-2 py-1 border-r border-slate-300 border-b">NILAI MATA PELAJARAN (NA)</th>
                                 <th colspan="2" class="px-2 py-1 border-r border-slate-300 border-b bg-emerald-50">KETERANGAN TAMBAHAN</th>
                                 <th rowspan="2" class="px-2 py-2 border-r border-slate-300 bg-indigo-50 text-indigo-900">RATA-RATA</th>
@@ -472,11 +495,46 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: JURNAL MENGAJAR -->
+            <!-- HALAMAN: JURNAL MENGAJAR (INPUT & LAPORAN) -->
             <div id="hal-jurnal-input" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Jurnal Mengajar Harian</h2></div>
-                    <button onclick="cetakLaporan('JURNAL HARIAN GURU KELAS')" class="bg-slate-800 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> Cetak F4</button>
+                    <div class="flex space-x-2">
+                        <button onclick="document.getElementById('form-jurnal').classList.toggle('hidden')" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="plus" class="w-4 h-4 mr-1"></i> Tulis Jurnal</button>
+                        <button onclick="cetakLaporan('JURNAL HARIAN GURU KELAS')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                    </div>
+                </div>
+
+                <!-- Form Input Jurnal dengan Pilihan Otomatis -->
+                <div id="form-jurnal" class="bg-blue-50/50 rounded-xl shadow-inner border border-blue-100 p-5 mb-6 hidden no-print">
+                    <h3 class="text-sm font-bold text-blue-800 mb-3 flex items-center"><i data-lucide="pen-tool" class="w-4 h-4 mr-2"></i> Formulir Entri Jurnal</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                        <div><label class="block text-xs font-semibold text-slate-600 mb-1">Tanggal</label><input type="date" id="jurnal-tgl" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500"></div>
+                        <div><label class="block text-xs font-semibold text-slate-600 mb-1">Jam Ke-</label><input type="text" id="jurnal-jam" placeholder="Misal: 1-3" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500"></div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Mata Pelajaran</label>
+                            <select id="jurnal-mapel" onchange="updateJurnalDropdowns()" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white"></select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Lingkup Materi (Otomatis dari Target DB)</label>
+                            <select id="jurnal-lm" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white"><option value="">-- Pilih Lingkup Materi --</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Tujuan Pembelajaran (Otomatis dari Target DB)</label>
+                            <select id="jurnal-tp" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white"><option value="">-- Pilih Tujuan Pembelajaran --</option></select>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Kegiatan Pembelajaran</label>
+                        <textarea id="jurnal-kegiatan" rows="2" placeholder="Deskripsi ringkas aktivitas di kelas" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500"></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Refleksi (Opsional)</label>
+                        <input type="text" id="jurnal-refleksi" placeholder="Catatan evaluasi singkat" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500">
+                    </div>
+                    <div class="flex justify-end"><button onclick="simpanJurnalAksi()" class="bg-blue-600 text-white px-5 py-2 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i>Simpan Jurnal</button></div>
                 </div>
 
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
@@ -488,13 +546,8 @@
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-semibold uppercase">
                             <tr><th class="px-3 py-2 w-24 border-r border-slate-300 text-center">Hari/Tgl</th><th class="px-2 py-2 w-10 border-r border-slate-300 text-center">Jam</th><th class="px-3 py-2 w-48 border-r border-slate-300">Mapel / Materi / TP</th><th class="px-3 py-2 border-r border-slate-300">Kegiatan Pembelajaran</th><th class="px-3 py-2 w-32">Refleksi</th></tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-200 text-slate-700">
-                            <tr class="align-top hover:bg-slate-50">
-                                <td class="px-3 py-2 font-semibold text-slate-800 text-center border-r border-slate-300">Selasa,<br>13 Jan 2026</td><td class="px-2 py-2 text-center border-r border-slate-300">1-3</td>
-                                <td class="px-3 py-2 border-r border-slate-300"><div class="font-bold text-blue-700 mb-1">Pendidikan Pancasila</div><div class="text-[10px] text-slate-500"><b>LM:</b> Pengenalan Perangkat TIK</div><div class="text-[10px] text-slate-500 mt-0.5"><b>TP:</b> menjelaskan pengertian TIK...</div></td>
-                                <td class="px-3 py-2 border-r border-slate-300"><p class="text-[10px] sm:text-xs">Siswa menyimak penjelasan tentang pengertian TIK, melakukan diskusi kelompok, dan presentasi ringan.</p></td>
-                                <td class="px-3 py-2 text-[10px]">Perlu pengulangan di bagian presentasi kelompok.</td>
-                            </tr>
+                        <tbody id="tb-jurnal" class="divide-y divide-slate-200 text-slate-700">
+                            <!-- JS Generated -->
                         </tbody>
                     </table>
                     <!-- Signature Block -->
@@ -530,30 +583,36 @@
             {nis: "2575", nama: "UWAIS AL QORNI", jk: "L"}
         ];
 
+        document.getElementById('dash-total-siswa').innerText = mockSiswa.length;
+
         // --- DATA TARGET LM & TP ---
         let mapelData = {
             "Pendidikan Pancasila": {
                 lm: ["Pengenalan Perangkat TIK", "Pengoperasian dasar komputer", "Manajemen File dan Folder"],
                 tp: [
-                    { nama: "menjelaskan pengertian TIK serta peranannya", k1: "Pemahaman Konsep", k2: "Penerapan" },
-                    { nama: "mengidentifikasi perangkat keras komputer", k1: "Identifikasi", k2: "Fungsi" },
-                    { nama: "mempraktikkan cara menyalakan komputer", k1: "Prosedur", k2: "Praktek" }
+                    { nama: "menjelaskan pengertian TIK serta peranannya", k1: "Pemahaman", k2: "Penerapan" },
+                    { nama: "mengidentifikasi perangkat keras komputer", k1: "Identifikasi", k2: "Fungsi" }
                 ]
             },
             "Bahasa Indonesia": {
                 lm: ["Teks Persuasi", "Teks Deskripsi"],
                 tp: [
-                    { nama: "membuat kalimat ajakan (persuasi)", k1: "Kosakata", k2: "Struktur Kalimat" },
+                    { nama: "membuat kalimat ajakan (persuasi)", k1: "Kosakata", k2: "Struktur" },
                     { nama: "mendeskripsikan benda di sekitar", k1: "Pengamatan", k2: "Penulisan" }
                 ]
             },
-            "Matematika": { lm: ["Bilangan Cacah sampai 10.000", "Pecahan", "Bangun Datar"], tp: [{ nama: "membaca dan menulis bilangan cacah", k1: "Membaca", k2: "Menulis" }, { nama: "membandingkan dua pecahan", k1: "Analisis", k2: "Perhitungan" }] },
-            "IPAS": { lm: ["Tumbuhan, Sumber Kehidupan di Bumi", "Wujud Zat dan Perubahannya"], tp: [{nama: "mengidentifikasi bagian tumbuhan", k1: "K1", k2: "K2"}] },
+            "Matematika": { lm: ["Bilangan Cacah", "Pecahan", "Bangun Datar"], tp: [{ nama: "membaca dan menulis bilangan cacah", k1: "Membaca", k2: "Menulis" }, { nama: "membandingkan dua pecahan", k1: "Analisis", k2: "Hitung" }] },
+            "IPAS": { lm: ["Tumbuhan, Sumber Kehidupan di Bumi"], tp: [{nama: "mengidentifikasi bagian tumbuhan", k1: "K1", k2: "K2"}] },
             "Seni Rupa": { lm: ["Menggambar Bentuk", "Mewarnai"], tp: [{nama: "menggambar bentuk 2 dimensi", k1: "K1", k2: "K2"}] },
-            "Bahasa Inggris": { lm: ["Greetings", "My Family"], tp: [{nama: "menyebutkan sapaan dalam bahasa inggris", k1: "K1", k2: "K2"}] }
+            "Bahasa Inggris": { lm: ["Greetings", "My Family"], tp: [{nama: "menyebutkan sapaan", k1: "K1", k2: "K2"}] }
         };
-
         let currentSettingMapel = "Pendidikan Pancasila";
+
+        // --- DATA JURNAL MOCKUP ---
+        let listJurnal = [
+            { tgl: "2026-01-13", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lm: "Pengenalan Perangkat TIK", tp: "menjelaskan pengertian TIK serta peranannya", kegiatan: "Siswa menyimak penjelasan tentang pengertian TIK, melakukan diskusi kelompok, dan presentasi ringan.", refleksi: "Perlu pengulangan di bagian presentasi." },
+            { tgl: "2026-01-14", tglFormat: "Rabu,<br>14 Jan 2026", jam: "4-5", mapel: "Bahasa Indonesia", lm: "Teks Persuasi", tp: "membuat kalimat ajakan (persuasi)", kegiatan: "Membaca contoh teks persuasi, menemukan kalimat ajakan, dan mempraktikkan menulis satu paragraf.", refleksi: "-" }
+        ];
 
         // --- 2. NAVIGASI UTAMA ---
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
@@ -572,7 +631,7 @@
             if(idHalaman === 'target') { judul = "Target Pembelajaran"; loadMenuSettingMapel(); }
             if(idHalaman.includes('siswa')) judul = "Administrasi Kehadiran Siswa";
             if(idHalaman.includes('nilai')) judul = "Pengolahan Nilai (Rapor)";
-            if(idHalaman.includes('jurnal')) judul = "Jurnal Mengajar";
+            if(idHalaman.includes('jurnal')) { judul = "Jurnal Mengajar"; renderTabelJurnal(); updateJurnalMapel(); }
             document.getElementById('judul-halaman').innerText = judul;
 
             document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -630,8 +689,8 @@
                 data.tp[i].k1 = document.getElementById(`inp-k1-${i}`).value;
                 data.tp[i].k2 = document.getElementById(`inp-k2-${i}`).value;
             });
-            alert("Tersimpan sementara! Tabel Penilaian otomatis menyesuaikan.");
-            renderFormatif(); renderSumatif();
+            alert("Tersimpan sementara! Tabel Penilaian dan Form Jurnal otomatis menyesuaikan.");
+            renderFormatif(); renderSumatif(); updateJurnalMapel();
         }
 
         // --- 4. SINKRONISASI KOP CETAK ---
@@ -653,9 +712,7 @@
             document.querySelectorAll('.print-nipguru').forEach(e => e.innerText = gNip);
             document.querySelectorAll('.print-kelas').forEach(e => e.innerText = kls);
             document.querySelectorAll('.print-sub-header').forEach(e => {
-                if(!e.innerText.includes("Mata Pelajaran")) {
-                    e.innerText = `Tahun Ajaran ${ta} | Semester ${smt} | Kelas ${kls}`;
-                }
+                if(!e.innerText.includes("Mata Pelajaran")) { e.innerText = `Tahun Ajaran ${ta} | Semester ${smt} | Kelas ${kls}`; }
             });
 
             let today = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -663,76 +720,68 @@
             document.querySelectorAll('[id^="print-tgl-"]').forEach(e => e.innerText = `${kota}, ${today}`);
         }
 
-        // --- 5. LOGIKA ABSENSI ---
-        let currentAbsenData = {}; // Store mock attendance: { studentIndex: { H:0, S:0, I:0, A:0, current: 'H' } }
+        // --- 5. LOGIKA KALENDER ABSENSI DINAMIS ---
+        let currentAbsenData = {}; 
+        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
         
         function initMockAbsen() {
             mockSiswa.forEach((s, i) => {
                 currentAbsenData[i] = { 
-                    H: 18 + Math.floor(Math.random()*6), 
-                    S: Math.floor(Math.random()*3), 
-                    I: Math.floor(Math.random()*2), 
-                    A: 0,
-                    current: 'H' // Default UI state
+                    H: 22 + Math.floor(Math.random()*3), S: Math.floor(Math.random()*2), I: Math.floor(Math.random()*2), A: 0, 
+                    hari: {} // Map specific days to simulate data
                 };
             });
         }
 
-        function renderInputAbsen() {
-            let tgl = document.getElementById('tgl-input-absen').value;
-            if(!tgl) { document.getElementById('tgl-input-absen').valueAsDate = new Date(); }
+        function getDaysInMonth(monthStr, year) {
+            let monthIdx = monthNames.indexOf(monthStr);
+            return new Date(year, monthIdx + 1, 0).getDate();
+        }
+        function isSunday(day, monthStr, year) {
+            let monthIdx = monthNames.indexOf(monthStr);
+            let date = new Date(year, monthIdx, day);
+            return date.getDay() === 0;
+        }
+
+        function buildCalendarGrid(targetTbody, targetThead, monthStr, isInput) {
+            let ta = document.getElementById('inp-ta').value;
+            let startYear = parseInt(ta.split('/')[0]); // ex: 2025
+            let monthIdx = monthNames.indexOf(monthStr);
+            let activeYear = (monthIdx < 6) ? startYear + 1 : startYear; // Genap = next year
             
-            let tbody = "";
-            mockSiswa.forEach((s, i) => {
-                let d = currentAbsenData[i];
-                let tot = d.H + d.S + d.I + d.A;
-                let pct = Math.round((d.H / tot) * 100) || 0;
-                
-                tbody += `
-                <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                    <td class="px-4 py-3 text-center border-r border-slate-100">${i+1}</td>
-                    <td class="px-4 py-3 font-medium border-r border-slate-100">${s.nama}</td>
-                    <td class="px-4 py-3 border-r border-slate-100">
-                        <div class="flex justify-center space-x-2">
-                            <button onclick="setAbsenUI(${i}, 'H')" id="btn-abs-${i}-H" class="btn-abs ${d.current==='H'?'active-h':''}">H</button>
-                            <button onclick="setAbsenUI(${i}, 'S')" id="btn-abs-${i}-S" class="btn-abs ${d.current==='S'?'active-s':''}">S</button>
-                            <button onclick="setAbsenUI(${i}, 'I')" id="btn-abs-${i}-I" class="btn-abs ${d.current==='I'?'active-i':''}">I</button>
-                            <button onclick="setAbsenUI(${i}, 'A')" id="btn-abs-${i}-A" class="btn-abs ${d.current==='A'?'active-a':''}">A</button>
-                        </div>
-                    </td>
-                    <td class="px-4 py-3 bg-slate-50 text-center font-medium">
-                        <span class="text-blue-600 mr-2">H:${d.H}</span><span class="text-amber-500 mr-2">S:${d.S}</span><span class="text-purple-500 mr-2">I:${d.I}</span><span class="text-red-500 mr-4">A:${d.A}</span>
-                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs">${pct}%</span>
-                    </td>
-                </tr>`;
-            });
-            document.getElementById('tb-input-absen-mudah').innerHTML = tbody;
-        }
-
-        function setAbsenUI(index, status) {
-            currentAbsenData[index].current = status;
-            ['H','S','I','A'].forEach(val => {
-                let btn = document.getElementById(`btn-abs-${index}-${val}`);
-                btn.className = `btn-abs ${status === val ? 'active-'+val.toLowerCase() : ''}`;
-            });
-        }
-
-        function renderRekapBulanan() {
+            let daysInMonth = getDaysInMonth(monthStr, activeYear);
+            
             let thead = "";
-            for(let d=1; d<=31; d++) { thead += `<th class="border-r border-slate-300 w-4">${d}</th>`; }
-            document.getElementById('head-tanggal-rekap').innerHTML = thead;
+            for(let d=1; d<=daysInMonth; d++) {
+                let sunday = isSunday(d, monthStr, activeYear);
+                thead += `<th class="border-r border-slate-300 w-4 ${sunday ? 'bg-red-100 text-red-500' : ''}">${d}</th>`;
+            }
+            document.getElementById(targetThead).innerHTML = thead;
+            
+            let thColspan = isInput ? 'th-colspan-absen' : 'th-colspan-rekap';
+            document.getElementById(thColspan).colSpan = daysInMonth;
 
             let tbody = "";
             mockSiswa.forEach((s, i) => {
                 let cells = ""; let dVal = currentAbsenData[i];
-                for(let d=1; d<=31; d++) {
-                    let val = "";
-                    // Create dummy visual based on their total S/I/A
-                    if(d%7===0) val = ""; // Sunday
-                    else if(d===3 && dVal.S > 0) val = "S";
-                    else if(d===12 && dVal.I > 0) val = "I";
-                    else val = "H";
-                    cells += `<td class="border-r border-slate-300 text-center font-medium text-[9px] ${val==='S'?'text-amber-500':(val==='I'?'text-purple-500':(val==='H'?'text-blue-600':''))}">${val}</td>`;
+                let th=0, ts=0, ti=0, ta_abs=0;
+
+                for(let d=1; d<=daysInMonth; d++) {
+                    let sunday = isSunday(d, monthStr, activeYear);
+                    let val = dVal.hari[d] || (sunday ? "" : "H"); // default Hadir
+                    if(sunday) val = "";
+
+                    if(val === "H") th++; else if(val === "S") ts++; else if(val === "I") ti++; else if(val === "A") ta_abs++;
+                    
+                    let cls = "";
+                    if(sunday) cls = "val-libur";
+                    else if(val === "H") cls = "val-h"; else if(val === "S") cls = "val-s"; else if(val === "I") cls = "val-i"; else if(val === "A") cls = "val-a";
+
+                    if(isInput) {
+                        cells += `<td class="border-r border-slate-200 text-center cell-abs ${cls}" onclick="toggleAbsenCel(this, ${sunday}, ${i}, ${d})">${val}</td>`;
+                    } else {
+                        cells += `<td class="border-r border-slate-300 text-center font-bold text-[9px] ${cls}">${val}</td>`;
+                    }
                 }
                 tbody += `
                 <tr>
@@ -740,13 +789,53 @@
                     <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[11rem]">${s.nama}</td>
                     <td class="border-r border-slate-300 border-b font-bold text-[9px] ${s.jk==='L'?'text-blue-500':'text-pink-500'}">${s.jk}</td>
                     ${cells}
-                    <td class="border-r border-slate-300 border-b font-bold text-blue-700 bg-slate-50">${dVal.H}</td>
-                    <td class="border-r border-slate-300 border-b font-bold text-amber-500 bg-slate-50">${dVal.S}</td>
-                    <td class="border-r border-slate-300 border-b font-bold text-purple-500 bg-slate-50">${dVal.I}</td>
-                    <td class="border-b border-slate-300 font-bold text-red-500 bg-slate-50">${dVal.A}</td>
+                    <td class="border-r border-slate-300 border-b font-bold text-blue-700 bg-slate-50" id="tot-h-${isInput?'inp':'rek'}-${i}">${th}</td>
+                    <td class="border-r border-slate-300 border-b font-bold text-amber-500 bg-slate-50" id="tot-s-${isInput?'inp':'rek'}-${i}">${ts}</td>
+                    <td class="border-r border-slate-300 border-b font-bold text-purple-500 bg-slate-50" id="tot-i-${isInput?'inp':'rek'}-${i}">${ti}</td>
+                    <td class="border-b border-slate-300 font-bold text-red-500 bg-slate-50" id="tot-a-${isInput?'inp':'rek'}-${i}">${ta_abs}</td>
                 </tr>`;
             });
-            document.getElementById('tb-rekap-bulan').innerHTML = tbody;
+            document.getElementById(targetTbody).innerHTML = tbody;
+        }
+
+        function renderInputAbsenBulan() {
+            let bln = document.getElementById('filter-bulan-absen-input').value;
+            buildCalendarGrid('tb-input-absen-bulan', 'head-tanggal-absen', bln, true);
+        }
+
+        function renderRekapBulanan() {
+            let bln = document.getElementById('filter-bulan-rekap').value;
+            buildCalendarGrid('tb-rekap-bulan', 'head-tanggal-rekap', bln, false);
+        }
+
+        function toggleAbsenCel(cell, isSunday, studentIdx, day) {
+            if(isSunday) return; // Libur tidak bisa diklik
+            let v = cell.innerText;
+            cell.classList.remove('val-h', 'val-s', 'val-i', 'val-a');
+            if(v === "H") { cell.innerText = "S"; cell.classList.add('val-s'); }
+            else if(v === "S") { cell.innerText = "I"; cell.classList.add('val-i'); }
+            else if(v === "I") { cell.innerText = "A"; cell.classList.add('val-a'); }
+            else if(v === "A") { cell.innerText = ""; }
+            else { cell.innerText = "H"; cell.classList.add('val-h'); }
+            
+            // Simpan status baru ke memori untuk dihitung manual kalau perlu, 
+            // Untuk preview UI saat ini, hanya visual class toggle.
+            currentAbsenData[studentIdx].hari[day] = cell.innerText;
+            recalcTotalRow(cell.parentElement, studentIdx, true);
+        }
+
+        function recalcTotalRow(tr, i, isInput) {
+            let h=0, s=0, iz=0, a=0;
+            let cells = tr.querySelectorAll('td.cell-abs');
+            cells.forEach(c => {
+                let v = c.innerText;
+                if(v==="H") h++; else if(v==="S") s++; else if(v==="I") iz++; else if(v==="A") a++;
+            });
+            let pref = isInput ? 'inp' : 'rek';
+            document.getElementById(`tot-h-${pref}-${i}`).innerText = h;
+            document.getElementById(`tot-s-${pref}-${i}`).innerText = s;
+            document.getElementById(`tot-i-${pref}-${i}`).innerText = iz;
+            document.getElementById(`tot-a-${pref}-${i}`).innerText = a;
         }
 
         // --- 6. LOGIKA TABEL PENILAIAN (DINAMIS BERDASAR MAPEL) ---
@@ -767,7 +856,7 @@
             let th1 = `<tr><th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-purple-50 z-10 shadow-[1px_0_0_0_#cbd5e1] w-48">NAMA SISWA</th>`;
             let th2 = `<tr>`;
             data.tp.forEach((t, i) => {
-                th1 += `<th colspan="3" class="px-1 py-1 border-r border-slate-300 border-b w-32">TP ${i+1}: ${t.nama.substring(0,25)}...</th>`;
+                th1 += `<th colspan="3" class="px-1 py-1 border-r border-slate-300 border-b w-32">TP ${i+1}: ${t.nama.substring(0,30)}...</th>`;
                 th2 += `<th class="px-1 py-1 border-r border-slate-300 font-normal bg-purple-100/50">${t.k1.substring(0,8)}</th><th class="px-1 py-1 border-r border-slate-300 font-normal bg-purple-100/50">${t.k2.substring(0,8)}</th><th class="px-1 py-1 border-r border-slate-300 font-bold bg-white/50">NA</th>`;
             });
             th1 += `<th rowspan="2" class="px-2 py-2 font-bold bg-purple-100">Rata-Rata Formatif</th></tr>`;
@@ -849,10 +938,89 @@
             document.getElementById('tb-legger').innerHTML = tLeg;
         }
 
-        // --- 7. CETAK (PRINT) LOGIC F4 LANDSCAPE ---
+        // --- 7. LOGIKA JURNAL & DROPDOWN ---
+        function updateJurnalMapel() {
+            let opts = "<option value=''>-- Pilih Mata Pelajaran --</option>";
+            for(let m in mapelData) opts += `<option value="${m}">${m}</option>`;
+            document.getElementById('jurnal-mapel').innerHTML = opts;
+            updateJurnalDropdowns(); // Clear sub-dropdowns
+            
+            // Set Default Tanggal
+            document.getElementById('jurnal-tgl').valueAsDate = new Date();
+        }
+
+        function updateJurnalDropdowns() {
+            let mapel = document.getElementById('jurnal-mapel').value;
+            let lmSelect = document.getElementById('jurnal-lm');
+            let tpSelect = document.getElementById('jurnal-tp');
+
+            lmSelect.innerHTML = "<option value=''>-- Pilih Lingkup Materi --</option>";
+            tpSelect.innerHTML = "<option value=''>-- Pilih Tujuan Pembelajaran --</option>";
+
+            if(mapel && mapelData[mapel]) {
+                mapelData[mapel].lm.forEach(lm => {
+                    if(lm.trim() !== "") lmSelect.innerHTML += `<option value="${lm}">${lm}</option>`;
+                });
+                mapelData[mapel].tp.forEach(tp => {
+                    if(tp.nama.trim() !== "") tpSelect.innerHTML += `<option value="${tp.nama}">${tp.nama}</option>`;
+                });
+            }
+        }
+
+        function simpanJurnalAksi() {
+            let tgl = document.getElementById('jurnal-tgl').value;
+            let jam = document.getElementById('jurnal-jam').value;
+            let mapel = document.getElementById('jurnal-mapel').value;
+            let lm = document.getElementById('jurnal-lm').value;
+            let tp = document.getElementById('jurnal-tp').value;
+            let kegiatan = document.getElementById('jurnal-kegiatan').value;
+            let refleksi = document.getElementById('jurnal-refleksi').value || "-";
+
+            if(!tgl || !jam || !mapel || !kegiatan) {
+                alert("Harap lengkapi semua isian wajib (Tanggal, Jam, Mapel, Kegiatan)!");
+                return;
+            }
+
+            // Format tanggal yang bagus untuk tampilan tabel
+            let d = new Date(tgl);
+            let hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"][d.getDay()];
+            let bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"][d.getMonth()];
+            let tglFormat = `${hari},<br>${d.getDate()} ${bulan} ${d.getFullYear()}`;
+
+            let obj = { tgl, tglFormat, jam, mapel, lm, tp, kegiatan, refleksi };
+            
+            // Tambahkan ke paling depan
+            listJurnal.unshift(obj);
+            
+            document.getElementById('dash-total-jurnal').innerText = listJurnal.length;
+            
+            alert("Jurnal berhasil disimpan!");
+            renderTabelJurnal();
+            document.getElementById('form-jurnal').classList.add('hidden');
+        }
+
+        function renderTabelJurnal() {
+            let tbody = "";
+            listJurnal.forEach(j => {
+                tbody += `
+                <tr class="align-top hover:bg-slate-50">
+                    <td class="px-3 py-2 font-semibold text-slate-800 text-center border-r border-slate-300">${j.tglFormat}</td>
+                    <td class="px-2 py-2 text-center border-r border-slate-300 font-bold text-slate-600 bg-slate-50">${j.jam}</td>
+                    <td class="px-3 py-2 border-r border-slate-300">
+                        <div class="font-bold text-blue-700 mb-1">${j.mapel}</div>
+                        ${j.lm ? `<div class="text-[10px] text-slate-500"><b>LM:</b> ${j.lm}</div>` : ''}
+                        ${j.tp ? `<div class="text-[10px] text-slate-500 mt-0.5"><b>TP:</b> ${j.tp}</div>` : ''}
+                    </td>
+                    <td class="px-3 py-2 border-r border-slate-300"><p class="text-[10px] sm:text-xs">${j.kegiatan}</p></td>
+                    <td class="px-3 py-2 text-[10px] italic text-slate-600">${j.refleksi}</td>
+                </tr>`;
+            });
+            document.getElementById('tb-jurnal').innerHTML = tbody;
+        }
+
+        // --- 8. CETAK (PRINT) LOGIC F4 LANDSCAPE ---
         function cetakLaporan(judul) {
             syncGlobalData(); 
-            // Dialog browser otomatis memakai CSS @media print
             setTimeout(() => { window.print(); }, 200);
         }
 
@@ -860,11 +1028,12 @@
         window.onload = () => {
             pindahHalaman('dashboard', document.querySelector('[data-target="dashboard"]'));
             initMockAbsen();
-            renderInputAbsen();
+            renderInputAbsenBulan();
             renderRekapBulanan();
             syncGlobalData();
             initDropdownMapel();
             generateStaticTables();
+            updateJurnalMapel();
         };
     </script>
 </body>
