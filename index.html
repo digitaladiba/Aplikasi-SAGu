@@ -37,22 +37,42 @@
         .loader-spinner { border: 4px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 4px solid #ffffff; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Print F4 Landscape Layouting (330mm x 215mm) */
+        /* =========================================================
+           PRINT LAYOUTING F4 LANDSCAPE (MULTI-PAGE SUPPORT)
+           ========================================================= */
         @media print {
-            body { background-color: white !important; color: #000; font-size: 8pt; }
-            #sidebar, header, .no-print { display: none !important; }
-            main { padding: 0 !important; overflow: visible !important; }
+            body { background-color: white !important; color: #000; font-size: 8pt; display: block !important; }
+            
+            /* KUNCI: Mematikan batasan scroll tinggi layar penuh agar browser bisa membelah halaman (Page Break) */
+            html, body, .h-screen, .h-full, .overflow-hidden, .overflow-y-auto, .overflow-x-auto, .flex-1, main, .print-area, .halaman { 
+                height: auto !important; 
+                min-height: auto !important;
+                overflow: visible !important; 
+                display: block !important;
+                position: static !important;
+            }
+            
+            #sidebar, header, .no-print, #loading-overlay, #login-overlay { display: none !important; }
+            main { padding: 0 !important; }
             .print-area { width: 100% !important; margin: 0 !important; padding: 0 !important; border: none !important; box-shadow: none !important; border-radius: 0 !important; }
             
+            /* TABEL OTOMATIS LANJUT KE HALAMAN BERIKUTNYA */
             table { width: 100%; border-collapse: collapse; font-size: 8pt !important; page-break-inside: auto; }
+            
+            /* KUNCI: Membuat judul kolom terulang otomatis di setiap halaman baru */
+            thead { display: table-header-group; } 
+            tfoot { display: table-footer-group; }
             tr { page-break-inside: avoid; page-break-after: auto; }
-            th, td { border: 1px solid #000 !important; padding: 2px 3px !important; color: black !important; }
+            
+            th, td { border: 1px solid #000 !important; padding: 3px 4px !important; color: black !important; }
             th { background-color: #e5e7eb !important; -webkit-print-color-adjust: exact; color-adjust: exact; font-weight: bold; text-align: center; }
             .val-libur { background-color: #fca5a5 !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
             input.cell-input { font-weight: bold; color: black; padding: 0; border: none !important; }
             
             .kop-surat { margin-bottom: 8px; padding-bottom: 4px; }
-            .print-signature { display: flex !important; justify-content: space-between; margin-top: 15px; page-break-inside: avoid; width: 100%; padding: 0 50px; font-size: 9pt; }
+            
+            /* KUNCI: Menjaga Tanda Tangan utuh (tidak terbelah halaman) */
+            .print-signature { display: flex !important; justify-content: space-between; margin-top: 25px; page-break-inside: avoid; width: 100%; padding: 0 50px; font-size: 9pt; }
             
             @page { size: 330mm 215mm landscape; margin: 10mm 12mm; }
         }
@@ -172,7 +192,7 @@
         <div class="p-4 border-t border-slate-800 bg-slate-950 flex items-center justify-between">
             <button onclick="handleLogout()" class="text-xs font-semibold text-red-400 hover:text-red-300 transition flex items-center"><i data-lucide="log-out" class="w-3 h-3 mr-1"></i> Logout</button>
             <div id="db-status-indicator" class="flex items-center text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">
-                <div class="w-2 h-2 rounded-full bg-emerald-500 mr-1 animate-pulse"></div> Live
+                <div class="w-2 h-2 rounded-full bg-emerald-500 mr-1 animate-pulse"></div> Live API
             </div>
         </div>
     </aside>
@@ -182,14 +202,14 @@
         <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 z-40 no-print flex-shrink-0 w-full shadow-sm">
             <div class="flex items-center">
                 <button onclick="toggleSidebar()" class="text-slate-500 hover:text-slate-800 p-2 -ml-2 mr-2"><i data-lucide="menu" class="w-6 h-6"></i></button>
-                <h2 id="judul-halaman" class="text-lg font-bold text-slate-800 hidden sm:block">Papan Utama</h2>
+                <h2 id="judul-halaman" class="text-lg font-bold text-slate-800 hidden sm:block">Dashboard</h2>
             </div>
             <div class="flex items-center space-x-3">
                 <div class="text-right hidden md:block">
                     <p class="text-sm font-bold text-slate-800" id="header-nama">Guru Kelas</p>
                     <p class="text-xs text-slate-500" id="header-kelas">Terkoneksi Database</p>
                 </div>
-                <button onclick="sinkronisasiDB(true)" class="bg-blue-50 text-blue-600 p-2 rounded-full hover:bg-blue-100 transition" title="Refresh Database"><i data-lucide="refresh-cw" class="w-5 h-5"></i></button>
+                <button onclick="sinkronisasiDB(true)" class="w-10 h-10 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center transition" title="Sinkronisasi Data Ulang"><i data-lucide="refresh-cw" class="w-5 h-5"></i></button>
             </div>
         </header>
 
@@ -321,7 +341,7 @@
                                 <th class="border-r border-slate-300 bg-blue-50 text-blue-700 w-5">H</th>
                                 <th class="border-r border-slate-300 bg-blue-50 text-amber-600 w-5">S</th>
                                 <th class="border-r border-slate-300 bg-blue-50 text-purple-600 w-5">I</th>
-                                <th class="bg-blue-50 text-red-600 w-5">A</th>
+                                <th class="bg-blue-50 text-red-600 w-5 border-r border-slate-300">A</th>
                             </tr>
                             <tr id="head-tanggal-absen">
                                 <!-- JS Generated -->
@@ -357,15 +377,15 @@
                                 <th rowspan="3" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48">Nama Murid</th>
                                 <th rowspan="3" class="px-1 py-1 border-r border-slate-300 w-6">L/P</th>
                                 <th id="th-colspan-rekap" colspan="31" class="py-1 border-r border-slate-300 border-b">Tanggal Pelaksanaan</th>
-                                <th colspan="4" class="py-1 border-b border-slate-300 bg-slate-200">TOTAL</th>
-                                <th rowspan="3" class="px-1 py-1 bg-slate-200 border-l border-slate-300">%</th>
+                                <th colspan="4" class="py-1 border-b border-r border-slate-300 bg-slate-200">TOTAL</th>
+                                <th rowspan="3" class="px-1 py-1 bg-slate-200 border-slate-300">%</th>
                             </tr>
                             <tr>
                                 <th class="hidden" colspan="31"></th>
                                 <th class="border-r border-slate-300 bg-slate-200 text-blue-700 w-5">H</th>
                                 <th class="border-r border-slate-300 bg-slate-200 text-amber-600 w-5">S</th>
                                 <th class="border-r border-slate-300 bg-slate-200 text-purple-600 w-5">I</th>
-                                <th class="bg-slate-200 text-red-600 w-5">A</th>
+                                <th class="bg-slate-200 text-red-600 w-5 border-r border-slate-300">A</th>
                             </tr>
                             <tr id="head-tanggal-rekap">
                                 <!-- JS Generated -->
@@ -493,9 +513,9 @@
                         <p class="text-[8pt] print-sub-header">Tahun Ajaran 2025/2026</p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
-                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
+                        <thead class="bg-amber-50 border-b border-slate-300 text-amber-900 font-semibold">
                             <tr>
-                                <th rowspan="2" class="px-3 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 shadow-[1px_0_0_0_#cbd5e1]">Nama Siswa</th>
+                                <th rowspan="2" class="px-3 py-1 border-r border-slate-300 text-left sticky left-0 bg-amber-50 z-10 shadow-[1px_0_0_0_#cbd5e1]">Nama Siswa</th>
                                 <th colspan="3" class="px-2 py-1 border-r border-slate-300 border-b">Nilai Keaktifan & Partisipasi</th>
                                 <th colspan="3" class="px-2 py-1 border-b border-slate-300">Nilai Sikap & Perilaku</th>
                             </tr>
@@ -547,7 +567,7 @@
                 </div>
             </div>
 
-            <!-- HAL HALAMAN: JURNAL MENGAJAR -->
+            <!-- HALAMAN: JURNAL MENGAJAR -->
             <div id="hal-jurnal-input" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Jurnal Mengajar Harian</h2></div>
@@ -765,7 +785,7 @@
                 if(resSiswa.status === 'success' && resSiswa.data.length > 0) { globalSiswa = resSiswa.data; } 
                 else { globalSiswa = mockSiswaFallback; }
 
-                // Fetch Identitas (Opsional jika API ada)
+                // Fetch Identitas
                 try {
                     const resId = await fetch(`${API_URL}?action=getIdentitas`).then(r => r.json());
                     if(resId.status === 'success') {
@@ -781,15 +801,6 @@
                         document.getElementById('inp-kelas').value = d.kelas || 'IV B';
                     }
                 } catch(e) {}
-
-                // CATATAN PENGEMBANG: Jika nanti Code.gs diupdate untuk bisa GetMapel dari Excel, 
-                // kodenya akan terbaca di blok ini secara otomatis (Auto-Sync Target Pembelajaran).
-                try {
-                    const resMapel = await fetch(`${API_URL}?action=getMapel`).then(r => r.json());
-                    if(resMapel.status === 'success' && Object.keys(resMapel.data).length > 0) {
-                        mapelData = resMapel.data;
-                    }
-                } catch(e) {} // Abaikan jika action tidak ada di Code.gs saat ini, gunakan default di atas.
 
                 // Fetch Jurnal
                 const resJurnal = await fetch(`${API_URL}?action=getJurnal`).then(r => r.json());
@@ -821,7 +832,7 @@
             renderTabelJurnal();
         }
 
-        // --- DATA FALLBACK JIKA OFFLINE ---
+        // --- DATA FALLBACK JIKA API GAGAL ---
         const mockSiswaFallback = [
             {nis: "2520", nama: "ADE TRISTAN ABDILLAH", jk: "L"}, {nis: "2713", nama: "AISYAH ANINDITA MYESHA ZAHRA", jk: "P"},
             {nis: "2527", nama: "ALESA AMELIA AFWA", jk: "P"}, {nis: "2530", nama: "ANINDITA AZAHRA", jk: "P"},
@@ -841,7 +852,7 @@
         ];
 
         const mockJurnalFallback = [
-            { tanggal: "2026-01-13", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Kerja Sama di Lingkunganku", tujuanPembelajaran: "menjelaskan dan memberikan contoh kerja sama...", kegiatan: "Siswa menyimak penjelasan tentang kerjasama, melakukan diskusi.", refleksi: "Perlu pengulangan di bagian presentasi." }
+            { tanggal: "13/01/2026", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Kerja Sama di Lingkunganku", tujuanPembelajaran: "menjelaskan dan memberikan contoh kerja sama...", kegiatan: "Siswa menyimak penjelasan tentang kerjasama.", refleksi: "Perlu pengulangan di bagian presentasi." }
         ];
 
         function initDataNilai() {
@@ -991,7 +1002,9 @@
         let currentAbsenData = {}; 
         
         function initMockAbsen() {
-            globalSiswa.forEach((s, i) => { currentAbsenData[i] = { hari: {} }; });
+            globalSiswa.forEach((s, i) => {
+                currentAbsenData[i] = { hari: {} }; 
+            });
         }
 
         function getDaysInMonth(monthStr, year) { return new Date(year, monthNames.indexOf(monthStr) + 1, 0).getDate(); }
@@ -1018,6 +1031,11 @@
                 thead += `<th class="border-r border-slate-300 w-4 ${sunday ? 'bg-red-100 text-red-500' : ''}">${d}</th>`;
             }
             
+            thead += `<th class="border-r border-slate-300 bg-blue-50 text-blue-700 w-5">H</th>
+                      <th class="border-r border-slate-300 bg-amber-50 text-amber-600 w-5">S</th>
+                      <th class="border-r border-slate-300 bg-purple-50 text-purple-600 w-5">I</th>
+                      <th class="bg-red-50 text-red-600 w-5 border-r border-slate-300">A</th>`;
+
             document.getElementById(targetThead).innerHTML = thead;
             document.getElementById(isInput ? 'th-colspan-absen' : 'th-colspan-rekap').colSpan = daysInMonth;
 
@@ -1129,7 +1147,7 @@
             document.getElementById(`pct-${pref}-${i}`).innerText = pct + "%";
         }
 
-        // --- PENILAIAN INPUT DINAMIS TANPA SIMULASI NILAI ---
+        // --- PENILAIAN INPUT DINAMIS ---
         function initDropdownMapel() {
             let opts = "";
             for(let m in mapelData) opts += `<option value="${m}">${m}</option>`;
@@ -1216,7 +1234,9 @@
                 rtLM = countLM > 0 ? Math.round(rtLM/countLM) : '-';
                 
                 let rapor = '-';
-                if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') { rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); }
+                if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
+                    rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); 
+                }
                 
                 tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[12rem]">${s.nama}</td>
                 ${cells}
@@ -1240,13 +1260,18 @@
             document.getElementById(`rtl-${sIdx}`).innerText = rtLM;
             
             let rapor = '-';
-            if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') { rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); }
+            if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
+                rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4);
+            }
             document.getElementById(`na-s-${sIdx}`).innerText = rapor;
         }
 
         function renderSikap() {
             let tSikap="";
-            const pr = (val) => { if(val === '' || val === '-') return '-'; return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup'); };
+            const pr = (val) => {
+                if(val === '' || val === '-') return '-';
+                return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup');
+            };
             globalSiswa.forEach((s,i) => {
                 let d = nilaiSiswa[i].sikap;
                 let prA = (d.dsk !== '' && d.ins !== '') ? pr((parseInt(d.dsk)+parseInt(d.ins))/2) : '-';
@@ -1267,7 +1292,10 @@
             let v = val === '' ? '' : parseInt(val);
             nilaiSiswa[sIdx].sikap[field] = v;
             let d = nilaiSiswa[sIdx].sikap;
-            const pr = (val) => { if(val === '' || val === '-') return '-'; return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup'); };
+            const pr = (val) => {
+                if(val === '' || val === '-') return '-';
+                return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup');
+            };
             let prA = (d.dsk !== '' && d.ins !== '') ? pr((parseInt(d.dsk)+parseInt(d.ins))/2) : '-';
             let prB = (d.dsp !== '' && d.tgg !== '') ? pr((parseInt(d.dsp)+parseInt(d.tgg))/2) : '-';
             
@@ -1385,10 +1413,9 @@
             setTimeout(() => { window.print(); }, 300);
         }
 
-        // --- INIT APP ---
         window.onload = () => {
             pindahHalaman('dashboard', document.querySelector('[data-target="dashboard"]'));
-            checkAuth(); // Cek login & set up data
+            checkAuth();
         };
     </script>
 </body>
