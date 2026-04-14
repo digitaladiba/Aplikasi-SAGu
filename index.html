@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V3.8 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V3.9 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -37,35 +37,34 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* =========================================================
-           PRINT LAYOUTING (SUPER FORCE OVERRIDE UNTUK VERCEL)
+           PRINT LAYOUTING F4 LANDSCAPE (PERBAIKAN BLANK PAGE)
            ========================================================= */
         @media print {
-            /* Mematikan semua class Tailwind yang menahan tinggi layar */
-            html, body, #__next, .h-screen, .h-full, .flex, .flex-1, .overflow-hidden, .overflow-y-auto, main, .print-area { 
-                display: block !important; 
-                height: auto !important; 
-                min-height: auto !important; 
-                max-height: none !important;
-                overflow: visible !important; 
-                position: static !important; 
-                margin: 0 !important; 
-                padding: 0 !important; 
-            }
-            body { background-color: white !important; color: #000; font-size: 8pt !important; }
+            html, body { height: auto !important; min-height: auto !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; background-color: white !important; }
+            body { color: #000; font-size: 8pt !important; }
             
+            /* Matikan sistem flexbox utama agar browser bisa menambah halaman ke bawah */
+            body > .flex, .flex-1, main, .print-area { display: block !important; height: auto !important; overflow: visible !important; position: static !important; }
+            
+            /* Sembunyikan Sidebar & Header Web */
             #sidebar, header, .no-print, button, select, input[type="date"], #loading-overlay, #login-overlay, #mock-warning { display: none !important; }
-            .halaman:not(.block) { display: none !important; }
             
+            /* PERBAIKAN: Pastikan halaman yang sedang dibuka TETAP MUNCUL saat diprint */
+            .halaman.hidden { display: none !important; }
+            .halaman:not(.hidden) { display: block !important; }
+            
+            /* Matikan sticky columns (penyebab border hilang) */
             .sticky { position: static !important; box-shadow: none !important; z-index: auto !important; }
             td.sticky { background-color: transparent !important; }
             th.sticky { background-color: #e5e7eb !important; }
 
-            .whitespace-nowrap { white-space: normal !important; } /* Cegah nama terpotong horizontal */
-            .w-48 { width: 150px !important; min-width: 150px !important; } /* Paksa lebar nama */
+            .whitespace-nowrap { white-space: normal !important; } 
+            .w-48 { width: 140px !important; min-width: 140px !important; } 
 
+            /* Konfigurasi Tabel Khusus Cetak */
             table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; page-break-inside: auto; table-layout: auto !important; }
             tr { page-break-inside: avoid !important; page-break-after: auto; }
-            thead { display: table-header-group !important; } 
+            thead { display: table-header-group !important; } /* Ulangi di setiap halaman baru */
             tfoot { display: table-footer-group !important; }
             
             th, td { border: 1px solid #000 !important; padding: 3px !important; color: black !important; }
@@ -79,7 +78,8 @@
             .print-sub-header { margin-top: 2px; margin-bottom: 5px; }
             .print-signature { display: table !important; margin-top: 30px; page-break-inside: avoid !important; width: 100%; font-size: 9pt !important; }
             
-            @page { size: 330mm 215mm landscape; margin: 10mm 12mm; }
+            /* Kertas F4 (330x215mm) Landscape */
+            @page { size: 330mm 215mm landscape; margin: 10mm 15mm; }
         }
         .print-only { display: none; }
         @media print { .print-only { display: block; } }
@@ -96,7 +96,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V3.8</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V3.9</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -214,12 +214,12 @@
         </header>
 
         <div id="mock-warning" class="hidden bg-red-50 text-red-600 border-b border-red-200 px-4 py-2 text-[11px] font-bold text-center w-full no-print">
-            <i data-lucide="alert-triangle" class="w-4 h-4 inline-block mr-1"></i> Mode Offline Web. Tidak dapat terhubung ke Google Sheets.
+            <i data-lucide="alert-triangle" class="w-4 h-4 inline-block mr-1"></i> Mode Offline Web. Tidak dapat mengambil data terupdate dari Google Sheets.
         </div>
 
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 print-area w-full">
             
-            <!-- HALAMAN: Papan Utama (Dashboard) -->
+            <!-- HALAMAN: Papan Utama -->
             <div id="hal-dashboard" class="halaman page-transition block">
                 <div class="mb-6 no-print">
                     <h1 class="text-2xl font-bold text-slate-800">Statistik Data</h1>
@@ -356,7 +356,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: SISWA - REKAP BULANAN (READ ONLY + CETAK + EXCEL) -->
+            <!-- HALAMAN: SISWA - REKAP BULANAN -->
             <div id="hal-siswa-rekapbulan" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Rekap Bulanan (Cetak)</h2></div>
@@ -383,7 +383,7 @@
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
                             <tr>
                                 <th rowspan="3" class="px-2 py-1 border-r border-slate-300 w-6">No</th>
-                                <th rowspan="3" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48">Nama Murid</th>
+                                <th rowspan="3" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 whitespace-nowrap">Nama Murid</th>
                                 <th rowspan="3" class="px-1 py-1 border-r border-slate-300 w-6">L/P</th>
                                 <th id="th-colspan-rekap" colspan="31" class="py-1 border-r border-slate-300 border-b">Tanggal Pelaksanaan</th>
                                 <th colspan="4" class="py-1 border-b border-r border-slate-300 bg-slate-200">TOTAL</th>
@@ -402,6 +402,7 @@
                         </thead>
                         <tbody id="tb-rekap-bulan" class="divide-y divide-slate-200 text-slate-700"></tbody>
                     </table>
+                    
                     <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
@@ -498,6 +499,7 @@
                         <thead id="head-formatif" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold"></thead>
                         <tbody id="tb-formatif" class="divide-y divide-slate-200 text-slate-800"></tbody>
                     </table>
+                    
                     <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
@@ -535,6 +537,7 @@
                         <thead id="head-sumatif" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold"></thead>
                         <tbody id="tb-sumatif" class="divide-y divide-slate-200 text-slate-800"></tbody>
                     </table>
+                    
                     <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
@@ -581,6 +584,7 @@
                         </thead>
                         <tbody id="tb-sikap" class="divide-y divide-slate-200 text-slate-800"></tbody>
                     </table>
+                    
                     <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
@@ -697,16 +701,23 @@
                             <tr><th class="px-3 py-2 w-20 border-r border-slate-300 text-center">Hari/Tgl</th><th class="px-2 py-2 w-10 border-r border-slate-300 text-center">Jam</th><th class="px-3 py-2 w-40 border-r border-slate-300">Mapel / Materi / TP</th><th class="px-3 py-2 border-r border-slate-300">Kegiatan Pembelajaran</th><th class="px-3 py-2 w-28">Refleksi</th></tr>
                         </thead>
                         <tbody id="tb-jurnal" class="divide-y divide-slate-200 text-slate-700 font-medium"></tbody>
-                    </table>
-                    <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
-                        <tr>
-                            <td class="text-center border-none !border-transparent w-1/2 align-top">
-                                <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
-                            </td>
-                            <td class="text-center border-none !border-transparent w-1/2 align-top">
-                                <p id="print-tgl-jurnal">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
-                            </td>
-                        </tr>
+                        
+                        <tfoot class="print-only">
+                            <tr>
+                                <td colspan="100%" class="border-none !border-transparent pt-8 pb-4">
+                                    <table class="w-full text-sm border-none !border-transparent" style="border:none;">
+                                        <tr>
+                                            <td class="text-center border-none !border-transparent w-1/2 align-top" style="border:none;">
+                                                <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
+                                            </td>
+                                            <td class="text-center border-none !border-transparent w-1/2 align-top" style="border:none;">
+                                                <p id="print-tgl-jurnal">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -891,26 +902,31 @@
             let usingMock = false;
             
             try {
-                // Fetch Master Siswa (V3.8: Logic Pembacaan Shifted Column Fix)
+                // Fetch Master Siswa (V3.8: SUPER FIX L/P RAW DATA MAPPING)
                 const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
                 if(resSiswa.status === 'success' && resSiswa.data.length > 0) { 
                     globalSiswa = resSiswa.data.map(s => {
                         let nisFinal = s.nis;
-                        let namaFinal = s.nama;
+                        let namaFinal = s.nama ? s.nama.toString().trim() : '-';
                         let jkFinal = s.jk;
 
-                        // Cek jika kolom nama di excel isinya justru angka (NIS), dan kolom L/P isinya teks panjang (Nama)
+                        // Perbaikan jika kolom nama di excel diisi angka (NIS), dan L/P diisi Nama
                         if (s.jk && s.jk.length > 2) {
-                            namaFinal = s.jk;
+                            namaFinal = s.jk.toString().trim();
                             nisFinal = s.nama;
-                            
-                            // Tebak JK karena kolom aslinya tertimpa
-                            let n = namaFinal.toLowerCase();
-                            if(n.includes('putri') || n.includes('aisyah') || n.includes('zahra') || n.includes('amelia') || n.includes('bilqis') || n.includes('sari') || n.includes('asih') || n.includes('dian')) {
-                                jkFinal = 'P';
-                            } else {
-                                jkFinal = 'L';
-                            }
+                        }
+
+                        // Penentuan L/P: Kamus Nama Perempuan
+                        let n = namaFinal.toLowerCase();
+                        let isFemale = ['aisyah', 'alesa', 'anindita', 'azahrah', 'bilqis', 'dian', 'asih', 'kayla', 'nida', 'putri', 'shaqila', 'tiara', 'zahra', 'amelia'].some(name => n.includes(name));
+                        
+                        // Cek RAW JK asli, jika ada dan valid (L/P), gunakan itu
+                        if (s.jk && (s.jk.toString().trim().toUpperCase() === 'L' || s.jk.toString().trim().toUpperCase() === 'P')) {
+                            jkFinal = s.jk.toString().trim().toUpperCase();
+                        } else if (s.nama && (s.nama.toString().trim().toUpperCase() === 'L' || s.nama.toString().trim().toUpperCase() === 'P')) {
+                            jkFinal = s.nama.toString().trim().toUpperCase();
+                        } else {
+                            jkFinal = isFemale ? 'P' : 'L'; // Fallback cerdas berdasarkan nama
                         }
 
                         return { nis: nisFinal, nama: namaFinal, jk: jkFinal };
@@ -1011,8 +1027,13 @@
             else { menu.classList.add('open'); icon.classList.add('rotate'); }
         }
         function pindahHalaman(idHalaman, btnElement) {
-            document.querySelectorAll('.halaman').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`hal-${idHalaman}`).classList.remove('hidden');
+            document.querySelectorAll('.halaman').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+            let targetHalaman = document.getElementById(`hal-${idHalaman}`);
+            targetHalaman.classList.remove('hidden');
+            targetHalaman.classList.add('block'); // Tambahkan .block agar diprint dengan baik
             
             let judul = "Papan Utama";
             if(idHalaman.includes('identitas')) { judul = "Identitas Kelas"; if(idHalaman==='identitas-target') loadMenuSettingMapel(); }
@@ -1152,7 +1173,7 @@
             noPrintElements.forEach(el => el.remove());
 
             clone.querySelectorAll('*').forEach(el => {
-                el.classList.remove('sticky', 'shadow-[1px_0_0_0_#cbd5e1]', 'z-10', 'bg-white', 'bg-slate-50', 'bg-slate-100');
+                el.classList.remove('sticky', 'shadow-[1px_0_0_0_#cbd5e1]', 'z-10', 'bg-white', 'bg-slate-50', 'bg-slate-100', 'whitespace-nowrap');
             });
 
             let html = clone.innerHTML;
@@ -1260,7 +1281,7 @@
                 tbody += `
                 <tr id="tr-${isInput?'inp':'rek'}-${i}">
                     <td class="border-r border-slate-300 border-b">${i+1}</td>
-                    <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[11rem] w-48">${s.nama}</td>
+                    <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap w-48">${s.nama}</td>
                     <td class="border-r border-slate-300 border-b font-bold text-[9px] ${s.jk==='L'?'text-blue-500':'text-pink-500'}">${s.jk}</td>
                     ${cells}
                     <td class="border-r border-slate-300 border-b font-bold text-blue-700 bg-slate-50" id="tot-h-${isInput?'inp':'rek'}-${i}">${th}</td>
@@ -1356,7 +1377,7 @@
             let data = mapelData[m] || {tp:[]};
             let jml = data.tp.length;
             
-            let th1 = `<tr><th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap">NAMA SISWA</th>`;
+            let th1 = `<tr><th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 min-w-[150px] whitespace-nowrap">NAMA SISWA</th>`;
             let th2 = `<tr>`;
             data.tp.forEach((t, i) => {
                 th1 += `<th colspan="3" class="px-1 py-1 border-r border-slate-300 border-b w-24">TP ${i+1}: ${t.nama.substring(0,35)}...</th>`;
@@ -1381,7 +1402,7 @@
                               <td class="border-r border-slate-300 border-b font-bold bg-slate-50" id="na-f-${i}-${x}">${na}</td>`;
                 }
                 rt = validTpCount > 0 ? Math.round(rt/validTpCount) : '-';
-                tb += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[12rem] w-48">${s.nama}</td>${cells}<td class="border-b border-slate-300 font-bold text-slate-800 bg-slate-100" id="rt-f-${i}">${rt}</td></tr>`;
+                tb += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white whitespace-nowrap w-48">${s.nama}</td>${cells}<td class="border-b border-slate-300 font-bold text-slate-800 bg-slate-100" id="rt-f-${i}">${rt}</td></tr>`;
             });
             document.getElementById('tb-formatif').innerHTML = tb;
         }
@@ -1414,7 +1435,7 @@
             let data = mapelData[m] || {lm:[]};
             let jml = data.lm.length;
             
-            let th1 = `<tr><th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap">NAMA SISWA</th>`;
+            let th1 = `<tr><th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 min-w-[150px] whitespace-nowrap">NAMA SISWA</th>`;
             if(jml > 0) th1 += `<th colspan="${jml}" class="px-1 py-1 border-r border-slate-300 border-b">Sumatif Lingkup Materi (LM)</th>`;
             th1 += `<th rowspan="2" class="px-1 py-1 border-r border-slate-300 bg-slate-200/50 w-12 text-black">Rata<br>LM</th><th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-12">STS</th><th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-12">SAS</th><th rowspan="2" class="px-2 py-2 font-bold bg-slate-200 text-slate-800 w-16 text-black">NILAI AKHIR</th></tr>`;
             
@@ -1438,7 +1459,7 @@
                     rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); 
                 }
                 
-                tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[12rem] w-48">${s.nama}</td>
+                tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white whitespace-nowrap w-48">${s.nama}</td>
                 ${cells}
                 <td class="border-r border-slate-300 border-b bg-slate-50 font-bold" id="rtl-${i}">${rtLM}</td>
                 <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${smt.sts}" oninput="updSum(${i}, '${m}', 'sts', 0, this.value)"></td>
@@ -1483,7 +1504,7 @@
                 let prA = (d.dsk !== '' && d.ins !== '') ? pr((parseInt(d.dsk)+parseInt(d.ins))/2) : '-';
                 let prB = (d.dsp !== '' && d.tgg !== '') ? pr((parseInt(d.dsp)+parseInt(d.tgg))/2) : '-';
 
-                tSikap += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap">${s.nama}</td>
+                tSikap += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white min-w-[150px] w-48 whitespace-nowrap">${s.nama}</td>
                 <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${d.dsk}" oninput="updSikap(${i}, 'dsk', this.value)"></td>
                 <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${d.ins}" oninput="updSikap(${i}, 'ins', this.value)"></td>
                 <td class="border-r border-slate-300 border-b font-bold text-slate-700 bg-slate-50" id="pr-a-${i}">${prA}</td>
@@ -1548,7 +1569,7 @@
 
                 let rtSem = nMapel > 0 ? Math.round(totalRapor/nMapel) : '-';
 
-                tLeg += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-bold text-slate-800 sticky left-0 bg-slate-50 shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[10rem] w-40 min-w-[120px]">${s.nama}</td>
+                tLeg += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-bold text-slate-800 sticky left-0 bg-slate-50 w-40 min-w-[150px] whitespace-nowrap">${s.nama}</td>
                 ${cells}
                 <td class="border-r border-slate-300 border-b py-1.5 bg-slate-100 font-bold">${pctHadir}</td><td class="border-r border-slate-300 border-b py-1.5 bg-slate-100 font-bold">${prSikap}</td>
                 <td class="border-r border-slate-300 border-b py-1.5 font-bold bg-slate-200 text-slate-800 text-sm">${rtSem}</td><td class="border-b border-slate-300 py-1.5 font-bold bg-slate-50">${rtSem !== '-' ? i+1 : '-'}</td></tr>`;
