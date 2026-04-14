@@ -637,71 +637,71 @@
                     { nama: "mendeskripsikan ciri-ciri bentuk bangun datar", k1: "K1", k2: "K2" },
                     { nama: "menyusun komosisi dan dekomposisi bangun datar", k1: "K1", k2: "K2" },
                     { nama: "menyajikan data dalam bentuk pictogram", k1: "K1", k2: "K2" },
-                    { nama: "menyajikan data dalam bentuk diagram batang", k1: "K1", k2: "K2" }
-                ]
-            },
-            "IPAS": {
-                lm: ["Ini Khas Daerahku", "Peranku di Lingkungan Sekolah...", "Keragaman Budaya...", "Menjadi Pahlawan..."],
+        const mockJurnalFallback = [
+            { tanggal: "13/01/2026", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Pengenalan Perangkat TIK", tujuanPembelajaran: "menjelaskan pengertian TIK serta peranannya", kegiatan: "Siswa menyimak penjelasan tentang pengertian TIK, melakukan diskusi kelompok, dan presentasi.", refleksi: "Perlu pengulangan di bagian presentasi." },
+            { tanggal: "14/01/2026", tglFormat: "Rabu,<br>14 Jan 2026", jam: "4-5", mapel: "Bahasa Indonesia", lingkupMateri: "Teks Persuasi", tujuanPembelajaran: "membuat kalimat ajakan (persuasi)", kegiatan: "Membaca contoh teks persuasi, menemukan kalimat ajakan, dan mempraktikkan menulis satu paragraf.", refleksi: "-" }
+        ];
+
+        let mapelData = {
+            "Pendidikan Pancasila": {
+                lm: ["Kerja Sama di Lingkunganku", "Pancasila dalam Diriku"],
                 tp: [
-                    { nama: "menganalisi bentang alam dengan keaneragaman hayati...", k1: "K1", k2: "K2" },
-                    { nama: "menerapkan peran, tugas serta tanggung jawab di sekolah...", k1: "K1", k2: "K2" },
-                    { nama: "menceritakan keragaman budaya dan kearifan lokal", k1: "K1", k2: "K2" },
-                    { nama: "menunjukan sikap peduli terhadap permasalahan lingkungan", k1: "K1", k2: "K2" },
-                    { nama: "berkontribusi dalam mitigasi perubahan", k1: "K1", k2: "K2" }
+                    { nama: "menjelaskan dan memberikan contoh kerja sama dalam keberagaman", k1: "Sikap", k2: "Pemahaman" },
+                    { nama: "menunjukan sikap kompak dan bersatu melalui gotong royong", k1: "Praktik", k2: "Kerjasama" },
+                    { nama: "mengidentifikasi dan menjelaskan makna sila-sila pancasila", k1: "Identifikasi", k2: "Analisis" },
+                    { nama: "menceritakan dan meneladani karakter para perumus pancasila", k1: "Pengetahuan", k2: "Sikap" }
                 ]
             },
-            "Seni Rupa": { lm: ["Seni Rupa 1", "Seni Rupa 2"], tp: [{nama: "menggambar bentuk 2 dimensi", k1: "K1", k2: "K2"}] },
-            "Bahasa Inggris": { lm: ["Greetings"], tp: [{nama: "menyebutkan sapaan", k1: "K1", k2: "K2"}] },
-            "Muatan Lokal": { lm: ["Mulok 1"], tp: [{nama: "TP Mulok 1", k1: "K1", k2: "K2"}] }
+            "Bahasa Indonesia": {
+                lm: ["Bertukar dan Membayar", "Satu Titik", "Asal Usul", "Sehatlah Ragaku"],
+                tp: [
+                    { nama: "memahami informasi dari teks fabel dan infografik", k1: "Membaca", k2: "Pemahaman" },
+                    { nama: "menerapkan kaidah penulisan nilai uang", k1: "Penulisan", k2: "Akurasi" },
+                    { nama: "menulis teks prosedur", k1: "Struktur", k2: "Kerapian" },
+                    { nama: "mengidentifikasi majas metafora", k1: "Identifikasi", k2: "Penerapan" }
+                ]
+            },
+            "Matematika": { 
+                lm: ["Pengukuran", "Geometri", "Analisis Data dan Peluang"], 
+                tp: [
+                    { nama: "mengukur luas dan volume dengan satuan tidak baku dan baku", k1: "Konsep", k2: "Akurasi" }, 
+                    { nama: "mendeskripsikan ciri-ciri bentuk bangun datar", k1: "Identifikasi", k2: "Analisis" },
+                    { nama: "menyajikan data dalam bentuk pictogram dan diagram batang", k1: "Penyajian", k2: "Kerapian" }
+                ] 
+            },
+            "IPAS": { 
+                lm: ["Ini Khas Daerahku", "Peranku di Lingkungan Sekolah", "Keragaman Budaya", "Menjadi Pahlawan Lingkungan"], 
+                tp: [
+                    {nama: "menganalisis bentang alam dengan keanekaragaman hayati", k1: "Pemahaman", k2: "Analisis"},
+                    {nama: "menceritakan keragaman budaya dan kearifan lokal", k1: "Pengetahuan", k2: "Sikap"},
+                    {nama: "berkontribusi dalam mitigasi perubahan lingkungan", k1: "Kepedulian", k2: "Tindakan"}
+                ] 
+            },
+            "Seni Rupa": { 
+                lm: ["Membuat Karya Seni Kriya", "Menggambar Dekoratif", "Mengenal Shadow Puppet"], 
+                tp: [
+                    {nama: "merancang dan membuat kriya dari bahan bekas (celengan)", k1: "Kreativitas", k2: "Estetika"},
+                    {nama: "menggambar dekoratif/ragam hias nusantara", k1: "Pemahaman", k2: "Teknik"},
+                    {nama: "membuat karya shadow puppet wayang", k1: "Desain", k2: "Karya"}
+                ] 
+            },
+            "Bahasa Inggris": { 
+                lm: ["My Activities", "Places in My Town", "My Feelings"], 
+                tp: [
+                    {nama: "menyebutkan aktivitas sehari-hari dalam bahasa inggris", k1: "Kosakata", k2: "Pelafalan"},
+                    {nama: "menjelaskan tempat-tempat umum di lingkungan sekitar", k1: "Pemahaman", k2: "Struktur"}
+                ] 
+            },
+            "Muatan Lokal": { 
+                lm: ["Bahasa Daerah (Kosa Kata)", "Aksara Daerah"], 
+                tp: [
+                    {nama: "memahami dan menggunakan kosa kata bahasa daerah", k1: "Kosakata", k2: "Penerapan"},
+                    {nama: "membaca dan menulis aksara daerah dasar", k1: "Membaca", k2: "Menulis"}
+                ] 
+            }
         };
         let currentSettingMapel = "Pendidikan Pancasila";
         let nilaiSiswa = {};
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const u = document.getElementById('login-user').value;
-            const p = document.getElementById('login-pass').value;
-            
-            if(u === 'sdn04taman' && p === 'bayuprahastian') {
-                sessionStorage.setItem('siguru_logged_in', 'true');
-                document.getElementById('login-error').classList.add('hidden');
-                
-                document.getElementById('login-overlay').classList.add('opacity-0');
-                setTimeout(() => {
-                    document.getElementById('login-overlay').classList.add('hidden');
-                    initialSetupSemua();
-                }, 300);
-            } else {
-                document.getElementById('login-error').classList.remove('hidden');
-            }
-        }
-
-        function handleLogout() {
-            if(confirm("Yakin ingin keluar dari sistem?")) {
-                sessionStorage.removeItem('siguru_logged_in');
-                window.location.reload();
-            }
-        }
-
-        function checkAuth() {
-            if(sessionStorage.getItem('siguru_logged_in') === 'true') {
-                document.getElementById('login-overlay').classList.add('hidden');
-                initialSetupSemua();
-            }
-        }
-
-        function initialSetupSemua() {
-            document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
-            initDataNilai();
-            initMockAbsen();
-            renderInputAbsenBulan();
-            renderRekapBulanan();
-            syncGlobalData();
-            initDropdownMapel(); 
-            renderLegger();      
-            updateJurnalMapel();
-            renderTabelJurnal();
-        }
 
         function initDataNilai() {
             globalSiswa.forEach((s, i) => {
