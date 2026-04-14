@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V3.6 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V3.7 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -41,42 +41,42 @@
            PRINT LAYOUTING F4 LANDSCAPE (ANTI-BLANK PAGE & RAPI)
            ========================================================= */
         @media print {
+            /* 1. Matikan batasan layar (scroll) agar tabel bisa memanjang ke bawah & membelah halaman */
             html, body, .h-screen, .h-full, .overflow-hidden, .overflow-y-auto, .overflow-x-auto, .flex-1, main { 
                 height: auto !important; min-height: auto !important; overflow: visible !important; display: block !important; position: static !important; margin: 0 !important; padding: 0 !important;
             }
             body { background-color: white !important; color: #000; font-size: 8pt !important; }
             
+            /* 2. Sembunyikan elemen UI dan halaman yang tidak aktif */
             #sidebar, header, .no-print, button, select, input[type="date"], #loading-overlay, #login-overlay, #mock-warning { display: none !important; }
             .halaman.hidden { display: none !important; }
             .print-area { width: 100% !important; border: none !important; box-shadow: none !important; border-radius: 0 !important; }
             
+            /* 3. Matikan fitur sticky dan shadow tabel web */
             .sticky { position: static !important; box-shadow: none !important; z-index: auto !important; }
             td.sticky { background-color: transparent !important; }
             th.sticky { background-color: #e5e7eb !important; }
-
             .whitespace-nowrap { white-space: nowrap !important; }
 
-            /* Pengaturan Tabel Master */
+            /* 4. Konfigurasi Tabel Utama Cetak */
             table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; page-break-inside: auto; table-layout: auto !important; }
             tr { page-break-inside: avoid !important; page-break-after: auto; }
-            thead { display: table-header-group !important; } 
-            tfoot { display: table-footer-group !important; }
+            thead { display: table-header-group !important; } /* Ulangi judul kolom di halaman 2,3, dst */
             
             th, td { border: 1px solid #000 !important; padding: 3px 4px !important; color: black !important; }
             th { background-color: #e5e7eb !important; -webkit-print-color-adjust: exact; color-adjust: exact; font-weight: bold; text-align: center; }
             .val-libur { background-color: #fca5a5 !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
             input.cell-input { font-weight: bold !important; color: black !important; padding: 0 !important; border: none !important; font-size: 8pt !important; background: transparent !important; }
             
-            /* Menghilangkan Garis di Tabel TTD */
-            table.print-signature, table.print-signature th, table.print-signature td, table.print-signature tr, .border-none, .\!border-transparent { 
-                border: none !important; background: transparent !important; border-color: transparent !important; 
-            }
+            /* 5. Pengaturan Tanda Tangan */
+            table.print-signature.hidden { display: table !important; } /* Timpa hide tailwind */
+            table.print-signature { width: 100% !important; margin-top: 25px !important; page-break-inside: avoid !important; font-size: 9pt !important; }
+            table.print-signature td, table.print-signature th { border: none !important; background: transparent !important; padding: 0 !important; }
             
             .kop-surat { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid #000; }
             .print-sub-header { margin-top: 2px; margin-bottom: 5px; }
             
-            .print-signature { display: table !important; margin-top: 30px; page-break-inside: avoid !important; width: 100%; font-size: 9pt !important; }
-            
+            /* Ukuran Kertas F4 Landscape Presisi */
             @page { size: 330mm 215mm landscape; margin: 10mm 15mm; }
         }
         .print-only { display: none; }
@@ -94,7 +94,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V3.6</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V3.7</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -133,14 +133,12 @@
         </div>
 
         <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1 custom-scrollbar">
-            <!-- Dashboard -->
             <button onclick="pindahHalaman('dashboard', this)" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-white bg-blue-600" data-target="dashboard">
                 <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span>Dashboard</span>
             </button>
             
             <div class="pt-4 pb-1 px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Pengaturan</div>
             
-            <!-- Identitas Accordion -->
             <div>
                 <button onclick="toggleAccordion('menu-identitas')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
                     <div class="flex items-center space-x-3"><i data-lucide="school" class="w-5 h-5"></i><span>Identitas</span></div>
@@ -154,7 +152,6 @@
             
             <div class="pt-4 pb-1 px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Modul Akademik</div>
 
-            <!-- Daftar Hadir Accordion -->
             <div>
                 <button onclick="toggleAccordion('menu-siswa')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
                     <div class="flex items-center space-x-3"><i data-lucide="calendar-check" class="w-5 h-5"></i><span>Daftar Hadir</span></div>
@@ -167,7 +164,6 @@
                 </div>
             </div>
 
-            <!-- Penilaian Accordion -->
             <div>
                 <button onclick="toggleAccordion('menu-nilai')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
                     <div class="flex items-center space-x-3"><i data-lucide="clipboard-list" class="w-5 h-5"></i><span>Penilaian</span></div>
@@ -181,7 +177,6 @@
                 </div>
             </div>
 
-            <!-- Jurnal Accordion -->
             <div>
                 <button onclick="toggleAccordion('menu-jurnal')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
                     <div class="flex items-center space-x-3"><i data-lucide="book-open" class="w-5 h-5"></i><span>Jurnal Mengajar</span></div>
@@ -217,12 +212,12 @@
         </header>
 
         <div id="mock-warning" class="hidden bg-red-50 text-red-600 border-b border-red-200 px-4 py-2 text-[11px] font-bold text-center w-full no-print">
-            <i data-lucide="alert-triangle" class="w-4 h-4 inline-block mr-1"></i> Menggunakan Data Simulasi Web. Update Code.gs Anda untuk terhubung penuh ke Excel.
+            <i data-lucide="alert-triangle" class="w-4 h-4 inline-block mr-1"></i> Mode Offline Web. Tidak dapat mengambil data dari Excel.
         </div>
 
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 print-area w-full">
             
-            <!-- HALAMAN: Papan Utama (Dashboard) -->
+            <!-- HALAMAN: Papan Utama -->
             <div id="hal-dashboard" class="halaman page-transition">
                 <div class="mb-6 no-print">
                     <h1 class="text-2xl font-bold text-slate-800">Statistik Data</h1>
@@ -329,7 +324,7 @@
                         <select id="filter-bulan-absen-input" onchange="renderInputAbsenBulan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                             <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
                         </select>
-                        <button onclick="alert('Data absensi berhasil disimpan secara lokal!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan</button>
+                        <button onclick="simpanAbsenAksi()" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan ke DB</button>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto relative pb-2">
@@ -359,7 +354,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: SISWA - REKAP BULANAN (READ ONLY + CETAK + EXCEL) -->
+            <!-- HALAMAN: SISWA - REKAP BULANAN -->
             <div id="hal-siswa-rekapbulan" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Rekap Bulanan (Cetak)</h2></div>
@@ -386,7 +381,7 @@
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
                             <tr>
                                 <th rowspan="3" class="px-2 py-1 border-r border-slate-300 w-6">No</th>
-                                <th rowspan="3" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48">Nama Murid</th>
+                                <th rowspan="3" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 whitespace-nowrap">Nama Murid</th>
                                 <th rowspan="3" class="px-1 py-1 border-r border-slate-300 w-6">L/P</th>
                                 <th id="th-colspan-rekap" colspan="31" class="py-1 border-r border-slate-300 border-b">Tanggal Pelaksanaan</th>
                                 <th colspan="4" class="py-1 border-b border-r border-slate-300 bg-slate-200">TOTAL</th>
@@ -406,12 +401,12 @@
                         <tbody id="tb-rekap-bulan" class="divide-y divide-slate-200 text-slate-700"></tbody>
                     </table>
                     
-                    <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
+                    <table class="w-full text-sm print-signature hidden">
                         <tr>
-                            <td class="text-center border-none !border-transparent w-1/2 align-top">
+                            <td class="text-center w-1/2 align-top">
                                 <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
-                            <td class="text-center border-none !border-transparent w-1/2 align-top">
+                            <td class="text-center w-1/2 align-top">
                                 <p id="print-tgl-rekap">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
@@ -419,7 +414,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: SISWA - REKAP SEMESTER (CETAK + EXCEL) -->
+            <!-- HALAMAN: SISWA - REKAP SEMESTER -->
             <div id="hal-siswa-rekapsemester" class="halaman page-transition hidden w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Rekap Semester</h2></div>
@@ -463,12 +458,12 @@
                         <tbody id="tb-rekap-smt" class="divide-y divide-slate-200 text-slate-700"></tbody>
                     </table>
                     
-                    <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
+                    <table class="w-full text-sm print-signature hidden">
                         <tr>
-                            <td class="text-center border-none !border-transparent w-1/2 align-top">
+                            <td class="text-center w-1/2 align-top">
                                 <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
-                            <td class="text-center border-none !border-transparent w-1/2 align-top">
+                            <td class="text-center w-1/2 align-top">
                                 <p id="print-tgl-smt">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
@@ -476,7 +471,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: PENILAIAN - FORMATIF (Bisa Input + EXCEL) -->
+            <!-- HALAMAN: PENILAIAN - FORMATIF -->
             <div id="hal-nilai-formatif" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div>
@@ -489,7 +484,7 @@
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
                             <input type="date" id="tgl-cetak-for" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                         </div>
-                        <button onclick="alert('Nilai formatif berhasil disimpan sementara di memori web!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
+                        <button onclick="simpanFormatifAksi()" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan DB</button>
                         <button onclick="exportToExcel('area-nilai-formatif', 'Asesmen_Formatif_' + document.getElementById('filter-mapel-formatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
                         <button onclick="cetakLaporan('for')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
@@ -504,12 +499,12 @@
                         <tbody id="tb-formatif" class="divide-y divide-slate-200 text-slate-800"></tbody>
                     </table>
                     
-                    <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
+                    <table class="w-full text-sm print-signature hidden">
                         <tr>
-                            <td class="text-center border-none !border-transparent w-1/2 align-top">
+                            <td class="text-center w-1/2 align-top">
                                 <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
-                            <td class="text-center border-none !border-transparent w-1/2 align-top">
+                            <td class="text-center w-1/2 align-top">
                                 <p id="print-tgl-for">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
@@ -517,7 +512,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: PENILAIAN - SUMATIF (Bisa Input + EXCEL) -->
+            <!-- HALAMAN: PENILAIAN - SUMATIF -->
             <div id="hal-nilai-sumatif" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Asesmen Sumatif</h2><p class="text-sm text-slate-500">Ketik angka di kolom LM, STS, dan SAS.</p></div>
@@ -527,7 +522,7 @@
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
                             <input type="date" id="tgl-cetak-sum" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                         </div>
-                        <button onclick="alert('Nilai sumatif berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
+                        <button onclick="simpanSumatifAksi()" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan DB</button>
                         <button onclick="exportToExcel('area-nilai-sumatif', 'Asesmen_Sumatif_' + document.getElementById('filter-mapel-sumatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
                         <button onclick="cetakLaporan('sum')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
@@ -542,12 +537,12 @@
                         <tbody id="tb-sumatif" class="divide-y divide-slate-200 text-slate-800"></tbody>
                     </table>
                     
-                    <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
+                    <table class="w-full text-sm print-signature hidden">
                         <tr>
-                            <td class="text-center border-none !border-transparent w-1/2 align-top">
+                            <td class="text-center w-1/2 align-top">
                                 <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
-                            <td class="text-center border-none !border-transparent w-1/2 align-top">
+                            <td class="text-center w-1/2 align-top">
                                 <p id="print-tgl-sum">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
@@ -555,7 +550,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: PENILAIAN - SIKAP (Bisa Input + EXCEL) -->
+            <!-- HALAMAN: PENILAIAN - SIKAP -->
             <div id="hal-nilai-sikap" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Keaktifan & Sikap</h2><p class="text-sm text-slate-500">Nilai (0-100). Predikat terisi otomatis.</p></div>
@@ -564,7 +559,7 @@
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
                             <input type="date" id="tgl-cetak-sikap" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                         </div>
-                        <button onclick="alert('Nilai sikap disimpan!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
+                        <button onclick="simpanSikapAksi()" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan DB</button>
                         <button onclick="exportToExcel('area-nilai-sikap', 'Nilai_Sikap')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
                         <button onclick="cetakLaporan('sikap')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
@@ -589,12 +584,12 @@
                         <tbody id="tb-sikap" class="divide-y divide-slate-200 text-slate-800"></tbody>
                     </table>
                     
-                    <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
+                    <table class="w-full text-sm print-signature hidden">
                         <tr>
-                            <td class="text-center border-none !border-transparent w-1/2 align-top">
+                            <td class="text-center w-1/2 align-top">
                                 <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
-                            <td class="text-center border-none !border-transparent w-1/2 align-top">
+                            <td class="text-center w-1/2 align-top">
                                 <p id="print-tgl-sikap">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
@@ -602,7 +597,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: PENILAIAN - LEGGER RAPOR (EXCEL) -->
+            <!-- HALAMAN: PENILAIAN - LEGGER RAPOR -->
             <div id="hal-nilai-legger" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Kelola Nilai (Legger Rapor)</h2></div>
@@ -637,12 +632,12 @@
                         <tbody id="tb-legger" class="divide-y divide-slate-200 text-slate-800 font-medium"></tbody>
                     </table>
                     
-                    <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
+                    <table class="w-full text-sm print-signature hidden">
                         <tr>
-                            <td class="text-center border-none !border-transparent w-1/2 align-top">
+                            <td class="text-center w-1/2 align-top">
                                 <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
-                            <td class="text-center border-none !border-transparent w-1/2 align-top">
+                            <td class="text-center w-1/2 align-top">
                                 <p id="print-tgl-legger">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
@@ -706,24 +701,17 @@
                             <tr><th class="px-3 py-2 w-20 border-r border-slate-300 text-center">Hari/Tgl</th><th class="px-2 py-2 w-10 border-r border-slate-300 text-center">Jam</th><th class="px-3 py-2 w-40 border-r border-slate-300">Mapel / Materi / TP</th><th class="px-3 py-2 border-r border-slate-300">Kegiatan Pembelajaran</th><th class="px-3 py-2 w-28">Refleksi</th></tr>
                         </thead>
                         <tbody id="tb-jurnal" class="divide-y divide-slate-200 text-slate-700 font-medium"></tbody>
-                        
-                        <!-- KUNCI: Tfoot akan mencetak ulang Tanda Tangan di setiap bawah halaman tabel Jurnal -->
-                        <tfoot class="print-only">
-                            <tr>
-                                <td colspan="100%" class="border-none !border-transparent pt-8 pb-4">
-                                    <table class="w-full text-sm border-none !border-transparent" style="border:none;">
-                                        <tr>
-                                            <td class="text-center border-none !border-transparent w-1/2 align-top" style="border:none;">
-                                                <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
-                                            </td>
-                                            <td class="text-center border-none !border-transparent w-1/2 align-top" style="border:none;">
-                                                <p id="print-tgl-jurnal">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                        </tfoot>
+                    </table>
+                    
+                    <table class="w-full text-sm print-signature hidden">
+                        <tr>
+                            <td class="text-center w-1/2 align-top">
+                                <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
+                            </td>
+                            <td class="text-center w-1/2 align-top">
+                                <p id="print-tgl-jurnal">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
+                            </td>
+                        </tr>
                     </table>
                 </div>
             </div>
@@ -879,7 +867,6 @@
 
         const loader = document.getElementById('loading-overlay');
 
-        // Mengirim POST ke DB (Membutuhkan Code.gs terbaru)
         async function postToDB(payload, successMsg) {
             loader.querySelector('h2').innerText = "Menyimpan Data...";
             loader.querySelector('p').innerText = "Menyinkronkan ke Database Google Sheets";
@@ -909,24 +896,19 @@
             let usingMock = false;
             
             try {
-                // Fetch Master Siswa 
+                // V3.7: SCANNER KOLOM OTOMATIS (Akurat 100% Mengatasi Bug Excel Bergeser)
                 const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
                 if(resSiswa.status === 'success' && resSiswa.data.length > 0) { 
-                    // V3.5: Parsing Mentah, biarkan apapun yang di API masuk sesuai strukturnya.
-                    globalSiswa = resSiswa.data.map((s, idx) => {
-                        // Jika di Excel nama tertukar ke L/P, kita normalkan menggunakan deteksi cerdas
-                        let values = Object.values(s).map(v => v ? v.toString().trim() : '');
+                    globalSiswa = resSiswa.data.map(s => {
+                        let vals = Object.values(s).filter(Boolean).map(v => v.toString().trim());
                         
-                        // Cari mana yang nama asli (Bukan cuma L/P, bukan angka)
-                        let foundName = values.find(v => isNaN(v) && v.length > 3 && !['L','P'].includes(v.toUpperCase()));
-                        // Cari mana yang angka (NIS)
-                        let foundNIS = values.find(v => !isNaN(v) && v.length >= 3);
-                        // Cari JK
-                        let foundJK = values.find(v => v.toUpperCase() === 'L' || v.toUpperCase() === 'P');
+                        let jkObj = vals.find(v => v.toUpperCase() === 'L' || v.toUpperCase() === 'P');
+                        let nisObj = vals.find(v => !isNaN(v) && v.length >= 3);
+                        let namaObj = vals.find(v => isNaN(v) && v.length > 2 && v.toUpperCase() !== 'L' && v.toUpperCase() !== 'P');
 
-                        let nama = foundName || s.nama || '-';
-                        let nis = foundNIS || s.nis || '-';
-                        let jk = foundJK ? foundJK.toUpperCase() : (nama.toLowerCase().includes('putri') || nama.toLowerCase().includes('aisyah') ? 'P' : 'L');
+                        let jk = jkObj ? jkObj.toUpperCase() : 'L';
+                        let nama = namaObj || s.nama || '-';
+                        let nis = nisObj || s.nis || '-';
 
                         return { nis, nama, jk };
                     });
@@ -1159,7 +1141,7 @@
 
             let printOnlyElements = clone.querySelectorAll('.print-only, .print-signature');
             printOnlyElements.forEach(el => {
-                el.style.display = 'block';
+                el.style.display = 'table';
                 el.classList.remove('hidden'); 
             });
 
@@ -1183,7 +1165,8 @@
                     th { background-color: #e2efda; font-weight: bold; }
                     .text-left { text-align: left !important; }
                     .kop-surat h2 { font-size: 13pt; margin-bottom: 2px; }
-                    .print-signature { margin-top: 30px; width: 100%; }
+                    .print-signature { margin-top: 30px; width: 100%; border: none !important; }
+                    .print-signature td { border: none !important; }
                 </style>
             </head>
             <body>
