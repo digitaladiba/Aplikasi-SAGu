@@ -916,9 +916,9 @@
                             nisFinal = s.nama;
                         }
 
-                        // Penentuan L/P: Kamus Nama Perempuan
+                        // Penentuan L/P: Kamus Nama Perempuan (Ditambah Nayluna)
                         let n = namaFinal.toLowerCase();
-                        let isFemale = ['aisyah', 'alesa', 'anindita', 'azahrah', 'bilqis', 'dian', 'asih', 'kayla', 'nida', 'putri', 'shaqila', 'tiara', 'zahra', 'amelia'].some(name => n.includes(name));
+                        let isFemale = ['aisyah', 'alesa', 'anindita', 'azahrah', 'bilqis', 'dian', 'asih', 'kayla', 'nida', 'putri', 'shaqila', 'tiara', 'zahra', 'amelia', 'nayluna'].some(name => n.includes(name));
                         
                         // Cek RAW JK asli, jika ada dan valid (L/P), gunakan itu
                         if (s.jk && (s.jk.toString().trim().toUpperCase() === 'L' || s.jk.toString().trim().toUpperCase() === 'P')) {
