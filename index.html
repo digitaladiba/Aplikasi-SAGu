@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V3.7 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V3.8 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -28,7 +28,6 @@
         .val-a { color: #dc2626; background-color: #fee2e2; }
         .val-libur { background-color: #fca5a5 !important; cursor: not-allowed; color: #991b1b; font-size: 0; }
 
-        /* Input Table Styles */
         input.cell-input { width: 100%; text-align: center; border: 1px solid transparent; background: transparent; outline: none; font-family: inherit; font-size: inherit; font-weight: 600; color: #1e293b; padding: 2px 0; }
         input.cell-input:focus { background-color: #eff6ff; color: #1d4ed8; border-bottom: 1px solid #3b82f6; }
         input.cell-input::-webkit-outer-spin-button, input.cell-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -38,46 +37,49 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* =========================================================
-           PRINT LAYOUTING F4 LANDSCAPE (ANTI-BLANK PAGE & RAPI)
+           PRINT LAYOUTING (SUPER FORCE OVERRIDE UNTUK VERCEL)
            ========================================================= */
         @media print {
-            /* 1. Matikan batasan layar (scroll) agar tabel bisa memanjang ke bawah & membelah halaman */
-            html, body, .h-screen, .h-full, .overflow-hidden, .overflow-y-auto, .overflow-x-auto, .flex-1, main { 
-                height: auto !important; min-height: auto !important; overflow: visible !important; display: block !important; position: static !important; margin: 0 !important; padding: 0 !important;
+            /* Mematikan semua class Tailwind yang menahan tinggi layar */
+            html, body, #__next, .h-screen, .h-full, .flex, .flex-1, .overflow-hidden, .overflow-y-auto, main, .print-area { 
+                display: block !important; 
+                height: auto !important; 
+                min-height: auto !important; 
+                max-height: none !important;
+                overflow: visible !important; 
+                position: static !important; 
+                margin: 0 !important; 
+                padding: 0 !important; 
             }
             body { background-color: white !important; color: #000; font-size: 8pt !important; }
             
-            /* 2. Sembunyikan elemen UI dan halaman yang tidak aktif */
             #sidebar, header, .no-print, button, select, input[type="date"], #loading-overlay, #login-overlay, #mock-warning { display: none !important; }
-            .halaman.hidden { display: none !important; }
-            .print-area { width: 100% !important; border: none !important; box-shadow: none !important; border-radius: 0 !important; }
+            .halaman:not(.block) { display: none !important; }
             
-            /* 3. Matikan fitur sticky dan shadow tabel web */
             .sticky { position: static !important; box-shadow: none !important; z-index: auto !important; }
             td.sticky { background-color: transparent !important; }
             th.sticky { background-color: #e5e7eb !important; }
-            .whitespace-nowrap { white-space: nowrap !important; }
 
-            /* 4. Konfigurasi Tabel Utama Cetak */
+            .whitespace-nowrap { white-space: normal !important; } /* Cegah nama terpotong horizontal */
+            .w-48 { width: 150px !important; min-width: 150px !important; } /* Paksa lebar nama */
+
             table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; page-break-inside: auto; table-layout: auto !important; }
             tr { page-break-inside: avoid !important; page-break-after: auto; }
-            thead { display: table-header-group !important; } /* Ulangi judul kolom di halaman 2,3, dst */
+            thead { display: table-header-group !important; } 
+            tfoot { display: table-footer-group !important; }
             
-            th, td { border: 1px solid #000 !important; padding: 3px 4px !important; color: black !important; }
+            th, td { border: 1px solid #000 !important; padding: 3px !important; color: black !important; }
             th { background-color: #e5e7eb !important; -webkit-print-color-adjust: exact; color-adjust: exact; font-weight: bold; text-align: center; }
             .val-libur { background-color: #fca5a5 !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
             input.cell-input { font-weight: bold !important; color: black !important; padding: 0 !important; border: none !important; font-size: 8pt !important; background: transparent !important; }
             
-            /* 5. Pengaturan Tanda Tangan */
-            table.print-signature.hidden { display: table !important; } /* Timpa hide tailwind */
-            table.print-signature { width: 100% !important; margin-top: 25px !important; page-break-inside: avoid !important; font-size: 9pt !important; }
-            table.print-signature td, table.print-signature th { border: none !important; background: transparent !important; padding: 0 !important; }
+            table.print-signature, table.print-signature th, table.print-signature td, table.print-signature tr { border: none !important; background: transparent !important; border-color: transparent !important; }
             
             .kop-surat { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid #000; }
             .print-sub-header { margin-top: 2px; margin-bottom: 5px; }
+            .print-signature { display: table !important; margin-top: 30px; page-break-inside: avoid !important; width: 100%; font-size: 9pt !important; }
             
-            /* Ukuran Kertas F4 Landscape Presisi */
-            @page { size: 330mm 215mm landscape; margin: 10mm 15mm; }
+            @page { size: 330mm 215mm landscape; margin: 10mm 12mm; }
         }
         .print-only { display: none; }
         @media print { .print-only { display: block; } }
@@ -94,7 +96,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V3.7</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V3.8</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -212,13 +214,13 @@
         </header>
 
         <div id="mock-warning" class="hidden bg-red-50 text-red-600 border-b border-red-200 px-4 py-2 text-[11px] font-bold text-center w-full no-print">
-            <i data-lucide="alert-triangle" class="w-4 h-4 inline-block mr-1"></i> Mode Offline Web. Tidak dapat mengambil data dari Excel.
+            <i data-lucide="alert-triangle" class="w-4 h-4 inline-block mr-1"></i> Mode Offline Web. Tidak dapat terhubung ke Google Sheets.
         </div>
 
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 print-area w-full">
             
-            <!-- HALAMAN: Papan Utama -->
-            <div id="hal-dashboard" class="halaman page-transition">
+            <!-- HALAMAN: Papan Utama (Dashboard) -->
+            <div id="hal-dashboard" class="halaman page-transition block">
                 <div class="mb-6 no-print">
                     <h1 class="text-2xl font-bold text-slate-800">Statistik Data</h1>
                     <p class="text-sm text-slate-500">Ringkasan informasi administrasi kelas Anda secara real-time.</p>
@@ -331,9 +333,9 @@
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
                             <tr>
-                                <th rowspan="3" class="px-2 py-2 border-r border-slate-300 w-6">No</th>
+                                <th rowspan="3" class="px-2 py-2 border-r border-slate-300 w-8">No</th>
                                 <th rowspan="3" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 shadow-[1px_0_0_0_#cbd5e1]">Nama Murid</th>
-                                <th rowspan="3" class="px-1 py-2 border-r border-slate-300 w-6">L/P</th>
+                                <th rowspan="3" class="px-1 py-2 border-r border-slate-300 w-8">L/P</th>
                                 <th id="th-colspan-absen" colspan="31" class="py-1 border-r border-slate-300 border-b">Tanggal Berjalan</th>
                                 <th colspan="4" class="py-1 border-b border-slate-300 bg-blue-50 text-blue-800">TOTAL</th>
                                 <th rowspan="3" class="px-1 py-2 border-l border-slate-300 bg-blue-50 text-blue-800">%</th>
@@ -354,7 +356,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: SISWA - REKAP BULANAN -->
+            <!-- HALAMAN: SISWA - REKAP BULANAN (READ ONLY + CETAK + EXCEL) -->
             <div id="hal-siswa-rekapbulan" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Rekap Bulanan (Cetak)</h2></div>
@@ -381,7 +383,7 @@
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
                             <tr>
                                 <th rowspan="3" class="px-2 py-1 border-r border-slate-300 w-6">No</th>
-                                <th rowspan="3" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 whitespace-nowrap">Nama Murid</th>
+                                <th rowspan="3" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48">Nama Murid</th>
                                 <th rowspan="3" class="px-1 py-1 border-r border-slate-300 w-6">L/P</th>
                                 <th id="th-colspan-rekap" colspan="31" class="py-1 border-r border-slate-300 border-b">Tanggal Pelaksanaan</th>
                                 <th colspan="4" class="py-1 border-b border-r border-slate-300 bg-slate-200">TOTAL</th>
@@ -400,13 +402,12 @@
                         </thead>
                         <tbody id="tb-rekap-bulan" class="divide-y divide-slate-200 text-slate-700"></tbody>
                     </table>
-                    
-                    <table class="w-full text-sm print-signature hidden">
+                    <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
-                            <td class="text-center w-1/2 align-top">
+                            <td class="text-center border-none !border-transparent w-1/2 align-top">
                                 <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
-                            <td class="text-center w-1/2 align-top">
+                            <td class="text-center border-none !border-transparent w-1/2 align-top">
                                 <p id="print-tgl-rekap">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
@@ -435,7 +436,7 @@
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
                             <tr>
-                                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap">Nama Murid</th>
+                                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap w-48">Nama Murid</th>
                                 <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 1</th>
                                 <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 2</th>
                                 <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 3</th>
@@ -457,13 +458,12 @@
                         </thead>
                         <tbody id="tb-rekap-smt" class="divide-y divide-slate-200 text-slate-700"></tbody>
                     </table>
-                    
-                    <table class="w-full text-sm print-signature hidden">
+                    <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
-                            <td class="text-center w-1/2 align-top">
+                            <td class="text-center border-none !border-transparent w-1/2 align-top">
                                 <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
-                            <td class="text-center w-1/2 align-top">
+                            <td class="text-center border-none !border-transparent w-1/2 align-top">
                                 <p id="print-tgl-smt">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
@@ -498,13 +498,12 @@
                         <thead id="head-formatif" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold"></thead>
                         <tbody id="tb-formatif" class="divide-y divide-slate-200 text-slate-800"></tbody>
                     </table>
-                    
-                    <table class="w-full text-sm print-signature hidden">
+                    <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
-                            <td class="text-center w-1/2 align-top">
+                            <td class="text-center border-none !border-transparent w-1/2 align-top">
                                 <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
-                            <td class="text-center w-1/2 align-top">
+                            <td class="text-center border-none !border-transparent w-1/2 align-top">
                                 <p id="print-tgl-for">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
@@ -536,13 +535,12 @@
                         <thead id="head-sumatif" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold"></thead>
                         <tbody id="tb-sumatif" class="divide-y divide-slate-200 text-slate-800"></tbody>
                     </table>
-                    
-                    <table class="w-full text-sm print-signature hidden">
+                    <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
-                            <td class="text-center w-1/2 align-top">
+                            <td class="text-center border-none !border-transparent w-1/2 align-top">
                                 <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
-                            <td class="text-center w-1/2 align-top">
+                            <td class="text-center border-none !border-transparent w-1/2 align-top">
                                 <p id="print-tgl-sum">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
@@ -572,7 +570,7 @@
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
                             <tr>
-                                <th rowspan="2" class="px-3 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap">Nama Siswa</th>
+                                <th rowspan="2" class="px-3 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap w-48">Nama Siswa</th>
                                 <th colspan="3" class="px-2 py-1 border-r border-slate-300 border-b">Nilai Keaktifan & Partisipasi</th>
                                 <th colspan="3" class="px-2 py-1 border-b border-slate-300">Nilai Sikap & Perilaku</th>
                             </tr>
@@ -583,13 +581,12 @@
                         </thead>
                         <tbody id="tb-sikap" class="divide-y divide-slate-200 text-slate-800"></tbody>
                     </table>
-                    
-                    <table class="w-full text-sm print-signature hidden">
+                    <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
-                            <td class="text-center w-1/2 align-top">
+                            <td class="text-center border-none !border-transparent w-1/2 align-top">
                                 <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
-                            <td class="text-center w-1/2 align-top">
+                            <td class="text-center border-none !border-transparent w-1/2 align-top">
                                 <p id="print-tgl-sikap">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
@@ -631,13 +628,12 @@
                         </thead>
                         <tbody id="tb-legger" class="divide-y divide-slate-200 text-slate-800 font-medium"></tbody>
                     </table>
-                    
-                    <table class="w-full text-sm print-signature hidden">
+                    <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
-                            <td class="text-center w-1/2 align-top">
+                            <td class="text-center border-none !border-transparent w-1/2 align-top">
                                 <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
-                            <td class="text-center w-1/2 align-top">
+                            <td class="text-center border-none !border-transparent w-1/2 align-top">
                                 <p id="print-tgl-legger">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
@@ -702,13 +698,12 @@
                         </thead>
                         <tbody id="tb-jurnal" class="divide-y divide-slate-200 text-slate-700 font-medium"></tbody>
                     </table>
-                    
-                    <table class="w-full text-sm print-signature hidden">
+                    <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
-                            <td class="text-center w-1/2 align-top">
+                            <td class="text-center border-none !border-transparent w-1/2 align-top">
                                 <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
-                            <td class="text-center w-1/2 align-top">
+                            <td class="text-center border-none !border-transparent w-1/2 align-top">
                                 <p id="print-tgl-jurnal">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
@@ -896,29 +891,29 @@
             let usingMock = false;
             
             try {
-                // Fetch Master Siswa (Perbaikan Pembacaan L/P Langsung dari DB)
+                // Fetch Master Siswa (V3.8: Logic Pembacaan Shifted Column Fix)
                 const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
                 if(resSiswa.status === 'success' && resSiswa.data.length > 0) { 
                     globalSiswa = resSiswa.data.map(s => {
-                        let nama = s.nama ? String(s.nama).trim() : '-';
-                        let nis = s.nis ? String(s.nis).trim() : '-';
-                        let jkRaw = s.jk ? String(s.jk).trim().toUpperCase() : '';
-                        
-                        // Perbaikan jika kolom Nama dan L/P tertukar di excel
-                        if (jkRaw.length > 2 && (nama === 'L' || nama === 'P')) {
-                            let temp = nama;
-                            nama = jkRaw;
-                            jkRaw = temp;
+                        let nisFinal = s.nis;
+                        let namaFinal = s.nama;
+                        let jkFinal = s.jk;
+
+                        // Cek jika kolom nama di excel isinya justru angka (NIS), dan kolom L/P isinya teks panjang (Nama)
+                        if (s.jk && s.jk.length > 2) {
+                            namaFinal = s.jk;
+                            nisFinal = s.nama;
+                            
+                            // Tebak JK karena kolom aslinya tertimpa
+                            let n = namaFinal.toLowerCase();
+                            if(n.includes('putri') || n.includes('aisyah') || n.includes('zahra') || n.includes('amelia') || n.includes('bilqis') || n.includes('sari') || n.includes('asih') || n.includes('dian')) {
+                                jkFinal = 'P';
+                            } else {
+                                jkFinal = 'L';
+                            }
                         }
 
-                        // Penentuan L/P yang lebih aman (Sesuai persis dengan DB)
-                        let jk = 'L'; // Default
-                        if (jkRaw.startsWith('P')) jk = 'P';
-                        else if (jkRaw.startsWith('L')) jk = 'L';
-                        // Tebakan cerdas terakhir jika kolom di DB benar-benar kosong
-                        else if (nama.includes('PUTRI') || nama.includes('AISYAH') || nama.includes('ZAHRA')) jk = 'P';
-
-                        return { nis, nama, jk };
+                        return { nis: nisFinal, nama: namaFinal, jk: jkFinal };
                     });
                 } 
                 else { 
