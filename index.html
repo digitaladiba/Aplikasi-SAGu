@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V2.5 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V2.6 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -67,7 +67,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V2.5</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V2.6</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -78,8 +78,8 @@
                     <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">Password</label>
                     <input type="password" id="login-pass" class="w-full border border-slate-300 rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 focus:bg-white text-sm font-medium" placeholder="Masukkan password" required>
                 </div>
-                <div id="login-error" class="hidden text-red-600 text-xs font-semibold text-center bg-red-50 py-2 rounded-lg">
-                    Kredensial tidak cocok!
+                <div id="login-error" class="hidden text-red-600 text-xs font-semibold text-center bg-red-50 py-2 rounded-lg border border-red-100">
+                    Username atau Password salah!
                 </div>
                 <button type="submit" class="w-full bg-blue-600 text-white font-bold rounded-lg px-4 py-2.5 hover:bg-blue-700 transition flex justify-center items-center">
                     Masuk <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
@@ -172,7 +172,7 @@
             </div>
             <div class="flex items-center space-x-3">
                 <div class="text-right hidden md:block">
-                    <p class="text-sm font-bold text-slate-800" id="header-nama">Bayu Prahastian, S.Pd.</p>
+                    <p class="text-sm font-bold text-slate-800" id="header-nama">Guru Kelas</p>
                     <p class="text-xs text-slate-500" id="header-kelas">Terkoneksi Database</p>
                 </div>
                 <div class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600"><i data-lucide="user" class="w-5 h-5"></i></div>
@@ -200,21 +200,21 @@
                             <p class="text-sm font-medium text-slate-500">Rata-rata Kehadiran</p>
                             <i data-lucide="user-check" class="w-5 h-5 text-emerald-500"></i>
                         </div>
-                        <h3 class="text-3xl font-bold text-emerald-600" id="dash-rata-hadir">83.3%</h3>
+                        <h3 class="text-3xl font-bold text-emerald-600" id="dash-rata-hadir">0%</h3>
                     </div>
                     <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm border-l-4 border-amber-500">
                         <div class="flex justify-between items-start mb-2">
                             <p class="text-sm font-medium text-slate-500">Jurnal Terisi</p>
                             <i data-lucide="book-open" class="w-5 h-5 text-amber-500"></i>
                         </div>
-                        <h3 class="text-3xl font-bold text-amber-600" id="dash-total-jurnal">1</h3>
+                        <h3 class="text-3xl font-bold text-amber-600" id="dash-total-jurnal">0</h3>
                     </div>
                     <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm border-l-4 border-purple-500">
                         <div class="flex justify-between items-start mb-2">
                             <p class="text-sm font-medium text-slate-500">Mata Pelajaran</p>
                             <i data-lucide="library" class="w-5 h-5 text-purple-500"></i>
                         </div>
-                        <h3 class="text-3xl font-bold text-purple-600" id="dash-total-mapel">9</h3>
+                        <h3 class="text-3xl font-bold text-purple-600" id="dash-total-mapel">0</h3>
                     </div>
                 </div>
             </div>
@@ -286,7 +286,7 @@
                     </div>
                     <div class="flex space-x-2">
                         <select id="filter-bulan-absen-input" onchange="renderInputAbsenBulan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium">
-                            <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option>
+                            <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
                         </select>
                         <button onclick="alert('Data absensi berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan</button>
                     </div>
@@ -319,8 +319,9 @@
                     <div class="flex space-x-2">
                         <select id="filter-bulan-rekap" onchange="renderRekapBulanan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                             <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option>
+                            <option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
                         </select>
-                        <button onclick="cetakLaporan('abs')" class="bg-slate-800 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> Cetak F4</button>
+                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
@@ -356,12 +357,12 @@
             <div id="hal-siswa-rekapsemester" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Rekap Semester</h2></div>
-                    <button onclick="cetakLaporan('smt')" class="bg-slate-800 text-white px-4 py-1.5 rounded-lg text-sm font-medium flex items-center shadow-sm"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> Cetak F4</button>
+                    <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-4 py-1.5 rounded-lg text-sm font-medium flex items-center shadow-sm"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> Cetak F4</button>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[11pt]">REKAPITULASI DAFTAR HADIR SEMESTER</h2>
-                        <p class="text-[9pt] print-sub-header">Tahun Ajaran 2025/2026</p>
+                        <h2 class="font-bold text-[10pt] uppercase">REKAPITULASI DAFTAR HADIR SEMESTER</h2>
+                        <p class="text-[8pt] print-sub-header">Tahun Ajaran 2025/2026</p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
@@ -373,8 +374,8 @@
                                 <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 4</th>
                                 <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 5</th>
                                 <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 6</th>
-                                <th colspan="4" class="px-2 py-1 border-r border-slate-300 border-b bg-blue-50 text-blue-800">TOTAL SMT</th>
-                                <th rowspan="2" class="px-2 py-1 bg-blue-50 text-blue-800 border-l border-slate-300">% HADIR</th>
+                                <th colspan="4" class="px-2 py-1 border-r border-slate-300 border-b bg-slate-200">TOTAL SMT</th>
+                                <th rowspan="2" class="px-2 py-1 bg-slate-200 border-l border-slate-300">% HADIR</th>
                             </tr>
                             <tr class="font-normal text-[9px] sm:text-[10px] text-slate-600">
                                 <th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>
@@ -383,7 +384,7 @@
                                 <th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>
                                 <th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>
                                 <th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>
-                                <th class="border-r border-slate-300 bg-blue-50 font-bold text-slate-800">H</th><th class="border-r border-slate-300 bg-blue-50 font-bold text-slate-800">S</th><th class="border-r border-slate-300 bg-blue-50 font-bold text-slate-800">I</th><th class="bg-blue-50 font-bold text-slate-800">A</th>
+                                <th class="border-r border-slate-300 bg-slate-200 font-bold text-black">H</th><th class="border-r border-slate-300 bg-slate-200 font-bold text-black">S</th><th class="border-r border-slate-300 bg-slate-200 font-bold text-black">I</th><th class="bg-slate-200 font-bold text-red-600">A</th>
                             </tr>
                         </thead>
                         <tbody id="tb-rekap-smt" class="divide-y divide-slate-200 text-slate-700"></tbody>
@@ -395,10 +396,13 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: PENILAIAN - FORMATIF -->
+            <!-- HALAMAN: PENILAIAN - FORMATIF (Bisa Input) -->
             <div id="hal-nilai-formatif" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
-                    <div><h2 class="text-xl font-bold text-slate-800">Asesmen Formatif</h2></div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">Asesmen Formatif</h2>
+                        <p class="text-sm text-slate-500">Ketik angka pada kolom K1 dan K2 untuk mengubah nilai.</p>
+                    </div>
                     <div class="flex space-x-2">
                         <select id="filter-mapel-formatif" onchange="renderFormatif()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium"></select>
                         <button onclick="alert('Nilai formatif berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan Nilai</button>
@@ -421,10 +425,10 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: PENILAIAN - SUMATIF -->
+            <!-- HALAMAN: PENILAIAN - SUMATIF (Bisa Input) -->
             <div id="hal-nilai-sumatif" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
-                    <div><h2 class="text-xl font-bold text-slate-800">Asesmen Sumatif</h2></div>
+                    <div><h2 class="text-xl font-bold text-slate-800">Asesmen Sumatif</h2><p class="text-sm text-slate-500">Ketik angka di kolom LM, STS, dan SAS.</p></div>
                     <div class="flex space-x-2">
                         <select id="filter-mapel-sumatif" onchange="renderSumatif()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium"></select>
                         <button onclick="alert('Nilai sumatif berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan Nilai</button>
@@ -447,10 +451,10 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: PENILAIAN - SIKAP -->
+            <!-- HALAMAN: PENILAIAN - SIKAP (Bisa Input) -->
             <div id="hal-nilai-sikap" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
-                    <div><h2 class="text-xl font-bold text-slate-800">Keaktifan & Sikap</h2></div>
+                    <div><h2 class="text-xl font-bold text-slate-800">Keaktifan & Sikap</h2><p class="text-sm text-slate-500">Nilai (0-100). Predikat terisi otomatis.</p></div>
                     <div class="flex space-x-2">
                         <button onclick="alert('Nilai sikap disimpan!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan Nilai</button>
                         <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm"><i data-lucide="printer" class="w-4 h-4"></i></button>
@@ -599,49 +603,11 @@
             {nis: "2575", nama: "UWAIS AL QORNI", jk: "L"}
         ];
 
-        let listJurnal = [
-            { tanggal: "2026-01-13", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Kerja Sama di Lingkunganku", tujuanPembelajaran: "menjelaskan dan memberikan contoh kerja sama...", kegiatan: "Siswa menyimak penjelasan tentang kerjasama, melakukan diskusi kelompok, dan presentasi.", refleksi: "Perlu pengulangan di bagian presentasi." }
-        ];
-
-        let mapelData = {
-            "Pendidikan Pancasila": {
-                lm: ["Kerja Sama di Lingkunganku", "Pancasila dalam Diriku"],
-                tp: [
-                    { nama: "menjelaskan dan memberikan contoh kerja sama...", k1: "K1", k2: "K2" },
-                    { nama: "menunjukan sikap kompak dan bersatu...", k1: "K1", k2: "K2" },
-                    { nama: "menunjukan sikap bangga menjadi anak Indonesia...", k1: "K1", k2: "K2" },
-                    { nama: "mengidentifikasi dan menjelaskan makna sila-sila pancasila...", k1: "K1", k2: "K2" },
-                    { nama: "menunjukan sikap dan perilaku sesuai nilai sila-sila pancasila...", k1: "K1", k2: "K2" },
-                    { nama: "menjelaskan secara singkat sejarah perumusan pancasila...", k1: "K1", k2: "K2" },
-                    { nama: "menceritakan dan meneladai karakter para perumus pancasila", k1: "K1", k2: "K2" }
-                ]
-            },
-            "Bahasa Indonesia": {
-                lm: ["Bertukar dan Membayar", "Satu Titik", "Asal Usul", "Sahatlah Ragaku"],
-                tp: [
-                    { nama: "memahami informasi dari teks fabel...", k1: "K1", k2: "K2" },
-                    { nama: "menerapkan kaidah penulisan nilai uang", k1: "K1", k2: "K2" },
-                    { nama: "menulis teks prosedur", k1: "K1", k2: "K2" },
-                    { nama: "berdiskusi tentang kebutuhan dan keinginan", k1: "K1", k2: "K2" },
-                    { nama: "menggunakan kaidah kalimat efektif", k1: "K1", k2: "K2" },
-                    { nama: "memahami makna dan menulis puisi", k1: "K1", k2: "K2" },
-                    { nama: "mengidentifikasi majas metafora", k1: "K1", k2: "K2" },
-                    { nama: "menulis laporan perjalanan berstruktur", k1: "K1", k2: "K2" }
-                ]
-            },
-            "Matematika": {
-                lm: ["Pengukuran", "Geometri", "Analisis Data dan Peluang"],
-                tp: [
-                    { nama: "mengukur luas dengan satuan tidak baku dan baku", k1: "K1", k2: "K2" },
-                    { nama: "mengukur volume dengan satuan tidak baku dan baku", k1: "K1", k2: "K2" },
-                    { nama: "mendeskripsikan ciri-ciri bentuk bangun datar", k1: "K1", k2: "K2" },
-                    { nama: "menyusun komosisi dan dekomposisi bangun datar", k1: "K1", k2: "K2" },
-                    { nama: "menyajikan data dalam bentuk pictogram", k1: "K1", k2: "K2" },
         const mockJurnalFallback = [
-            { tanggal: "13/01/2026", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Pengenalan Perangkat TIK", tujuanPembelajaran: "menjelaskan pengertian TIK serta peranannya", kegiatan: "Siswa menyimak penjelasan tentang pengertian TIK, melakukan diskusi kelompok, dan presentasi.", refleksi: "Perlu pengulangan di bagian presentasi." },
-            { tanggal: "14/01/2026", tglFormat: "Rabu,<br>14 Jan 2026", jam: "4-5", mapel: "Bahasa Indonesia", lingkupMateri: "Teks Persuasi", tujuanPembelajaran: "membuat kalimat ajakan (persuasi)", kegiatan: "Membaca contoh teks persuasi, menemukan kalimat ajakan, dan mempraktikkan menulis satu paragraf.", refleksi: "-" }
+            { tanggal: "13/01/2026", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Kerja Sama di Lingkunganku", tujuanPembelajaran: "menjelaskan dan memberikan contoh kerja sama...", kegiatan: "Siswa menyimak penjelasan tentang kerjasama, melakukan diskusi kelompok, dan presentasi.", refleksi: "Perlu pengulangan di bagian presentasi." }
         ];
 
+        // MENGKEMBALIKAN DATA MAPEL TERMASUK SENI RUPA
         let mapelData = {
             "Pendidikan Pancasila": {
                 lm: ["Kerja Sama di Lingkunganku", "Pancasila dalam Diriku"],
@@ -700,8 +666,56 @@
                 ] 
             }
         };
+
         let currentSettingMapel = "Pendidikan Pancasila";
         let nilaiSiswa = {};
+
+        // PERBAIKAN LOGIN: MENGABAIKAN HURUF BESAR/KECIL DAN SPASI
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-user').value.trim().toLowerCase();
+            const p = document.getElementById('login-pass').value.trim();
+            
+            if(u === 'sdn04taman' && p === 'bayuprahastian') {
+                sessionStorage.setItem('siguru_logged_in', 'true');
+                document.getElementById('login-error').classList.add('hidden');
+                
+                document.getElementById('login-overlay').classList.add('opacity-0');
+                setTimeout(() => {
+                    document.getElementById('login-overlay').classList.add('hidden');
+                    initialSetupSemua();
+                }, 300);
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            if(confirm("Yakin ingin keluar dari sistem?")) {
+                sessionStorage.removeItem('siguru_logged_in');
+                window.location.reload();
+            }
+        }
+
+        function checkAuth() {
+            if(sessionStorage.getItem('siguru_logged_in') === 'true') {
+                document.getElementById('login-overlay').classList.add('hidden');
+                initialSetupSemua();
+            }
+        }
+
+        function initialSetupSemua() {
+            document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
+            initDataNilai();
+            initMockAbsen();
+            renderInputAbsenBulan();
+            renderRekapBulanan();
+            syncGlobalData();
+            initDropdownMapel(); 
+            renderLegger();      
+            updateJurnalMapel();
+            renderTabelJurnal();
+        }
 
         function initDataNilai() {
             globalSiswa.forEach((s, i) => {
@@ -856,7 +870,6 @@
                 thead += `<th class="border-r border-slate-300 w-4 ${sunday ? 'bg-red-100 text-red-500' : ''}">${d}</th>`;
             }
             
-            // Kolom Total
             thead += `<th class="border-r border-slate-300 bg-blue-50 text-blue-700 w-5">H</th>
                       <th class="border-r border-slate-300 bg-amber-50 text-amber-600 w-5">S</th>
                       <th class="border-r border-slate-300 bg-purple-50 text-purple-600 w-5">I</th>
@@ -1217,7 +1230,7 @@
         // --- INIT APP ---
         window.onload = () => {
             pindahHalaman('dashboard', document.querySelector('[data-target="dashboard"]'));
-            checkAuth(); // Cek login & set up data
+            checkAuth(); // Cek login
         };
     </script>
 </body>
