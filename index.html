@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V2.8.2 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V3 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -38,39 +38,42 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* =========================================================
-           PRINT LAYOUTING F4 LANDSCAPE (SANGAT RAPI)
+           PRINT LAYOUTING F4 LANDSCAPE (SANGAT RAPI MULTI-PAGE)
            ========================================================= */
         @media print {
-            /* Matikan semua efek UI Web */
-            body { background-color: white !important; color: #000; font-size: 7.5pt !important; display: block !important; margin: 0 !important; }
+            body { background-color: white !important; color: #000; font-size: 8pt !important; display: block !important; margin: 0 !important; }
             #sidebar, header, .no-print, button, select, #loading-overlay, #login-overlay { display: none !important; }
             
-            /* Bebaskan layout agar tidak terpotong */
-            html, body, .h-screen, .h-full, .overflow-hidden, .overflow-y-auto, .overflow-x-auto, .flex-1, main, .print-area, .halaman { 
+            /* KUNCI PENTING: Mematikan overflow web agar browser bisa membelah halaman */
+            html, body, .h-screen, .h-full, .overflow-hidden, .overflow-y-auto, .overflow-x-auto, .flex, .flex-1, main { 
                 height: auto !important; min-height: auto !important; overflow: visible !important; display: block !important; position: static !important; padding: 0 !important; margin: 0 !important;
             }
+
+            /* KUNCI PENTING 2: Jaga halaman yang tidak aktif tetap tersembunyi */
+            .hidden { display: none !important; }
+
             .print-area { width: 100% !important; border: none !important; box-shadow: none !important; border-radius: 0 !important; }
             
-            /* Konfigurasi Tabel Khusus Cetak */
-            table { width: 100% !important; border-collapse: collapse !important; font-size: 7.5pt !important; page-break-inside: auto; table-layout: auto !important; }
-            tr { page-break-inside: avoid; page-break-after: auto; }
-            thead { display: table-header-group !important; } /* Judul berulang di halaman baru */
+            /* Konfigurasi Tabel */
+            table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; page-break-inside: auto; table-layout: auto !important; }
+            tr { page-break-inside: avoid !important; page-break-after: auto; }
+            
+            /* Judul Kolom otomatis terulang di halaman baru */
+            thead { display: table-header-group !important; } 
             tfoot { display: table-footer-group !important; }
             
-            /* Garis & Sel Tabel Rapat */
-            th, td { border: 1pt solid #000 !important; padding: 2px !important; color: black !important; }
+            th, td { border: 1px solid #000 !important; padding: 3px 4px !important; color: black !important; }
             th { background-color: #e5e7eb !important; -webkit-print-color-adjust: exact; color-adjust: exact; font-weight: bold; text-align: center; }
             .val-libur { background-color: #fca5a5 !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
-            input.cell-input { font-weight: bold !important; color: black !important; padding: 0 !important; border: none !important; font-size: 7.5pt !important; background: transparent !important; }
+            input.cell-input { font-weight: bold !important; color: black !important; padding: 0 !important; border: none !important; font-size: 8pt !important; background: transparent !important; }
             
-            .kop-surat { margin-bottom: 5px; padding-bottom: 2px; }
+            .kop-surat { margin-bottom: 8px; padding-bottom: 4px; }
             .print-sub-header { margin-top: 2px; margin-bottom: 5px; }
             
-            /* Tanda Tangan */
-            .print-signature { display: flex !important; justify-content: space-between; margin-top: 15px; page-break-inside: avoid !important; width: 100%; padding: 0 40px; font-size: 8pt !important; }
+            /* Tanda Tangan tidak boleh terpotong */
+            .print-signature { display: flex !important; justify-content: space-between; margin-top: 20px; page-break-inside: avoid !important; width: 100%; padding: 0 40px; font-size: 9pt !important; }
             
-            /* Kunci Ukuran F4 Landscape Margin Kecil */
-            @page { size: 330mm 215mm landscape; margin: 8mm 10mm; }
+            @page { size: 330mm 215mm landscape; margin: 10mm 15mm; }
         }
         .print-only { display: none; }
         @media print { .print-only { display: block; } }
@@ -87,7 +90,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V2.8.2</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V3</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -126,12 +129,14 @@
         </div>
 
         <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1 custom-scrollbar">
+            <!-- Dashboard -->
             <button onclick="pindahHalaman('dashboard', this)" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-white bg-blue-600" data-target="dashboard">
                 <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span>Dashboard</span>
             </button>
             
             <div class="pt-4 pb-1 px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Pengaturan</div>
             
+            <!-- Identitas Accordion -->
             <div>
                 <button onclick="toggleAccordion('menu-identitas')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
                     <div class="flex items-center space-x-3"><i data-lucide="school" class="w-5 h-5"></i><span>Identitas</span></div>
@@ -145,18 +150,20 @@
             
             <div class="pt-4 pb-1 px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Modul Akademik</div>
 
+            <!-- Daftar Hadir Accordion -->
             <div>
                 <button onclick="toggleAccordion('menu-siswa')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
                     <div class="flex items-center space-x-3"><i data-lucide="calendar-check" class="w-5 h-5"></i><span>Daftar Hadir</span></div>
                     <i data-lucide="chevron-down" id="icon-menu-siswa" class="w-4 h-4 chevron rotate"></i>
                 </button>
                 <div id="menu-siswa" class="submenu flex flex-col pl-9 pr-2 space-y-1 mt-1 open">
-                    <button onclick="pindahHalaman('siswa-absen', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-absen">Input Daftar Hadir</button>
+                    <button onclick="pindahHalaman('siswa-absen', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-absen">Input Kehadiran</button>
                     <button onclick="pindahHalaman('siswa-rekapbulan', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-rekapbulan">Rekap Bulanan</button>
                     <button onclick="pindahHalaman('siswa-rekapsemester', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-rekapsemester">Rekap Semester</button>
                 </div>
             </div>
 
+            <!-- Penilaian Accordion -->
             <div>
                 <button onclick="toggleAccordion('menu-nilai')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
                     <div class="flex items-center space-x-3"><i data-lucide="clipboard-list" class="w-5 h-5"></i><span>Penilaian</span></div>
@@ -170,6 +177,7 @@
                 </div>
             </div>
 
+            <!-- Jurnal Accordion -->
             <div>
                 <button onclick="toggleAccordion('menu-jurnal')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
                     <div class="flex items-center space-x-3"><i data-lucide="book-open" class="w-5 h-5"></i><span>Jurnal Mengajar</span></div>
@@ -193,7 +201,7 @@
         <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 z-40 no-print flex-shrink-0 w-full shadow-sm">
             <div class="flex items-center">
                 <button onclick="toggleSidebar()" class="text-slate-500 hover:text-slate-800 p-2 -ml-2 mr-2"><i data-lucide="menu" class="w-6 h-6"></i></button>
-                <h2 id="judul-halaman" class="text-lg font-bold text-slate-800 hidden sm:block">Papan Utama</h2>
+                <h2 id="judul-halaman" class="text-lg font-bold text-slate-800 hidden sm:block">Dashboard</h2>
             </div>
             <div class="flex items-center space-x-3">
                 <div class="text-right hidden md:block">
@@ -313,7 +321,7 @@
                         <select id="filter-bulan-absen-input" onchange="renderInputAbsenBulan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                             <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
                         </select>
-                        <button onclick="alert('Data absensi berhasil disimpan secara lokal!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan</button>
+                        <button onclick="alert('Data absensi berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan</button>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto relative pb-2">
@@ -343,7 +351,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: SISWA - REKAP BULANAN (READ ONLY + CETAK) -->
+            <!-- HALAMAN: SISWA - REKAP BULANAN (READ ONLY + CETAK + EXCEL) -->
             <div id="hal-siswa-rekapbulan" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Rekap Bulanan (Cetak)</h2></div>
@@ -392,7 +400,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: SISWA - REKAP SEMESTER -->
+            <!-- HALAMAN: SISWA - REKAP SEMESTER (CETAK + EXCEL) -->
             <div id="hal-siswa-rekapsemester" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Rekap Semester</h2></div>
@@ -438,7 +446,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: PENILAIAN - FORMATIF (Bisa Input) -->
+            <!-- HALAMAN: PENILAIAN - FORMATIF (Bisa Input + EXCEL) -->
             <div id="hal-nilai-formatif" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div>
@@ -449,7 +457,7 @@
                         <select id="filter-mapel-formatif" onchange="renderFormatif()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium"></select>
                         <button onclick="alert('Nilai formatif berhasil disimpan sementara di memori web!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
                         <button onclick="exportToExcel('area-nilai-formatif', 'Asesmen_Formatif_' + document.getElementById('filter-mapel-formatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan('for')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm"><i data-lucide="printer" class="w-4 h-4"></i></button>
+                        <button onclick="cetakLaporan('for')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-nilai-formatif" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
@@ -468,7 +476,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: PENILAIAN - SUMATIF (Bisa Input) -->
+            <!-- HALAMAN: PENILAIAN - SUMATIF (Bisa Input + EXCEL) -->
             <div id="hal-nilai-sumatif" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Asesmen Sumatif</h2><p class="text-sm text-slate-500">Ketik angka di kolom LM, STS, dan SAS.</p></div>
@@ -476,7 +484,7 @@
                         <select id="filter-mapel-sumatif" onchange="renderSumatif()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium"></select>
                         <button onclick="alert('Nilai sumatif berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
                         <button onclick="exportToExcel('area-nilai-sumatif', 'Asesmen_Sumatif_' + document.getElementById('filter-mapel-sumatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan('sum')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm"><i data-lucide="printer" class="w-4 h-4"></i></button>
+                        <button onclick="cetakLaporan('sum')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-nilai-sumatif" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
@@ -495,14 +503,14 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: PENILAIAN - SIKAP (Bisa Input) -->
+            <!-- HALAMAN: PENILAIAN - SIKAP (Bisa Input + EXCEL) -->
             <div id="hal-nilai-sikap" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Keaktifan & Sikap</h2><p class="text-sm text-slate-500">Nilai (0-100). Predikat terisi otomatis.</p></div>
                     <div class="flex space-x-2">
                         <button onclick="alert('Nilai sikap disimpan!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
                         <button onclick="exportToExcel('area-nilai-sikap', 'Nilai_Sikap')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan('sikap')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm"><i data-lucide="printer" class="w-4 h-4"></i></button>
+                        <button onclick="cetakLaporan('sikap')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-nilai-sikap" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
@@ -531,7 +539,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: PENILAIAN - LEGGER RAPOR -->
+            <!-- HALAMAN: PENILAIAN - LEGGER RAPOR (EXCEL) -->
             <div id="hal-nilai-legger" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Kelola Nilai (Legger Rapor)</h2></div>
@@ -635,7 +643,7 @@
         lucide.createIcons();
 
         // ------------------------------------------
-        // 1. DATA MAPEL & TARGET (100% SESUAI DB)
+        // 1. DATA MAPEL & TARGET
         // ------------------------------------------
         let mapelData = {
             "Pendidikan Pancasila": {
@@ -787,7 +795,7 @@
                 if(resSiswa.status === 'success' && resSiswa.data.length > 0) { globalSiswa = resSiswa.data; } 
                 else { globalSiswa = mockSiswaFallback; }
 
-                // Fetch Identitas (Opsional jika API ada)
+                // Fetch Identitas (Opsional)
                 try {
                     const resId = await fetch(`${API_URL}?action=getIdentitas`).then(r => r.json());
                     if(resId.status === 'success') {
@@ -854,7 +862,7 @@
         ];
 
         const mockJurnalFallback = [
-            { tanggal: "13/01/2026", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Kerja Sama di Lingkunganku", tujuanPembelajaran: "menjelaskan dan memberikan contoh kerja sama...", kegiatan: "Siswa menyimak penjelasan tentang kerjasama, melakukan diskusi.", refleksi: "Perlu pengulangan di bagian presentasi." }
+            { tanggal: "2026-01-13", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Kerja Sama di Lingkunganku", tujuanPembelajaran: "menjelaskan dan memberikan contoh kerja sama...", kegiatan: "Siswa menyimak penjelasan tentang kerjasama, melakukan diskusi.", refleksi: "Perlu pengulangan di bagian presentasi." }
         ];
 
         function initDataNilai() {
@@ -1474,7 +1482,7 @@
 
         window.onload = () => {
             pindahHalaman('dashboard', document.querySelector('[data-target="dashboard"]'));
-            checkAuth();
+            checkAuth(); // Cek login & set up data
         };
     </script>
 </body>
