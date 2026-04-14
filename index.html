@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V3 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V3.1 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -38,41 +38,43 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* =========================================================
-           PRINT LAYOUTING F4 LANDSCAPE (SANGAT RAPI MULTI-PAGE)
+           PRINT LAYOUTING F4 LANDSCAPE (ANTI-BERANTAKAN)
            ========================================================= */
         @media print {
-            body { background-color: white !important; color: #000; font-size: 8pt !important; display: block !important; margin: 0 !important; }
-            #sidebar, header, .no-print, button, select, #loading-overlay, #login-overlay { display: none !important; }
-            
-            /* KUNCI PENTING: Mematikan overflow web agar browser bisa membelah halaman */
-            html, body, .h-screen, .h-full, .overflow-hidden, .overflow-y-auto, .overflow-x-auto, .flex, .flex-1, main { 
-                height: auto !important; min-height: auto !important; overflow: visible !important; display: block !important; position: static !important; padding: 0 !important; margin: 0 !important;
+            /* 1. Matikan batasan tinggi & overflow untuk cegah halaman kosong/terpotong */
+            html, body, .h-screen, .h-full, .overflow-hidden, .overflow-y-auto, .overflow-x-auto, .flex, .flex-col, .flex-1, main { 
+                height: auto !important; min-height: auto !important; overflow: visible !important; display: block !important; position: static !important; margin: 0 !important; padding: 0 !important;
             }
-
-            /* KUNCI PENTING 2: Jaga halaman yang tidak aktif tetap tersembunyi */
-            .hidden { display: none !important; }
-
+            body { background-color: white !important; color: #000; font-size: 8pt !important; }
+            
+            /* 2. Sembunyikan elemen UI Web */
+            #sidebar, header, .no-print, button, select, #loading-overlay, #login-overlay { display: none !important; }
+            .halaman.hidden { display: none !important; }
             .print-area { width: 100% !important; border: none !important; box-shadow: none !important; border-radius: 0 !important; }
             
-            /* Konfigurasi Tabel */
+            /* 3. Reset Sticky Column (Penyebab border hilang di kolom nama) */
+            .sticky { position: static !important; box-shadow: none !important; z-index: auto !important; }
+            td.sticky { background-color: transparent !important; }
+            th.sticky { background-color: #e5e7eb !important; }
+
+            /* 4. Konfigurasi Tabel Kertas */
             table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; page-break-inside: auto; table-layout: auto !important; }
             tr { page-break-inside: avoid !important; page-break-after: auto; }
-            
-            /* Judul Kolom otomatis terulang di halaman baru */
-            thead { display: table-header-group !important; } 
+            thead { display: table-header-group !important; } /* Ulangi header di halaman baru */
             tfoot { display: table-footer-group !important; }
             
+            /* 5. Paksa Border Tampil Sempurna */
             th, td { border: 1px solid #000 !important; padding: 3px 4px !important; color: black !important; }
             th { background-color: #e5e7eb !important; -webkit-print-color-adjust: exact; color-adjust: exact; font-weight: bold; text-align: center; }
             .val-libur { background-color: #fca5a5 !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
             input.cell-input { font-weight: bold !important; color: black !important; padding: 0 !important; border: none !important; font-size: 8pt !important; background: transparent !important; }
             
-            .kop-surat { margin-bottom: 8px; padding-bottom: 4px; }
+            /* 6. Tata Letak Kop & TTD */
+            .kop-surat { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid #000; }
             .print-sub-header { margin-top: 2px; margin-bottom: 5px; }
-            
-            /* Tanda Tangan tidak boleh terpotong */
             .print-signature { display: flex !important; justify-content: space-between; margin-top: 20px; page-break-inside: avoid !important; width: 100%; padding: 0 40px; font-size: 9pt !important; }
             
+            /* Kertas F4 Landscape Margins Rapat */
             @page { size: 330mm 215mm landscape; margin: 10mm 15mm; }
         }
         .print-only { display: none; }
@@ -90,7 +92,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V3</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V3.1</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -321,7 +323,7 @@
                         <select id="filter-bulan-absen-input" onchange="renderInputAbsenBulan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                             <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
                         </select>
-                        <button onclick="alert('Data absensi berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan</button>
+                        <button onclick="alert('Data absensi berhasil disimpan secara lokal!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan</button>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto relative pb-2">
@@ -361,13 +363,13 @@
                             <option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
                         </select>
                         <button onclick="exportToExcel('area-rekap-bulan', 'Rekap_Hadir_Bulanan')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan('abs')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-rekap-bulan" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[10pt] uppercase" id="judul-cetak-rekap-bulan">DAFTAR HADIR SISWA BULAN JANUARI</h2>
-                        <p class="text-[8pt] print-sub-header">Tahun Ajaran 2025/2026 | Semester Genap | Kelas IV B</p>
+                        <h2 class="font-bold text-[11pt] uppercase" id="judul-cetak-rekap-bulan">DAFTAR HADIR SISWA BULAN JANUARI</h2>
+                        <p class="text-[9pt] print-sub-header">Tahun Ajaran 2025/2026 | Semester Genap | Kelas IV B</p>
                     </div>
                     <div class="px-3 pt-2 print-only text-right font-bold italic text-[8pt]" id="info-hari-efektif-cetak">Hari Efektif: 26 Hari</div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-[11px]">
@@ -406,7 +408,7 @@
                     <div><h2 class="text-xl font-bold text-slate-800">Rekap Semester</h2></div>
                     <div class="flex space-x-2">
                         <button onclick="exportToExcel('area-rekap-semester', 'Rekap_Hadir_Semester')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan('smt')" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-medium flex items-center shadow-sm"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-medium flex items-center shadow-sm"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-rekap-semester" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
@@ -457,13 +459,13 @@
                         <select id="filter-mapel-formatif" onchange="renderFormatif()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium"></select>
                         <button onclick="alert('Nilai formatif berhasil disimpan sementara di memori web!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
                         <button onclick="exportToExcel('area-nilai-formatif', 'Asesmen_Formatif_' + document.getElementById('filter-mapel-formatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan('for')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-nilai-formatif" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[10pt] uppercase">DAFTAR NILAI ASESMEN FORMATIF</h2>
-                        <p class="text-[8pt] print-sub-header">Mata Pelajaran: <span id="print-mapel-formatif"></span></p>
+                        <h2 class="font-bold text-[11pt] uppercase">DOKUMEN ASESMEN FORMATIF</h2>
+                        <p class="text-[9pt] print-sub-header">Mata Pelajaran: <span id="print-mapel-formatif"></span></p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs">
                         <thead id="head-formatif" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold"></thead>
@@ -484,13 +486,13 @@
                         <select id="filter-mapel-sumatif" onchange="renderSumatif()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium"></select>
                         <button onclick="alert('Nilai sumatif berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
                         <button onclick="exportToExcel('area-nilai-sumatif', 'Asesmen_Sumatif_' + document.getElementById('filter-mapel-sumatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan('sum')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-nilai-sumatif" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[10pt] uppercase">DAFTAR NILAI ASESMEN SUMATIF</h2>
-                        <p class="text-[8pt] print-sub-header">Mata Pelajaran: <span id="print-mapel-sumatif"></span></p>
+                        <h2 class="font-bold text-[11pt] uppercase">DOKUMEN ASESMEN SUMATIF</h2>
+                        <p class="text-[9pt] print-sub-header">Mata Pelajaran: <span id="print-mapel-sumatif"></span></p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs">
                         <thead id="head-sumatif" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold"></thead>
@@ -510,18 +512,18 @@
                     <div class="flex space-x-2">
                         <button onclick="alert('Nilai sikap disimpan!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
                         <button onclick="exportToExcel('area-nilai-sikap', 'Nilai_Sikap')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan('sikap')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-nilai-sikap" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[10pt] uppercase">REKAPITULASI PENILAIAN KEAKTIFAN DAN SIKAP</h2>
-                        <p class="text-[8pt] print-sub-header">Tahun Ajaran 2025/2026</p>
+                        <h2 class="font-bold text-[11pt] uppercase">REKAPITULASI PENILAIAN KEAKTIFAN DAN SIKAP</h2>
+                        <p class="text-[9pt] print-sub-header">Tahun Ajaran 2025/2026</p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
                             <tr>
-                                <th rowspan="2" class="px-3 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 shadow-[1px_0_0_0_#cbd5e1]">Nama Siswa</th>
+                                <th rowspan="2" class="px-3 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 shadow-[1px_0_0_0_#cbd5e1] w-48">Nama Siswa</th>
                                 <th colspan="3" class="px-2 py-1 border-r border-slate-300 border-b">Nilai Keaktifan & Partisipasi</th>
                                 <th colspan="3" class="px-2 py-1 border-b border-slate-300">Nilai Sikap & Perilaku</th>
                             </tr>
@@ -545,12 +547,12 @@
                     <div><h2 class="text-xl font-bold text-slate-800">Kelola Nilai (Legger Rapor)</h2></div>
                     <div class="flex space-x-2">
                         <button onclick="exportToExcel('area-nilai-legger', 'Legger_Rapor')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan('legger')" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-nilai-legger" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[10pt] uppercase">Legger Nilai Rapor Akhir Semester</h2>
+                        <h2 class="font-bold text-[11pt] uppercase">Legger Nilai Rapor Akhir Semester</h2>
                         <p class="text-[8pt] print-sub-header">Tahun Ajaran: 2025/2026 | Semester: Genap</p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-[11px]">
@@ -583,7 +585,7 @@
                     <div class="flex space-x-2">
                         <button onclick="document.getElementById('form-jurnal').classList.toggle('hidden')" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="plus" class="w-4 h-4 mr-1"></i> Tulis Jurnal</button>
                         <button onclick="exportToExcel('area-jurnal', 'Jurnal_Mengajar_Harian')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan('jurnal')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
 
@@ -620,7 +622,7 @@
 
                 <div id="area-jurnal" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[10pt] uppercase">JURNAL HARIAN GURU KELAS</h2>
+                        <h2 class="font-bold text-[11pt] uppercase">JURNAL HARIAN GURU KELAS</h2>
                         <p class="text-[8pt] print-sub-header">Tahun Ajaran 2025/2026 | Semester Genap</p>
                     </div>
                     <table class="w-full text-left border-collapse text-[10px] sm:text-[11px]">
@@ -1007,7 +1009,7 @@
             document.querySelectorAll('[id^="print-tgl-"]').forEach(e => e.innerText = `${kota}, ${today}`);
         }
 
-        // --- EKSPOR KE EXCEL (HTML to XLS) ---
+        // --- EKSPOR KE EXCEL (HTML to XLS) KHUSUS ---
         function exportToExcel(containerId, filename) {
             syncGlobalData(); // Pastikan data terbaru di kop
             
@@ -1016,45 +1018,51 @@
             
             let clone = container.cloneNode(true);
             
-            // Ubah input menjadi teks biasa agar terbaca di Excel
+            // Ubah input menjadi span agar terbaca rapi di Excel
             let inputs = clone.querySelectorAll('input');
             inputs.forEach(inp => {
-                let val = inp.value;
                 let span = document.createElement('span');
-                span.innerText = val;
+                span.innerText = inp.value;
                 inp.parentNode.replaceChild(span, inp);
             });
 
-            // Tampilkan elemen yang disembunyikan hanya untuk print (Kop & Tanda Tangan)
+            // Tampilkan Kop dan Tanda Tangan
             let printOnlyElements = clone.querySelectorAll('.print-only, .print-signature');
             printOnlyElements.forEach(el => {
                 el.style.display = 'block';
-                if(el.classList.contains('print-signature')) {
-                    el.style.display = 'flex';
-                    el.style.justifyContent = 'space-between';
-                    el.style.marginTop = '30px';
-                }
+                el.classList.remove('hidden'); // Paksa tampil
             });
 
-            // Sembunyikan elemen yang tidak perlu diekspor
+            // Sembunyikan tombol / UI web
             let noPrintElements = clone.querySelectorAll('.no-print');
             noPrintElements.forEach(el => el.remove());
 
+            // Hilangkan class tailwind yang bisa merusak excel layout
+            clone.querySelectorAll('*').forEach(el => {
+                el.classList.remove('sticky', 'shadow-[1px_0_0_0_#cbd5e1]', 'z-10', 'bg-white', 'bg-slate-50', 'bg-slate-100');
+            });
+
             let html = clone.innerHTML;
             
-            // Format HTML khusus yang dikenali MS Excel
-            let excelFile = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel' xmlns='http://www.w3.org/TR/REC-html40'>`;
-            excelFile += `<head><meta charset='utf-8'><style>
-                body { font-family: Arial, sans-serif; }
-                table { border-collapse: collapse; width: 100%; }
-                td, th { border: 1px solid black; padding: 4px; text-align: center; vertical-align: middle; font-size: 10pt;}
-                th { background-color: #f1f5f9; font-weight: bold; }
-                .text-left { text-align: left !important; }
-                .font-bold { font-weight: bold !important; }
-                .val-libur { background-color: #fca5a5 !important; }
-                .print-signature { margin-top: 40px; }
-            </style></head>`;
-            excelFile += `<body>${html}</body></html>`;
+            // Format HTML khusus yang dikenali MS Excel (dengan border fix)
+            let excelFile = `
+            <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    body { font-family: Arial, sans-serif; font-size: 10pt; }
+                    table { border-collapse: collapse; width: 100%; border: 1pt solid black; }
+                    th, td { border: 1pt solid black; padding: 4px; text-align: center; vertical-align: middle; }
+                    th { background-color: #e2efda; font-weight: bold; }
+                    .text-left { text-align: left !important; }
+                    .kop-surat h2 { font-size: 13pt; margin-bottom: 2px; }
+                    .print-signature { margin-top: 30px; width: 100%; }
+                </style>
+            </head>
+            <body>
+                ${html}
+            </body>
+            </html>`;
 
             let blob = new Blob([excelFile], { type: 'application/vnd.ms-excel' });
             let url = URL.createObjectURL(blob);
@@ -1139,7 +1147,7 @@
                 tbody += `
                 <tr id="tr-${isInput?'inp':'rek'}-${i}">
                     <td class="border-r border-slate-300 border-b">${i+1}</td>
-                    <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[11rem]">${s.nama}</td>
+                    <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[11rem] w-48">${s.nama}</td>
                     <td class="border-r border-slate-300 border-b font-bold text-[9px] ${s.jk==='L'?'text-blue-500':'text-pink-500'}">${s.jk}</td>
                     ${cells}
                     <td class="border-r border-slate-300 border-b font-bold text-blue-700 bg-slate-50" id="tot-h-${isInput?'inp':'rek'}-${i}">${th}</td>
@@ -1214,7 +1222,7 @@
             document.getElementById(`pct-${pref}-${i}`).innerText = pct + "%";
         }
 
-        // --- PENILAIAN INPUT DINAMIS TANPA SIMULASI NILAI ---
+        // --- PENILAIAN INPUT DINAMIS ---
         function initDropdownMapel() {
             let opts = "";
             for(let m in mapelData) opts += `<option value="${m}">${m}</option>`;
@@ -1254,7 +1262,7 @@
                               <td class="border-r border-slate-300 border-b font-bold bg-slate-50" id="na-f-${i}-${x}">${na}</td>`;
                 }
                 rt = validTpCount > 0 ? Math.round(rt/validTpCount) : '-';
-                tb += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[12rem]">${s.nama}</td>${cells}<td class="border-b border-slate-300 font-bold text-slate-800 bg-slate-100" id="rt-f-${i}">${rt}</td></tr>`;
+                tb += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[12rem] w-48">${s.nama}</td>${cells}<td class="border-b border-slate-300 font-bold text-slate-800 bg-slate-100" id="rt-f-${i}">${rt}</td></tr>`;
             });
             document.getElementById('tb-formatif').innerHTML = tb;
         }
@@ -1305,7 +1313,7 @@
                     rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); 
                 }
                 
-                tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[12rem]">${s.nama}</td>
+                tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[12rem] w-48">${s.nama}</td>
                 ${cells}
                 <td class="border-r border-slate-300 border-b bg-slate-50 font-bold" id="rtl-${i}">${rtLM}</td>
                 <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${smt.sts}" oninput="updSum(${i}, '${m}', 'sts', 0, this.value)"></td>
@@ -1344,7 +1352,7 @@
                 let prA = (d.dsk !== '' && d.ins !== '') ? pr((parseInt(d.dsk)+parseInt(d.ins))/2) : '-';
                 let prB = (d.dsp !== '' && d.tgg !== '') ? pr((parseInt(d.dsp)+parseInt(d.tgg))/2) : '-';
 
-                tSikap += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1]">${s.nama}</td>
+                tSikap += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] w-48">${s.nama}</td>
                 <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${d.dsk}" oninput="updSikap(${i}, 'dsk', this.value)"></td>
                 <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${d.ins}" oninput="updSikap(${i}, 'ins', this.value)"></td>
                 <td class="border-r border-slate-300 border-b font-bold text-slate-700 bg-slate-50" id="pr-a-${i}">${prA}</td>
@@ -1404,7 +1412,7 @@
 
                 let rtSem = nMapel > 0 ? Math.round(totalRapor/nMapel) : '-';
 
-                tLeg += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-bold text-slate-800 sticky left-0 bg-slate-50 shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[10rem]">${s.nama}</td>
+                tLeg += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-bold text-slate-800 sticky left-0 bg-slate-50 shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[10rem] w-40">${s.nama}</td>
                 ${cells}
                 <td class="border-r border-slate-300 border-b py-1.5 bg-slate-100 font-bold">${pctHadir}</td><td class="border-r border-slate-300 border-b py-1.5 bg-slate-100 font-bold">${prSikap}</td>
                 <td class="border-r border-slate-300 border-b py-1.5 font-bold bg-slate-200 text-slate-800 text-sm">${rtSem}</td><td class="border-b border-slate-300 py-1.5 font-bold bg-slate-50">${rtSem !== '-' ? i+1 : '-'}</td></tr>`;
@@ -1482,7 +1490,7 @@
 
         window.onload = () => {
             pindahHalaman('dashboard', document.querySelector('[data-target="dashboard"]'));
-            checkAuth(); // Cek login & set up data
+            checkAuth();
         };
     </script>
 </body>
