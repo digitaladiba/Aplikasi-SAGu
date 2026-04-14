@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V3.1 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V3.2 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -41,40 +41,33 @@
            PRINT LAYOUTING F4 LANDSCAPE (ANTI-BERANTAKAN)
            ========================================================= */
         @media print {
-            /* 1. Matikan batasan tinggi & overflow untuk cegah halaman kosong/terpotong */
             html, body, .h-screen, .h-full, .overflow-hidden, .overflow-y-auto, .overflow-x-auto, .flex, .flex-col, .flex-1, main { 
                 height: auto !important; min-height: auto !important; overflow: visible !important; display: block !important; position: static !important; margin: 0 !important; padding: 0 !important;
             }
             body { background-color: white !important; color: #000; font-size: 8pt !important; }
             
-            /* 2. Sembunyikan elemen UI Web */
-            #sidebar, header, .no-print, button, select, #loading-overlay, #login-overlay { display: none !important; }
+            #sidebar, header, .no-print, button, select, input[type="date"], #loading-overlay, #login-overlay, #mock-warning { display: none !important; }
             .halaman.hidden { display: none !important; }
             .print-area { width: 100% !important; border: none !important; box-shadow: none !important; border-radius: 0 !important; }
             
-            /* 3. Reset Sticky Column (Penyebab border hilang di kolom nama) */
             .sticky { position: static !important; box-shadow: none !important; z-index: auto !important; }
             td.sticky { background-color: transparent !important; }
             th.sticky { background-color: #e5e7eb !important; }
 
-            /* 4. Konfigurasi Tabel Kertas */
             table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; page-break-inside: auto; table-layout: auto !important; }
             tr { page-break-inside: avoid !important; page-break-after: auto; }
-            thead { display: table-header-group !important; } /* Ulangi header di halaman baru */
+            thead { display: table-header-group !important; }
             tfoot { display: table-footer-group !important; }
             
-            /* 5. Paksa Border Tampil Sempurna */
             th, td { border: 1px solid #000 !important; padding: 3px 4px !important; color: black !important; }
             th { background-color: #e5e7eb !important; -webkit-print-color-adjust: exact; color-adjust: exact; font-weight: bold; text-align: center; }
             .val-libur { background-color: #fca5a5 !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
             input.cell-input { font-weight: bold !important; color: black !important; padding: 0 !important; border: none !important; font-size: 8pt !important; background: transparent !important; }
             
-            /* 6. Tata Letak Kop & TTD */
             .kop-surat { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid #000; }
             .print-sub-header { margin-top: 2px; margin-bottom: 5px; }
             .print-signature { display: flex !important; justify-content: space-between; margin-top: 20px; page-break-inside: avoid !important; width: 100%; padding: 0 40px; font-size: 9pt !important; }
             
-            /* Kertas F4 Landscape Margins Rapat */
             @page { size: 330mm 215mm landscape; margin: 10mm 15mm; }
         }
         .print-only { display: none; }
@@ -92,7 +85,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V3.1</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V3.2</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -214,6 +207,11 @@
             </div>
         </header>
 
+        <!-- WARNING API GAGAL -->
+        <div id="mock-warning" class="hidden bg-red-50 text-red-600 border-b border-red-200 px-4 py-2 text-[11px] font-bold text-center w-full no-print">
+            <i data-lucide="alert-triangle" class="w-4 h-4 inline-block mr-1"></i> Gagal mengambil data siswa dari Database. Menampilkan Data Simulasi. Pastikan Kode Google Apps Script Anda sudah diperbarui (Cek petunjuk di chat).
+        </div>
+
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 print-area w-full">
             
             <!-- HALAMAN: Papan Utama (Dashboard) -->
@@ -323,7 +321,7 @@
                         <select id="filter-bulan-absen-input" onchange="renderInputAbsenBulan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                             <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
                         </select>
-                        <button onclick="alert('Data absensi berhasil disimpan secara lokal!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan</button>
+                        <button onclick="alert('Data absensi berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan</button>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto relative pb-2">
@@ -355,21 +353,25 @@
 
             <!-- HALAMAN: SISWA - REKAP BULANAN (READ ONLY + CETAK + EXCEL) -->
             <div id="hal-siswa-rekapbulan" class="halaman page-transition hidden w-full">
-                <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
-                    <div><h2 class="text-xl font-bold text-slate-800">Rekap Bulanan (Cetak)</h2></div>
-                    <div class="flex space-x-2">
-                        <select id="filter-bulan-rekap" onchange="renderRekapBulanan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
+                    <div><h2 class="text-xl font-bold text-slate-800">Rekap Bulanan</h2></div>
+                    <div class="flex space-x-2 items-end">
+                        <select id="filter-bulan-rekap" onchange="renderRekapBulanan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium mb-[1px]">
                             <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option>
                             <option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
                         </select>
-                        <button onclick="exportToExcel('area-rekap-bulan', 'Rekap_Hadir_Bulanan')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
+                            <input type="date" id="tgl-cetak-rekap-bulan" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium" title="Ubah Tanggal di Laporan">
+                        </div>
+                        <button onclick="exportToExcel('area-rekap-bulan', 'Rekap_Hadir_Bulanan')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
+                        <button onclick="cetakLaporan('abs')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-rekap-bulan" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[11pt] uppercase" id="judul-cetak-rekap-bulan">DAFTAR HADIR SISWA BULAN JANUARI</h2>
-                        <p class="text-[9pt] print-sub-header">Tahun Ajaran 2025/2026 | Semester Genap | Kelas IV B</p>
+                        <h2 class="font-bold text-[10pt] uppercase" id="judul-cetak-rekap-bulan">DAFTAR HADIR SISWA BULAN JANUARI</h2>
+                        <p class="text-[8pt] print-sub-header">Tahun Ajaran 2025/2026 | Semester Genap | Kelas IV B</p>
                     </div>
                     <div class="px-3 pt-2 print-only text-right font-bold italic text-[8pt]" id="info-hari-efektif-cetak">Hari Efektif: 26 Hari</div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-[11px]">
@@ -404,11 +406,15 @@
 
             <!-- HALAMAN: SISWA - REKAP SEMESTER (CETAK + EXCEL) -->
             <div id="hal-siswa-rekapsemester" class="halaman page-transition hidden w-full">
-                <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Rekap Semester</h2></div>
-                    <div class="flex space-x-2">
-                        <button onclick="exportToExcel('area-rekap-semester', 'Rekap_Hadir_Semester')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-medium flex items-center shadow-sm"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                    <div class="flex space-x-2 items-end">
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
+                            <input type="date" id="tgl-cetak-rekap-smt" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium" title="Ubah Tanggal di Laporan">
+                        </div>
+                        <button onclick="exportToExcel('area-rekap-semester', 'Rekap_Hadir_Semester')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
+                        <button onclick="cetakLaporan('smt')" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-medium flex items-center shadow-sm mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-rekap-semester" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
@@ -455,17 +461,21 @@
                         <h2 class="text-xl font-bold text-slate-800">Asesmen Formatif</h2>
                         <p class="text-sm text-slate-500">Ketik angka pada kolom K1 dan K2 untuk mengubah nilai.</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <select id="filter-mapel-formatif" onchange="renderFormatif()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium"></select>
-                        <button onclick="alert('Nilai formatif berhasil disimpan sementara di memori web!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
-                        <button onclick="exportToExcel('area-nilai-formatif', 'Asesmen_Formatif_' + document.getElementById('filter-mapel-formatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                    <div class="flex space-x-2 items-end">
+                        <select id="filter-mapel-formatif" onchange="renderFormatif()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium mb-[1px]"></select>
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
+                            <input type="date" id="tgl-cetak-for" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium" title="Ubah Tanggal di Laporan">
+                        </div>
+                        <button onclick="alert('Nilai formatif berhasil disimpan sementara di memori web!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
+                        <button onclick="exportToExcel('area-nilai-formatif', 'Asesmen_Formatif_' + document.getElementById('filter-mapel-formatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
+                        <button onclick="cetakLaporan('for')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-nilai-formatif" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[11pt] uppercase">DAFTAR NILAI ASESMEN FORMATIF</h2>
-                        <p class="text-[9pt] print-sub-header">Mata Pelajaran: <span id="print-mapel-formatif"></span></p>
+                        <h2 class="font-bold text-[10pt] uppercase">DOKUMEN ASESMEN FORMATIF</h2>
+                        <p class="text-[8pt] print-sub-header">Mata Pelajaran: <span id="print-mapel-formatif"></span></p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs">
                         <thead id="head-formatif" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold"></thead>
@@ -473,7 +483,7 @@
                     </table>
                     <div class="print-signature hidden">
                         <div class="text-center"><p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p></div>
-                        <div class="text-center"><p id="print-tgl-formatif">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p></div>
+                        <div class="text-center"><p id="print-tgl-for">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p></div>
                     </div>
                 </div>
             </div>
@@ -482,17 +492,21 @@
             <div id="hal-nilai-sumatif" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Asesmen Sumatif</h2><p class="text-sm text-slate-500">Ketik angka di kolom LM, STS, dan SAS.</p></div>
-                    <div class="flex space-x-2">
-                        <select id="filter-mapel-sumatif" onchange="renderSumatif()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium"></select>
-                        <button onclick="alert('Nilai sumatif berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
-                        <button onclick="exportToExcel('area-nilai-sumatif', 'Asesmen_Sumatif_' + document.getElementById('filter-mapel-sumatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                    <div class="flex space-x-2 items-end">
+                        <select id="filter-mapel-sumatif" onchange="renderSumatif()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium mb-[1px]"></select>
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
+                            <input type="date" id="tgl-cetak-sum" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium" title="Ubah Tanggal di Laporan">
+                        </div>
+                        <button onclick="alert('Nilai sumatif berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
+                        <button onclick="exportToExcel('area-nilai-sumatif', 'Asesmen_Sumatif_' + document.getElementById('filter-mapel-sumatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
+                        <button onclick="cetakLaporan('sum')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-nilai-sumatif" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[11pt] uppercase">DAFTAR NILAI ASESMEN SUMATIF</h2>
-                        <p class="text-[9pt] print-sub-header">Mata Pelajaran: <span id="print-mapel-sumatif"></span></p>
+                        <h2 class="font-bold text-[10pt] uppercase">DOKUMEN ASESMEN SUMATIF</h2>
+                        <p class="text-[8pt] print-sub-header">Mata Pelajaran: <span id="print-mapel-sumatif"></span></p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs">
                         <thead id="head-sumatif" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold"></thead>
@@ -500,7 +514,7 @@
                     </table>
                     <div class="print-signature hidden">
                         <div class="text-center"><p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p></div>
-                        <div class="text-center"><p id="print-tgl-sumatif">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p></div>
+                        <div class="text-center"><p id="print-tgl-sum">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p></div>
                     </div>
                 </div>
             </div>
@@ -509,16 +523,20 @@
             <div id="hal-nilai-sikap" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Keaktifan & Sikap</h2><p class="text-sm text-slate-500">Nilai (0-100). Predikat terisi otomatis.</p></div>
-                    <div class="flex space-x-2">
-                        <button onclick="alert('Nilai sikap disimpan!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
-                        <button onclick="exportToExcel('area-nilai-sikap', 'Nilai_Sikap')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                    <div class="flex space-x-2 items-end">
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
+                            <input type="date" id="tgl-cetak-sikap" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium" title="Ubah Tanggal di Laporan">
+                        </div>
+                        <button onclick="alert('Nilai sikap disimpan!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
+                        <button onclick="exportToExcel('area-nilai-sikap', 'Nilai_Sikap')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
+                        <button onclick="cetakLaporan('sikap')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-nilai-sikap" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[11pt] uppercase">REKAPITULASI PENILAIAN KEAKTIFAN DAN SIKAP</h2>
-                        <p class="text-[9pt] print-sub-header">Tahun Ajaran 2025/2026</p>
+                        <h2 class="font-bold text-[10pt] uppercase">REKAPITULASI PENILAIAN KEAKTIFAN DAN SIKAP</h2>
+                        <p class="text-[8pt] print-sub-header">Tahun Ajaran 2025/2026</p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
@@ -545,14 +563,18 @@
             <div id="hal-nilai-legger" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Kelola Nilai (Legger Rapor)</h2></div>
-                    <div class="flex space-x-2">
-                        <button onclick="exportToExcel('area-nilai-legger', 'Legger_Rapor')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                    <div class="flex space-x-2 items-end">
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
+                            <input type="date" id="tgl-cetak-legger" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium" title="Ubah Tanggal di Laporan">
+                        </div>
+                        <button onclick="exportToExcel('area-nilai-legger', 'Legger_Rapor')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
+                        <button onclick="cetakLaporan('legger')" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-nilai-legger" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[11pt] uppercase">Legger Nilai Rapor Akhir Semester</h2>
+                        <h2 class="font-bold text-[10pt] uppercase">Legger Nilai Rapor Akhir Semester</h2>
                         <p class="text-[8pt] print-sub-header">Tahun Ajaran: 2025/2026 | Semester: Genap</p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-[11px]">
@@ -582,10 +604,14 @@
             <div id="hal-jurnal-input" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Jurnal Mengajar Harian</h2></div>
-                    <div class="flex space-x-2">
-                        <button onclick="document.getElementById('form-jurnal').classList.toggle('hidden')" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="plus" class="w-4 h-4 mr-1"></i> Tulis Jurnal</button>
-                        <button onclick="exportToExcel('area-jurnal', 'Jurnal_Mengajar_Harian')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
-                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
+                    <div class="flex space-x-2 items-end">
+                        <button onclick="document.getElementById('form-jurnal').classList.toggle('hidden')" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="plus" class="w-4 h-4 mr-1"></i> Tulis Jurnal</button>
+                        <div class="flex flex-col mx-2">
+                            <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
+                            <input type="date" id="tgl-cetak-jurnal" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium" title="Ubah Tanggal di Laporan">
+                        </div>
+                        <button onclick="exportToExcel('area-jurnal', 'Jurnal_Mengajar_Harian')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
+                        <button onclick="cetakLaporan('jurnal')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
 
@@ -622,7 +648,7 @@
 
                 <div id="area-jurnal" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[11pt] uppercase">JURNAL HARIAN GURU KELAS</h2>
+                        <h2 class="font-bold text-[10pt] uppercase">JURNAL HARIAN GURU KELAS</h2>
                         <p class="text-[8pt] print-sub-header">Tahun Ajaran 2025/2026 | Semester Genap</p>
                     </div>
                     <table class="w-full text-left border-collapse text-[10px] sm:text-[11px]">
@@ -790,14 +816,20 @@
         const loader = document.getElementById('loading-overlay');
         async function sinkronisasiDB(isManual = false) {
             if(isManual) loader.classList.remove('hidden', 'opacity-0');
+            let usingMock = false;
             
             try {
                 // Fetch Master Siswa
                 const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
-                if(resSiswa.status === 'success' && resSiswa.data.length > 0) { globalSiswa = resSiswa.data; } 
-                else { globalSiswa = mockSiswaFallback; }
+                if(resSiswa.status === 'success' && resSiswa.data.length > 0) { 
+                    globalSiswa = resSiswa.data; 
+                } 
+                else { 
+                    globalSiswa = mockSiswaFallback; 
+                    usingMock = true; 
+                }
 
-                // Fetch Identitas (Opsional)
+                // Fetch Identitas
                 try {
                     const resId = await fetch(`${API_URL}?action=getIdentitas`).then(r => r.json());
                     if(resId.status === 'success') {
@@ -819,19 +851,25 @@
                 if(resJurnal.status === 'success') listJurnal = resJurnal.data.reverse(); 
                 else listJurnal = mockJurnalFallback;
 
-                initialSetupSemua();
+                initialSetupSemua(usingMock);
             } catch (error) {
                 console.warn("Gagal sinkronisasi API. Mode Offline Aktif.", error);
                 globalSiswa = mockSiswaFallback;
                 listJurnal = mockJurnalFallback;
-                initialSetupSemua();
+                initialSetupSemua(true);
             } finally {
                 loader.classList.add('opacity-0');
                 setTimeout(() => loader.classList.add('hidden'), 500);
             }
         }
 
-        function initialSetupSemua() {
+        function initialSetupSemua(usingMock) {
+            if(usingMock) {
+                document.getElementById('mock-warning').classList.remove('hidden');
+            } else {
+                document.getElementById('mock-warning').classList.add('hidden');
+            }
+
             document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
             initDataNilai();
             initMockAbsen();
@@ -844,28 +882,9 @@
             renderTabelJurnal();
         }
 
-        // --- DATA FALLBACK JIKA API GAGAL ---
-        const mockSiswaFallback = [
-            {nis: "2520", nama: "ADE TRISTAN ABDILLAH", jk: "L"}, {nis: "2713", nama: "AISYAH ANINDITA MYESHA ZAHRA", jk: "P"},
-            {nis: "2527", nama: "ALESA AMELIA AFWA", jk: "P"}, {nis: "2530", nama: "ANINDITA AZAHRA", jk: "P"},
-            {nis: "2531", nama: "ARDAN ALIF MULIA", jk: "L"}, {nis: "2532", nama: "ARJUNA", jk: "L"},
-            {nis: "2537", nama: "AZAHRAH NAILUL RAMADHANI", jk: "P"}, {nis: "2538", nama: "BILQIS FAIHA RIFDA", jk: "P"},
-            {nis: "2539", nama: "DAVID SYARIF FIRDAUS", jk: "L"}, {nis: "2541", nama: "DIAN ILFI YUNIANDI", jk: "P"},
-            {nis: "2542", nama: "DIRGANTARA KIBRAKA IMRON", jk: "L"}, {nis: "2543", nama: "DWI MULYA ASIH", jk: "P"},
-            {nis: "2546", nama: "FAHRUL SEBASTIAN", jk: "L"}, {nis: "2549", nama: "KAYLA RENATA TUNGGADEWI", jk: "P"},
-            {nis: "2550", nama: "MOHAMAD ALFAREZA", jk: "L"}, {nis: "2551", nama: "MOHAMAD ALFARIZI", jk: "L"},
-            {nis: "2556", nama: "MUHAMAD FAHRI SAHREZA", jk: "L"}, {nis: "2557", nama: "MUHAMMAD ARFAN KUSUMO", jk: "L"},
-            {nis: "2558", nama: "MUHAMMAD ASFIHAN", jk: "L"}, {nis: "2561", nama: "NIDA AYUNDA PUSPITASARI", jk: "P"},
-            {nis: "2562", nama: "NIZAM AFARIK", jk: "L"}, {nis: "2563", nama: "NIZAM KAMIL", jk: "L"},
-            {nis: "2565", nama: "PUTRI AYUNINGTYAS", jk: "P"}, {nis: "2567", nama: "RAMADHAN ALFIANSYAH", jk: "L"},
-            {nis: "2775", nama: "SAKYA JAMAL JATMIKO", jk: "L"}, {nis: "2570", nama: "SALMAN AL FARIZI", jk: "L"},
-            {nis: "2572", nama: "SHAQILA ZIA RAYAFIRTI", jk: "P"}, {nis: "2574", nama: "TIARA SARI", jk: "P"},
-            {nis: "2575", nama: "UWAIS AL QORNI", jk: "L"}
-        ];
-
-        const mockJurnalFallback = [
-            { tanggal: "2026-01-13", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Kerja Sama di Lingkunganku", tujuanPembelajaran: "menjelaskan dan memberikan contoh kerja sama...", kegiatan: "Siswa menyimak penjelasan tentang kerjasama, melakukan diskusi.", refleksi: "Perlu pengulangan di bagian presentasi." }
-        ];
+        // --- DATA FALLBACK (DIKOSONGKAN AGAR JELAS JIKA API GAGAL) ---
+        const mockSiswaFallback = [];
+        const mockJurnalFallback = [];
 
         function initDataNilai() {
             globalSiswa.forEach((s, i) => {
@@ -982,7 +1001,7 @@
             renderFormatif(); renderSumatif(); updateJurnalMapel();
         }
 
-        // --- SINKRONISASI KOP CETAK ---
+        // --- SINKRONISASI KOP CETAK & PENANGGALAN CUSTOM ---
         function syncGlobalData() {
             let sep = document.getElementById('inp-kepsek').value;
             let sNip = document.getElementById('inp-nipkepsek').value;
@@ -1004,12 +1023,15 @@
                 if(!e.innerText.includes("Mata Pelajaran")) { e.innerText = `Tahun Ajaran ${ta} | Semester ${smt} | Kelas ${kls}`; }
             });
 
-            let today = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+            // Set Tanggal Hari Ini Sebagai Default
+            let today = new Date();
             let kota = document.getElementById('inp-kota').value;
-            document.querySelectorAll('[id^="print-tgl-"]').forEach(e => e.innerText = `${kota}, ${today}`);
+            let defaultFormat = new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }).format(today);
+            
+            document.querySelectorAll('[id^="print-tgl-"]').forEach(e => e.innerText = `${kota}, ${defaultFormat}`);
         }
 
-        // --- EKSPOR KE EXCEL (HTML to XLS) KHUSUS ---
+        // --- EKSPOR KE EXCEL (HTML to XLS) ---
         function exportToExcel(containerId, filename) {
             syncGlobalData(); // Pastikan data terbaru di kop
             
@@ -1018,7 +1040,6 @@
             
             let clone = container.cloneNode(true);
             
-            // Ubah input menjadi span agar terbaca rapi di Excel
             let inputs = clone.querySelectorAll('input');
             inputs.forEach(inp => {
                 let span = document.createElement('span');
@@ -1026,25 +1047,21 @@
                 inp.parentNode.replaceChild(span, inp);
             });
 
-            // Tampilkan Kop dan Tanda Tangan
             let printOnlyElements = clone.querySelectorAll('.print-only, .print-signature');
             printOnlyElements.forEach(el => {
                 el.style.display = 'block';
-                el.classList.remove('hidden'); // Paksa tampil
+                el.classList.remove('hidden'); 
             });
 
-            // Sembunyikan tombol / UI web
             let noPrintElements = clone.querySelectorAll('.no-print');
             noPrintElements.forEach(el => el.remove());
 
-            // Hilangkan class tailwind yang bisa merusak excel layout
             clone.querySelectorAll('*').forEach(el => {
                 el.classList.remove('sticky', 'shadow-[1px_0_0_0_#cbd5e1]', 'z-10', 'bg-white', 'bg-slate-50', 'bg-slate-100');
             });
 
             let html = clone.innerHTML;
             
-            // Format HTML khusus yang dikenali MS Excel (dengan border fix)
             let excelFile = `
             <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
             <head>
@@ -1484,13 +1501,34 @@
 
         function cetakLaporan(tipe) {
             syncGlobalData(); 
+            
+            // Fungsi untuk merubah tanggal pada print (dari inputan custom)
+            let kota = document.getElementById('inp-kota').value;
+            let overrideDate = (inputId, targetId) => {
+                let val = document.getElementById(inputId).value;
+                if(val) {
+                    let d = new Date(val);
+                    let f = new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
+                    document.getElementById(targetId).innerText = `${kota}, ${f}`;
+                }
+            };
+
+            // Timpa penanggalan jika user memilih tanggal di kotak cetak khusus
+            if(tipe === 'abs') overrideDate('tgl-cetak-rekap-bulan', 'print-tgl-rekap');
+            if(tipe === 'smt') overrideDate('tgl-cetak-rekap-smt', 'print-tgl-smt');
+            if(tipe === 'for') overrideDate('tgl-cetak-for', 'print-tgl-for');
+            if(tipe === 'sum') overrideDate('tgl-cetak-sum', 'print-tgl-sum');
+            if(tipe === 'sikap') overrideDate('tgl-cetak-sikap', 'print-tgl-sikap');
+            if(tipe === 'legger') overrideDate('tgl-cetak-legger', 'print-tgl-legger');
+            if(tipe === 'jurnal') overrideDate('tgl-cetak-jurnal', 'print-tgl-jurnal');
+
             if(!document.getElementById('hal-nilai-legger').classList.contains('hidden')) renderLegger();
             setTimeout(() => { window.print(); }, 300);
         }
 
         window.onload = () => {
             pindahHalaman('dashboard', document.querySelector('[data-target="dashboard"]'));
-            checkAuth();
+            checkAuth(); // Cek login & set up data
         };
     </script>
 </body>
