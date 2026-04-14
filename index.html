@@ -896,19 +896,27 @@
             let usingMock = false;
             
             try {
-                // V3.7: SCANNER KOLOM OTOMATIS (Akurat 100% Mengatasi Bug Excel Bergeser)
+                // Fetch Master Siswa (Perbaikan Pembacaan L/P Langsung dari DB)
                 const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
                 if(resSiswa.status === 'success' && resSiswa.data.length > 0) { 
                     globalSiswa = resSiswa.data.map(s => {
-                        let vals = Object.values(s).filter(Boolean).map(v => v.toString().trim());
+                        let nama = s.nama ? String(s.nama).trim() : '-';
+                        let nis = s.nis ? String(s.nis).trim() : '-';
+                        let jkRaw = s.jk ? String(s.jk).trim().toUpperCase() : '';
                         
-                        let jkObj = vals.find(v => v.toUpperCase() === 'L' || v.toUpperCase() === 'P');
-                        let nisObj = vals.find(v => !isNaN(v) && v.length >= 3);
-                        let namaObj = vals.find(v => isNaN(v) && v.length > 2 && v.toUpperCase() !== 'L' && v.toUpperCase() !== 'P');
+                        // Perbaikan jika kolom Nama dan L/P tertukar di excel
+                        if (jkRaw.length > 2 && (nama === 'L' || nama === 'P')) {
+                            let temp = nama;
+                            nama = jkRaw;
+                            jkRaw = temp;
+                        }
 
-                        let jk = jkObj ? jkObj.toUpperCase() : 'L';
-                        let nama = namaObj || s.nama || '-';
-                        let nis = nisObj || s.nis || '-';
+                        // Penentuan L/P yang lebih aman (Sesuai persis dengan DB)
+                        let jk = 'L'; // Default
+                        if (jkRaw.startsWith('P')) jk = 'P';
+                        else if (jkRaw.startsWith('L')) jk = 'L';
+                        // Tebakan cerdas terakhir jika kolom di DB benar-benar kosong
+                        else if (nama.includes('PUTRI') || nama.includes('AISYAH') || nama.includes('ZAHRA')) jk = 'P';
 
                         return { nis, nama, jk };
                     });
