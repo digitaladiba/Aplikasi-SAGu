@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V2.9 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V2.8 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -71,7 +71,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V2.9</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V2.8</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -172,7 +172,7 @@
         <div class="p-4 border-t border-slate-800 bg-slate-950 flex items-center justify-between">
             <button onclick="handleLogout()" class="text-xs font-semibold text-red-400 hover:text-red-300 transition flex items-center"><i data-lucide="log-out" class="w-3 h-3 mr-1"></i> Logout</button>
             <div id="db-status-indicator" class="flex items-center text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">
-                <div class="w-2 h-2 rounded-full bg-emerald-500 mr-1 animate-pulse"></div> Live API
+                <div class="w-2 h-2 rounded-full bg-emerald-500 mr-1 animate-pulse"></div> Live
             </div>
         </div>
     </aside>
@@ -189,7 +189,7 @@
                     <p class="text-sm font-bold text-slate-800" id="header-nama">Guru Kelas</p>
                     <p class="text-xs text-slate-500" id="header-kelas">Terkoneksi Database</p>
                 </div>
-                <button onclick="sinkronisasiDB(true)" class="w-10 h-10 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center transition" title="Sinkronisasi Data Ulang"><i data-lucide="refresh-cw" class="w-5 h-5"></i></button>
+                <button onclick="sinkronisasiDB(true)" class="bg-blue-50 text-blue-600 p-2 rounded-full hover:bg-blue-100 transition" title="Refresh Database"><i data-lucide="refresh-cw" class="w-5 h-5"></i></button>
             </div>
         </header>
 
@@ -302,7 +302,7 @@
                         <select id="filter-bulan-absen-input" onchange="renderInputAbsenBulan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                             <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
                         </select>
-                        <button onclick="alert('Data absensi berhasil disimpan secara lokal!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan</button>
+                        <button onclick="alert('Data absensi berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan</button>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto relative pb-2">
@@ -321,7 +321,7 @@
                                 <th class="border-r border-slate-300 bg-blue-50 text-blue-700 w-5">H</th>
                                 <th class="border-r border-slate-300 bg-blue-50 text-amber-600 w-5">S</th>
                                 <th class="border-r border-slate-300 bg-blue-50 text-purple-600 w-5">I</th>
-                                <th class="bg-blue-50 text-red-600 w-5 border-r border-slate-300">A</th>
+                                <th class="bg-blue-50 text-red-600 w-5">A</th>
                             </tr>
                             <tr id="head-tanggal-absen">
                                 <!-- JS Generated -->
@@ -357,15 +357,15 @@
                                 <th rowspan="3" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48">Nama Murid</th>
                                 <th rowspan="3" class="px-1 py-1 border-r border-slate-300 w-6">L/P</th>
                                 <th id="th-colspan-rekap" colspan="31" class="py-1 border-r border-slate-300 border-b">Tanggal Pelaksanaan</th>
-                                <th colspan="4" class="py-1 border-b border-r border-slate-300 bg-slate-200">TOTAL</th>
-                                <th rowspan="3" class="px-1 py-1 bg-slate-200 border-slate-300">%</th>
+                                <th colspan="4" class="py-1 border-b border-slate-300 bg-slate-200">TOTAL</th>
+                                <th rowspan="3" class="px-1 py-1 bg-slate-200 border-l border-slate-300">%</th>
                             </tr>
                             <tr>
                                 <th class="hidden" colspan="31"></th>
                                 <th class="border-r border-slate-300 bg-slate-200 text-blue-700 w-5">H</th>
                                 <th class="border-r border-slate-300 bg-slate-200 text-amber-600 w-5">S</th>
                                 <th class="border-r border-slate-300 bg-slate-200 text-purple-600 w-5">I</th>
-                                <th class="bg-slate-200 text-red-600 w-5 border-r border-slate-300">A</th>
+                                <th class="bg-slate-200 text-red-600 w-5">A</th>
                             </tr>
                             <tr id="head-tanggal-rekap">
                                 <!-- JS Generated -->
@@ -452,7 +452,7 @@
                 </div>
             </div>
 
-            <!-- HAL HALAMAN: PENILAIAN - SUMATIF (Bisa Input) -->
+            <!-- HALAMAN: PENILAIAN - SUMATIF (Bisa Input) -->
             <div id="hal-nilai-sumatif" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Asesmen Sumatif</h2><p class="text-sm text-slate-500">Ketik angka di kolom LM, STS, dan SAS.</p></div>
@@ -493,9 +493,9 @@
                         <p class="text-[8pt] print-sub-header">Tahun Ajaran 2025/2026</p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
-                        <thead class="bg-amber-50 border-b border-slate-300 text-amber-900 font-semibold">
+                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
                             <tr>
-                                <th rowspan="2" class="px-3 py-1 border-r border-slate-300 text-left sticky left-0 bg-amber-50 z-10 shadow-[1px_0_0_0_#cbd5e1]">Nama Siswa</th>
+                                <th rowspan="2" class="px-3 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 shadow-[1px_0_0_0_#cbd5e1]">Nama Siswa</th>
                                 <th colspan="3" class="px-2 py-1 border-r border-slate-300 border-b">Nilai Keaktifan & Partisipasi</th>
                                 <th colspan="3" class="px-2 py-1 border-b border-slate-300">Nilai Sikap & Perilaku</th>
                             </tr>
@@ -547,7 +547,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: JURNAL MENGAJAR -->
+            <!-- HAL HALAMAN: JURNAL MENGAJAR -->
             <div id="hal-jurnal-input" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Jurnal Mengajar Harian</h2></div>
@@ -613,129 +613,8 @@
         lucide.createIcons();
 
         // ------------------------------------------
-        // 1. KONEKSI GOOGLE APPS SCRIPT API
+        // 1. DATA MAPEL & TARGET (100% SESUAI DB)
         // ------------------------------------------
-        const API_URL = "https://script.google.com/macros/s/AKfycbx1NwJ4SQ5ZyZAEAjKrgwfz-0gZpz2LluVl044y9d7b8YcO6kL4a3tu_U-dvSPdHmE-7g/exec";
-        
-        let globalSiswa = [];
-        let listJurnal = [];
-        let currentSettingMapel = "Pendidikan Pancasila";
-        let nilaiSiswa = {};
-
-        // --- SISTEM LOGIN ---
-        function handleLogin(e) {
-            e.preventDefault();
-            const u = document.getElementById('login-user').value.trim().toLowerCase();
-            const p = document.getElementById('login-pass').value.trim();
-            
-            if(u === 'sdn04taman' && p === 'bayuprahastian') {
-                sessionStorage.setItem('siguru_logged_in', 'true');
-                document.getElementById('login-error').classList.add('hidden');
-                
-                document.getElementById('login-overlay').classList.add('opacity-0');
-                setTimeout(() => {
-                    document.getElementById('login-overlay').classList.add('hidden');
-                    sinkronisasiDB(true);
-                }, 300);
-            } else {
-                document.getElementById('login-error').classList.remove('hidden');
-            }
-        }
-
-        function handleLogout() {
-            if(confirm("Yakin ingin keluar dari sistem?")) {
-                sessionStorage.removeItem('siguru_logged_in');
-                window.location.reload();
-            }
-        }
-
-        function checkAuth() {
-            if(sessionStorage.getItem('siguru_logged_in') === 'true') {
-                document.getElementById('login-overlay').classList.add('hidden');
-                sinkronisasiDB(true);
-            }
-        }
-
-        const loader = document.getElementById('loading-overlay');
-        async function sinkronisasiDB(isManual = false) {
-            if(isManual) loader.classList.remove('hidden', 'opacity-0');
-            
-            try {
-                // Fetch Master Siswa
-                const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
-                if(resSiswa.status === 'success' && resSiswa.data.length > 0) { globalSiswa = resSiswa.data; } 
-                else { globalSiswa = mockSiswaFallback; }
-
-                // Fetch Identitas (Opsional jika API ada)
-                try {
-                    const resId = await fetch(`${API_URL}?action=getIdentitas`).then(r => r.json());
-                    if(resId.status === 'success') {
-                        const d = resId.data;
-                        document.getElementById('inp-sekolah').value = d.sekolah || 'SD Negeri 04 Taman';
-                        document.getElementById('inp-kota').value = d.kota || 'Pemalang';
-                        document.getElementById('inp-smt').value = d.semester || 'Genap';
-                        document.getElementById('inp-ta').value = d.tahunAjaran || '2025/2026';
-                        document.getElementById('inp-kepsek').value = d.kepalaSekolah || 'Tentrem Lestari, S.Pd.';
-                        document.getElementById('inp-nipkepsek').value = d.nipKepsek || '196706291991032002';
-                        document.getElementById('inp-guru').value = d.namaGuru || 'Bayu Prahastian, S.Pd.';
-                        document.getElementById('inp-nipguru').value = d.nipGuru || '199601212025211014';
-                        document.getElementById('inp-kelas').value = d.kelas || 'IV B';
-                    }
-                } catch(e) {}
-
-                // Fetch Jurnal
-                const resJurnal = await fetch(`${API_URL}?action=getJurnal`).then(r => r.json());
-                if(resJurnal.status === 'success') listJurnal = resJurnal.data.reverse(); 
-                else listJurnal = mockJurnalFallback;
-
-                initialSetupSemua();
-            } catch (error) {
-                console.warn("Gagal sinkronisasi API. Mode Offline Aktif.", error);
-                globalSiswa = mockSiswaFallback;
-                listJurnal = mockJurnalFallback;
-                initialSetupSemua();
-            } finally {
-                loader.classList.add('opacity-0');
-                setTimeout(() => loader.classList.add('hidden'), 500);
-            }
-        }
-
-        function initialSetupSemua() {
-            document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
-            initDataNilai();
-            initMockAbsen();
-            renderInputAbsenBulan();
-            renderRekapBulanan();
-            syncGlobalData();
-            initDropdownMapel(); 
-            renderLegger();      
-            updateJurnalMapel();
-            renderTabelJurnal();
-        }
-
-        // --- DATA FALLBACK (LOKAL JIKA OFFLINE) ---
-        const mockSiswaFallback = [
-            {nis: "2520", nama: "ADE TRISTAN ABDILLAH", jk: "L"}, {nis: "2713", nama: "AISYAH ANINDITA MYESHA ZAHRA", jk: "P"},
-            {nis: "2527", nama: "ALESA AMELIA AFWA", jk: "P"}, {nis: "2530", nama: "ANINDITA AZAHRA", jk: "P"},
-            {nis: "2531", nama: "ARDAN ALIF MULIA", jk: "L"}, {nis: "2532", nama: "ARJUNA", jk: "L"},
-            {nis: "2537", nama: "AZAHRAH NAILUL RAMADHANI", jk: "P"}, {nis: "2538", nama: "BILQIS FAIHA RIFDA", jk: "P"},
-            {nis: "2539", nama: "DAVID SYARIF FIRDAUS", jk: "L"}, {nis: "2541", nama: "DIAN ILFI YUNIANDI", jk: "P"},
-            {nis: "2542", nama: "DIRGANTARA KIBRAKA IMRON", jk: "L"}, {nis: "2543", nama: "DWI MULYA ASIH", jk: "P"},
-            {nis: "2546", nama: "FAHRUL SEBASTIAN", jk: "L"}, {nis: "2549", nama: "KAYLA RENATA TUNGGADEWI", jk: "P"},
-            {nis: "2550", nama: "MOHAMAD ALFAREZA", jk: "L"}, {nis: "2551", nama: "MOHAMAD ALFARIZI", jk: "L"},
-            {nis: "2556", nama: "MUHAMAD FAHRI SAHREZA", jk: "L"}, {nis: "2557", nama: "MUHAMMAD ARFAN KUSUMO", jk: "L"},
-            {nis: "2558", nama: "MUHAMMAD ASFIHAN", jk: "L"}, {nis: "2561", nama: "NIDA AYUNDA PUSPITASARI", jk: "P"},
-            {nis: "2562", nama: "NIZAM AFARIK", jk: "L"}, {nis: "2563", nama: "NIZAM KAMIL", jk: "L"},
-            {nis: "2565", nama: "PUTRI AYUNINGTYAS", jk: "P"}, {nis: "2567", nama: "RAMADHAN ALFIANSYAH", jk: "L"},
-            {nis: "2775", nama: "SAKYA JAMAL JATMIKO", jk: "L"}, {nis: "2570", nama: "SALMAN AL FARIZI", jk: "L"},
-            {nis: "2572", nama: "SHAQILA ZIA RAYAFIRTI", jk: "P"}, {nis: "2574", nama: "TIARA SARI", jk: "P"},
-            {nis: "2575", nama: "UWAIS AL QORNI", jk: "L"}
-        ];
-
-        const mockJurnalFallback = [
-            { tanggal: "2026-01-13", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Kerja Sama di Lingkunganku", tujuanPembelajaran: "menjelaskan dan memberikan contoh kerja sama...", kegiatan: "Siswa menyimak penjelasan tentang kerjasama, melakukan diskusi.", refleksi: "Perlu pengulangan di bagian presentasi." }
-        ];
-
         let mapelData = {
             "Pendidikan Pancasila": {
                 lm: ["Kerja Sama di Lingkunganku", "Pancasila dalam Diriku"],
@@ -817,8 +696,153 @@
                     { nama: "Menyebutkan kegiatan harian", k1: "K1", k2: "K2" },
                     { nama: "Memahami teks sederhana", k1: "K1", k2: "K2" }
                 ]
+            },
+            "Muatan Lokal": {
+                lm: ["mulok1", "kosa kata", "kalimat"],
+                tp: [
+                    { nama: "mampu menggunakan bahasa daerah", k1: "K1", k2: "K2" },
+                    { nama: "berbicara menggunakan bahasa bugis", k1: "K1", k2: "K2" }
+                ]
+            },
+            "Kokurikuler": {
+                lm: ["bing1"],
+                tp: [
+                    { nama: "siswa mampu membuat kalimat present tense", k1: "K1", k2: "K2" }
+                ]
             }
         };
+
+        // ------------------------------------------
+        // 2. KONEKSI & LOGIKA LOGIN API
+        // ------------------------------------------
+        const API_URL = "https://script.google.com/macros/s/AKfycbx1NwJ4SQ5ZyZAEAjKrgwfz-0gZpz2LluVl044y9d7b8YcO6kL4a3tu_U-dvSPdHmE-7g/exec";
+        
+        let globalSiswa = [];
+        let listJurnal = [];
+        let currentSettingMapel = "Pendidikan Pancasila";
+        let nilaiSiswa = {};
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-user').value.trim().toLowerCase();
+            const p = document.getElementById('login-pass').value.trim();
+            
+            if(u === 'sdn04taman' && p === 'bayuprahastian') {
+                sessionStorage.setItem('siguru_logged_in', 'true');
+                document.getElementById('login-error').classList.add('hidden');
+                
+                document.getElementById('login-overlay').classList.add('opacity-0');
+                setTimeout(() => {
+                    document.getElementById('login-overlay').classList.add('hidden');
+                    sinkronisasiDB(true);
+                }, 300);
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            if(confirm("Yakin ingin keluar dari sistem?")) {
+                sessionStorage.removeItem('siguru_logged_in');
+                window.location.reload();
+            }
+        }
+
+        function checkAuth() {
+            if(sessionStorage.getItem('siguru_logged_in') === 'true') {
+                document.getElementById('login-overlay').classList.add('hidden');
+                sinkronisasiDB(true);
+            }
+        }
+
+        const loader = document.getElementById('loading-overlay');
+        async function sinkronisasiDB(isManual = false) {
+            if(isManual) loader.classList.remove('hidden', 'opacity-0');
+            
+            try {
+                // Fetch Master Siswa
+                const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
+                if(resSiswa.status === 'success' && resSiswa.data.length > 0) { globalSiswa = resSiswa.data; } 
+                else { globalSiswa = mockSiswaFallback; }
+
+                // Fetch Identitas (Opsional jika API ada)
+                try {
+                    const resId = await fetch(`${API_URL}?action=getIdentitas`).then(r => r.json());
+                    if(resId.status === 'success') {
+                        const d = resId.data;
+                        document.getElementById('inp-sekolah').value = d.sekolah || 'SD Negeri 04 Taman';
+                        document.getElementById('inp-kota').value = d.kota || 'Pemalang';
+                        document.getElementById('inp-smt').value = d.semester || 'Genap';
+                        document.getElementById('inp-ta').value = d.tahunAjaran || '2025/2026';
+                        document.getElementById('inp-kepsek').value = d.kepalaSekolah || 'Tentrem Lestari, S.Pd.';
+                        document.getElementById('inp-nipkepsek').value = d.nipKepsek || '196706291991032002';
+                        document.getElementById('inp-guru').value = d.namaGuru || 'Bayu Prahastian, S.Pd.';
+                        document.getElementById('inp-nipguru').value = d.nipGuru || '199601212025211014';
+                        document.getElementById('inp-kelas').value = d.kelas || 'IV B';
+                    }
+                } catch(e) {}
+
+                // CATATAN PENGEMBANG: Jika nanti Code.gs diupdate untuk bisa GetMapel dari Excel, 
+                // kodenya akan terbaca di blok ini secara otomatis (Auto-Sync Target Pembelajaran).
+                try {
+                    const resMapel = await fetch(`${API_URL}?action=getMapel`).then(r => r.json());
+                    if(resMapel.status === 'success' && Object.keys(resMapel.data).length > 0) {
+                        mapelData = resMapel.data;
+                    }
+                } catch(e) {} // Abaikan jika action tidak ada di Code.gs saat ini, gunakan default di atas.
+
+                // Fetch Jurnal
+                const resJurnal = await fetch(`${API_URL}?action=getJurnal`).then(r => r.json());
+                if(resJurnal.status === 'success') listJurnal = resJurnal.data.reverse(); 
+                else listJurnal = mockJurnalFallback;
+
+                initialSetupSemua();
+            } catch (error) {
+                console.warn("Gagal sinkronisasi API. Mode Lokal Aktif.", error);
+                globalSiswa = mockSiswaFallback;
+                listJurnal = mockJurnalFallback;
+                initialSetupSemua();
+            } finally {
+                loader.classList.add('opacity-0');
+                setTimeout(() => loader.classList.add('hidden'), 500);
+            }
+        }
+
+        function initialSetupSemua() {
+            document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
+            initDataNilai();
+            initMockAbsen();
+            renderInputAbsenBulan();
+            renderRekapBulanan();
+            syncGlobalData();
+            initDropdownMapel(); 
+            renderLegger();      
+            updateJurnalMapel();
+            renderTabelJurnal();
+        }
+
+        // --- DATA FALLBACK JIKA OFFLINE ---
+        const mockSiswaFallback = [
+            {nis: "2520", nama: "ADE TRISTAN ABDILLAH", jk: "L"}, {nis: "2713", nama: "AISYAH ANINDITA MYESHA ZAHRA", jk: "P"},
+            {nis: "2527", nama: "ALESA AMELIA AFWA", jk: "P"}, {nis: "2530", nama: "ANINDITA AZAHRA", jk: "P"},
+            {nis: "2531", nama: "ARDAN ALIF MULIA", jk: "L"}, {nis: "2532", nama: "ARJUNA", jk: "L"},
+            {nis: "2537", nama: "AZAHRAH NAILUL RAMADHANI", jk: "P"}, {nis: "2538", nama: "BILQIS FAIHA RIFDA", jk: "P"},
+            {nis: "2539", nama: "DAVID SYARIF FIRDAUS", jk: "L"}, {nis: "2541", nama: "DIAN ILFI YUNIANDI", jk: "P"},
+            {nis: "2542", nama: "DIRGANTARA KIBRAKA IMRON", jk: "L"}, {nis: "2543", nama: "DWI MULYA ASIH", jk: "P"},
+            {nis: "2546", nama: "FAHRUL SEBASTIAN", jk: "L"}, {nis: "2549", nama: "KAYLA RENATA TUNGGADEWI", jk: "P"},
+            {nis: "2550", nama: "MOHAMAD ALFAREZA", jk: "L"}, {nis: "2551", nama: "MOHAMAD ALFARIZI", jk: "L"},
+            {nis: "2556", nama: "MUHAMAD FAHRI SAHREZA", jk: "L"}, {nis: "2557", nama: "MUHAMMAD ARFAN KUSUMO", jk: "L"},
+            {nis: "2558", nama: "MUHAMMAD ASFIHAN", jk: "L"}, {nis: "2561", nama: "NIDA AYUNDA PUSPITASARI", jk: "P"},
+            {nis: "2562", nama: "NIZAM AFARIK", jk: "L"}, {nis: "2563", nama: "NIZAM KAMIL", jk: "L"},
+            {nis: "2565", nama: "PUTRI AYUNINGTYAS", jk: "P"}, {nis: "2567", nama: "RAMADHAN ALFIANSYAH", jk: "L"},
+            {nis: "2775", nama: "SAKYA JAMAL JATMIKO", jk: "L"}, {nis: "2570", nama: "SALMAN AL FARIZI", jk: "L"},
+            {nis: "2572", nama: "SHAQILA ZIA RAYAFIRTI", jk: "P"}, {nis: "2574", nama: "TIARA SARI", jk: "P"},
+            {nis: "2575", nama: "UWAIS AL QORNI", jk: "L"}
+        ];
+
+        const mockJurnalFallback = [
+            { tanggal: "2026-01-13", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Kerja Sama di Lingkunganku", tujuanPembelajaran: "menjelaskan dan memberikan contoh kerja sama...", kegiatan: "Siswa menyimak penjelasan tentang kerjasama, melakukan diskusi.", refleksi: "Perlu pengulangan di bagian presentasi." }
+        ];
 
         function initDataNilai() {
             globalSiswa.forEach((s, i) => {
@@ -967,9 +991,7 @@
         let currentAbsenData = {}; 
         
         function initMockAbsen() {
-            globalSiswa.forEach((s, i) => {
-                currentAbsenData[i] = { hari: {} }; 
-            });
+            globalSiswa.forEach((s, i) => { currentAbsenData[i] = { hari: {} }; });
         }
 
         function getDaysInMonth(monthStr, year) { return new Date(year, monthNames.indexOf(monthStr) + 1, 0).getDate(); }
@@ -996,12 +1018,6 @@
                 thead += `<th class="border-r border-slate-300 w-4 ${sunday ? 'bg-red-100 text-red-500' : ''}">${d}</th>`;
             }
             
-            // Kolom Total
-            thead += `<th class="border-r border-slate-300 bg-blue-50 text-blue-700 w-5">H</th>
-                      <th class="border-r border-slate-300 bg-amber-50 text-amber-600 w-5">S</th>
-                      <th class="border-r border-slate-300 bg-purple-50 text-purple-600 w-5">I</th>
-                      <th class="bg-red-50 text-red-600 w-5 border-r border-slate-300">A</th>`;
-
             document.getElementById(targetThead).innerHTML = thead;
             document.getElementById(isInput ? 'th-colspan-absen' : 'th-colspan-rekap').colSpan = daysInMonth;
 
@@ -1016,7 +1032,7 @@
 
                 for(let d=1; d<=daysInMonth; d++) {
                     let sunday = isSunday(d, monthStr, activeYear);
-                    let val = dVal.hari[d] || ""; // Default kosong
+                    let val = dVal.hari[d] || ""; 
                     if(sunday) val = "";
 
                     if(val === "H") th++; else if(val === "S") ts++; else if(val === "I") ti++; else if(val === "A") ta_abs++;
@@ -1113,7 +1129,7 @@
             document.getElementById(`pct-${pref}-${i}`).innerText = pct + "%";
         }
 
-        // --- PENILAIAN INPUT DINAMIS ---
+        // --- PENILAIAN INPUT DINAMIS TANPA SIMULASI NILAI ---
         function initDropdownMapel() {
             let opts = "";
             for(let m in mapelData) opts += `<option value="${m}">${m}</option>`;
@@ -1200,9 +1216,7 @@
                 rtLM = countLM > 0 ? Math.round(rtLM/countLM) : '-';
                 
                 let rapor = '-';
-                if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
-                    rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); 
-                }
+                if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') { rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); }
                 
                 tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[12rem]">${s.nama}</td>
                 ${cells}
@@ -1226,18 +1240,13 @@
             document.getElementById(`rtl-${sIdx}`).innerText = rtLM;
             
             let rapor = '-';
-            if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
-                rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4);
-            }
+            if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') { rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); }
             document.getElementById(`na-s-${sIdx}`).innerText = rapor;
         }
 
         function renderSikap() {
             let tSikap="";
-            const pr = (val) => {
-                if(val === '' || val === '-') return '-';
-                return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup');
-            };
+            const pr = (val) => { if(val === '' || val === '-') return '-'; return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup'); };
             globalSiswa.forEach((s,i) => {
                 let d = nilaiSiswa[i].sikap;
                 let prA = (d.dsk !== '' && d.ins !== '') ? pr((parseInt(d.dsk)+parseInt(d.ins))/2) : '-';
@@ -1258,10 +1267,7 @@
             let v = val === '' ? '' : parseInt(val);
             nilaiSiswa[sIdx].sikap[field] = v;
             let d = nilaiSiswa[sIdx].sikap;
-            const pr = (val) => {
-                if(val === '' || val === '-') return '-';
-                return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup');
-            };
+            const pr = (val) => { if(val === '' || val === '-') return '-'; return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup'); };
             let prA = (d.dsk !== '' && d.ins !== '') ? pr((parseInt(d.dsk)+parseInt(d.ins))/2) : '-';
             let prB = (d.dsp !== '' && d.tgg !== '') ? pr((parseInt(d.dsp)+parseInt(d.tgg))/2) : '-';
             
@@ -1379,9 +1385,10 @@
             setTimeout(() => { window.print(); }, 300);
         }
 
+        // --- INIT APP ---
         window.onload = () => {
             pindahHalaman('dashboard', document.querySelector('[data-target="dashboard"]'));
-            checkAuth();
+            checkAuth(); // Cek login & set up data
         };
     </script>
 </body>
