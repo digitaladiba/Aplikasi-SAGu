@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V2 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V2.5 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -26,7 +26,7 @@
         .val-s { color: #d97706; background-color: #fef3c7; }
         .val-i { color: #9333ea; background-color: #f3e8ff; }
         .val-a { color: #dc2626; background-color: #fee2e2; }
-        .val-libur { background-color: #fca5a5 !important; cursor: not-allowed; color: #991b1b; font-size: 0; } /* Sembunyikan text di hari libur */
+        .val-libur { background-color: #fca5a5 !important; cursor: not-allowed; color: #991b1b; font-size: 0; }
 
         /* Input Table Styles */
         input.cell-input { width: 100%; text-align: center; border: 1px solid transparent; background: transparent; outline: none; font-family: inherit; font-size: inherit; font-weight: 600; color: #1e293b; padding: 2px 0; }
@@ -40,7 +40,6 @@
             main { padding: 0 !important; overflow: visible !important; }
             .print-area { width: 100% !important; margin: 0 !important; padding: 0 !important; border: none !important; box-shadow: none !important; border-radius: 0 !important; }
             
-            /* Mengatur tabel agar sangat padat namun terbaca */
             table { width: 100%; border-collapse: collapse; font-size: 8pt !important; page-break-inside: auto; }
             tr { page-break-inside: avoid; page-break-after: auto; }
             th, td { border: 1px solid #000 !important; padding: 2px 3px !important; color: black !important; }
@@ -48,11 +47,9 @@
             .val-libur { background-color: #fca5a5 !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
             input.cell-input { font-weight: bold; color: black; padding: 0; border: none !important; }
             
-            /* Kop Surat & Tanda Tangan */
             .kop-surat { margin-bottom: 8px; padding-bottom: 4px; }
             .print-signature { display: flex !important; justify-content: space-between; margin-top: 15px; page-break-inside: avoid; width: 100%; padding: 0 50px; font-size: 9pt; }
             
-            /* F4 Landscape Margins */
             @page { size: 330mm 215mm landscape; margin: 10mm 12mm; }
         }
         .print-only { display: none; }
@@ -67,10 +64,10 @@
             <div class="absolute top-0 left-0 w-full h-2 bg-blue-600"></div>
             <div class="text-center mb-6 mt-2">
                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-50 text-blue-600 mb-3 border border-blue-100">
-                    <i data-lucide="lock" class="w-6 h-6"></i>
+                    <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V2</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V2.5</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -175,7 +172,7 @@
             </div>
             <div class="flex items-center space-x-3">
                 <div class="text-right hidden md:block">
-                    <p class="text-sm font-bold text-slate-800" id="header-nama">Guru Kelas</p>
+                    <p class="text-sm font-bold text-slate-800" id="header-nama">Bayu Prahastian, S.Pd.</p>
                     <p class="text-xs text-slate-500" id="header-kelas">Terkoneksi Database</p>
                 </div>
                 <div class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600"><i data-lucide="user" class="w-5 h-5"></i></div>
@@ -203,21 +200,21 @@
                             <p class="text-sm font-medium text-slate-500">Rata-rata Kehadiran</p>
                             <i data-lucide="user-check" class="w-5 h-5 text-emerald-500"></i>
                         </div>
-                        <h3 class="text-3xl font-bold text-emerald-600" id="dash-rata-hadir">0%</h3>
+                        <h3 class="text-3xl font-bold text-emerald-600" id="dash-rata-hadir">83.3%</h3>
                     </div>
                     <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm border-l-4 border-amber-500">
                         <div class="flex justify-between items-start mb-2">
                             <p class="text-sm font-medium text-slate-500">Jurnal Terisi</p>
                             <i data-lucide="book-open" class="w-5 h-5 text-amber-500"></i>
                         </div>
-                        <h3 class="text-3xl font-bold text-amber-600" id="dash-total-jurnal">0</h3>
+                        <h3 class="text-3xl font-bold text-amber-600" id="dash-total-jurnal">1</h3>
                     </div>
                     <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm border-l-4 border-purple-500">
                         <div class="flex justify-between items-start mb-2">
                             <p class="text-sm font-medium text-slate-500">Mata Pelajaran</p>
                             <i data-lucide="library" class="w-5 h-5 text-purple-500"></i>
                         </div>
-                        <h3 class="text-3xl font-bold text-purple-600" id="dash-total-mapel">0</h3>
+                        <h3 class="text-3xl font-bold text-purple-600" id="dash-total-mapel">9</h3>
                     </div>
                 </div>
             </div>
@@ -238,7 +235,7 @@
                         <div><label class="block text-[11px] font-bold text-slate-500 mb-1">TAHUN AJARAN</label><input type="text" id="inp-ta" value="2025/2026" class="w-full border border-slate-300 rounded px-3 py-2 text-sm font-medium outline-none focus:border-blue-500"></div>
                         <div class="col-span-1 md:col-span-2 border-t border-slate-100 pt-4 mt-2"><h3 class="font-bold text-slate-700 text-sm">Penandatangan Laporan (Kop Bawah Cetak)</h3></div>
                         <div><label class="block text-[11px] font-bold text-slate-500 mb-1">KEPALA SEKOLAH</label><input type="text" id="inp-kepsek" value="Tentrem Lestari, S.Pd." class="w-full border border-slate-300 rounded px-3 py-2 text-sm font-medium outline-none focus:border-blue-500"></div>
-                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">NIP KEPALA SEKOLAH</label><input type="text" id="inp-nipkepsek" value="-" class="w-full border border-slate-300 rounded px-3 py-2 text-sm font-medium outline-none focus:border-blue-500"></div>
+                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">NIP KEPALA SEKOLAH</label><input type="text" id="inp-nipkepsek" value="196706291991032002" class="w-full border border-slate-300 rounded px-3 py-2 text-sm font-medium outline-none focus:border-blue-500"></div>
                         <div><label class="block text-[11px] font-bold text-slate-500 mb-1">GURU KELAS</label><input type="text" id="inp-guru" value="Bayu Prahastian, S.Pd." class="w-full border border-slate-300 rounded px-3 py-2 text-sm font-medium outline-none focus:border-blue-500"></div>
                         <div class="grid grid-cols-2 gap-4">
                             <div><label class="block text-[11px] font-bold text-slate-500 mb-1">NIP GURU</label><input type="text" id="inp-nipguru" value="199601212025211014" class="w-full border border-slate-300 rounded px-3 py-2 text-sm font-medium outline-none focus:border-blue-500"></div>
@@ -289,7 +286,7 @@
                     </div>
                     <div class="flex space-x-2">
                         <select id="filter-bulan-absen-input" onchange="renderInputAbsenBulan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium">
-                            <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
+                            <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option>
                         </select>
                         <button onclick="alert('Data absensi berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan</button>
                     </div>
@@ -321,9 +318,9 @@
                     <div><h2 class="text-xl font-bold text-slate-800">Rekap Bulanan (Cetak)</h2></div>
                     <div class="flex space-x-2">
                         <select id="filter-bulan-rekap" onchange="renderRekapBulanan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium">
-                            <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
+                            <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option>
                         </select>
-                        <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> Cetak F4</button>
+                        <button onclick="cetakLaporan('abs')" class="bg-slate-800 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
@@ -359,12 +356,12 @@
             <div id="hal-siswa-rekapsemester" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Rekap Semester</h2></div>
-                    <button onclick="cetakLaporan()" class="bg-slate-800 text-white px-4 py-1.5 rounded-lg text-sm font-medium flex items-center shadow-sm"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> Cetak F4</button>
+                    <button onclick="cetakLaporan('smt')" class="bg-slate-800 text-white px-4 py-1.5 rounded-lg text-sm font-medium flex items-center shadow-sm"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> Cetak F4</button>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[10pt] uppercase">REKAPITULASI DAFTAR HADIR SEMESTER</h2>
-                        <p class="text-[8pt] print-sub-header">Tahun Ajaran 2025/2026</p>
+                        <h2 class="font-bold text-[11pt]">REKAPITULASI DAFTAR HADIR SEMESTER</h2>
+                        <p class="text-[9pt] print-sub-header">Tahun Ajaran 2025/2026</p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
@@ -376,8 +373,8 @@
                                 <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 4</th>
                                 <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 5</th>
                                 <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 6</th>
-                                <th colspan="4" class="px-2 py-1 border-r border-slate-300 border-b bg-slate-200">TOTAL SMT</th>
-                                <th rowspan="2" class="px-2 py-1 bg-slate-200 border-l border-slate-300">% HADIR</th>
+                                <th colspan="4" class="px-2 py-1 border-r border-slate-300 border-b bg-blue-50 text-blue-800">TOTAL SMT</th>
+                                <th rowspan="2" class="px-2 py-1 bg-blue-50 text-blue-800 border-l border-slate-300">% HADIR</th>
                             </tr>
                             <tr class="font-normal text-[9px] sm:text-[10px] text-slate-600">
                                 <th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>
@@ -386,7 +383,7 @@
                                 <th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>
                                 <th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>
                                 <th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>
-                                <th class="border-r border-slate-300 bg-slate-200 font-bold text-black">H</th><th class="border-r border-slate-300 bg-slate-200 font-bold text-black">S</th><th class="border-r border-slate-300 bg-slate-200 font-bold text-black">I</th><th class="bg-slate-200 font-bold text-red-600">A</th>
+                                <th class="border-r border-slate-300 bg-blue-50 font-bold text-slate-800">H</th><th class="border-r border-slate-300 bg-blue-50 font-bold text-slate-800">S</th><th class="border-r border-slate-300 bg-blue-50 font-bold text-slate-800">I</th><th class="bg-blue-50 font-bold text-slate-800">A</th>
                             </tr>
                         </thead>
                         <tbody id="tb-rekap-smt" class="divide-y divide-slate-200 text-slate-700"></tbody>
@@ -584,103 +581,7 @@
     <script>
         lucide.createIcons();
 
-        // ==========================================
-        // 1. KONEKSI GOOGLE APPS SCRIPT API
-        // ==========================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbx1NwJ4SQ5ZyZAEAjKrgwfz-0gZpz2LluVl044y9d7b8YcO6kL4a3tu_U-dvSPdHmE-7g/exec";
-        
-        let globalSiswa = [];
-        let listJurnal = [];
-
-        // --- SISTEM LOGIN ---
-        function handleLogin(e) {
-            e.preventDefault();
-            const u = document.getElementById('login-user').value;
-            const p = document.getElementById('login-pass').value;
-            
-            if(u === 'sdn04taman' && p === 'bayuprahastian') {
-                sessionStorage.setItem('siguru_logged_in', 'true');
-                document.getElementById('login-error').classList.add('hidden');
-                
-                document.getElementById('login-overlay').classList.add('opacity-0');
-                setTimeout(() => {
-                    document.getElementById('login-overlay').classList.add('hidden');
-                    sinkronisasiDB(true); 
-                }, 300);
-            } else {
-                document.getElementById('login-error').classList.remove('hidden');
-            }
-        }
-
-        function handleLogout() {
-            if(confirm("Yakin ingin keluar dari sistem?")) {
-                sessionStorage.removeItem('siguru_logged_in');
-                window.location.reload();
-            }
-        }
-
-        function checkAuth() {
-            if(sessionStorage.getItem('siguru_logged_in') === 'true') {
-                document.getElementById('login-overlay').classList.add('hidden');
-                sinkronisasiDB(true);
-            }
-        }
-
-        const loader = document.getElementById('loading-overlay');
-        async function sinkronisasiDB(isManual = false) {
-            if(isManual) loader.classList.remove('hidden', 'opacity-0');
-            
-            try {
-                // Fetch API (Simulasi Delay jika koneksi putus akan otomatis fallback)
-                const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
-                if(resSiswa.status === 'success' && resSiswa.data.length > 0) { globalSiswa = resSiswa.data; } 
-                else { globalSiswa = mockSiswaFallback; }
-
-                const resId = await fetch(`${API_URL}?action=getIdentitas`).then(r => r.json());
-                if(resId.status === 'success') {
-                    const d = resId.data;
-                    document.getElementById('inp-sekolah').value = d.sekolah || 'SD Negeri 04 Taman';
-                    document.getElementById('inp-kota').value = d.kota || 'Pemalang';
-                    document.getElementById('inp-smt').value = d.semester || 'Genap';
-                    document.getElementById('inp-ta').value = d.tahunAjaran || '2025/2026';
-                    document.getElementById('inp-kepsek').value = d.kepalaSekolah || 'Tentrem Lestari, S.Pd.';
-                    document.getElementById('inp-nipkepsek').value = d.nipKepsek || '-';
-                    document.getElementById('inp-guru').value = d.namaGuru || 'Bayu Prahastian, S.Pd.';
-                    document.getElementById('inp-nipguru').value = d.nipGuru || '199601212025211014';
-                    document.getElementById('inp-kelas').value = d.kelas || 'IV B';
-                }
-
-                const resJurnal = await fetch(`${API_URL}?action=getJurnal`).then(r => r.json());
-                if(resJurnal.status === 'success') listJurnal = resJurnal.data.reverse(); 
-                else listJurnal = mockJurnalFallback;
-
-                initialSetupSemua();
-            } catch (error) {
-                console.warn("Gagal sinkronisasi API. Mode Offline Aktif.", error);
-                globalSiswa = mockSiswaFallback;
-                listJurnal = mockJurnalFallback;
-                initialSetupSemua();
-            } finally {
-                loader.classList.add('opacity-0');
-                setTimeout(() => loader.classList.add('hidden'), 500);
-            }
-        }
-
-        function initialSetupSemua() {
-            document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
-            initDataNilai();
-            initMockAbsen();
-            renderInputAbsenBulan();
-            renderRekapBulanan();
-            syncGlobalData();
-            initDropdownMapel(); 
-            renderLegger();      
-            updateJurnalMapel();
-            renderTabelJurnal();
-        }
-
-        // --- DATA FALLBACK (LOKAL) ---
-        const mockSiswaFallback = [
+        let globalSiswa = [
             {nis: "2520", nama: "ADE TRISTAN ABDILLAH", jk: "L"}, {nis: "2713", nama: "AISYAH ANINDITA MYESHA ZAHRA", jk: "P"},
             {nis: "2527", nama: "ALESA AMELIA AFWA", jk: "P"}, {nis: "2530", nama: "ANINDITA AZAHRA", jk: "P"},
             {nis: "2531", nama: "ARDAN ALIF MULIA", jk: "L"}, {nis: "2532", nama: "ARJUNA", jk: "L"},
@@ -698,21 +599,109 @@
             {nis: "2575", nama: "UWAIS AL QORNI", jk: "L"}
         ];
 
-        const mockJurnalFallback = [
-            { tanggal: "13/01/2026", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Pengenalan Perangkat TIK", tujuanPembelajaran: "menjelaskan pengertian TIK serta peranannya", kegiatan: "Siswa menyimak penjelasan tentang pengertian TIK, melakukan diskusi kelompok, dan presentasi.", refleksi: "Perlu pengulangan di bagian presentasi." },
-            { tanggal: "14/01/2026", tglFormat: "Rabu,<br>14 Jan 2026", jam: "4-5", mapel: "Bahasa Indonesia", lingkupMateri: "Teks Persuasi", tujuanPembelajaran: "membuat kalimat ajakan (persuasi)", kegiatan: "Membaca contoh teks persuasi, menemukan kalimat ajakan, dan mempraktikkan menulis satu paragraf.", refleksi: "-" }
+        let listJurnal = [
+            { tanggal: "2026-01-13", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Kerja Sama di Lingkunganku", tujuanPembelajaran: "menjelaskan dan memberikan contoh kerja sama...", kegiatan: "Siswa menyimak penjelasan tentang kerjasama, melakukan diskusi kelompok, dan presentasi.", refleksi: "Perlu pengulangan di bagian presentasi." }
         ];
 
         let mapelData = {
-            "Pendidikan Pancasila": { lm: ["Pengenalan Perangkat TIK", "Pengoperasian dasar komputer"], tp: [{ nama: "menjelaskan pengertian TIK", k1: "Pemahaman", k2: "Penerapan" }] },
-            "Bahasa Indonesia": { lm: ["Teks Persuasi", "Teks Deskripsi"], tp: [{ nama: "membuat kalimat ajakan", k1: "Kosakata", k2: "Struktur" }] },
-            "Matematika": { lm: ["Bilangan Cacah", "Pecahan"], tp: [{ nama: "membaca bilangan cacah", k1: "Membaca", k2: "Menulis" }] },
-            "IPAS": { lm: ["Tumbuhan"], tp: [{nama: "mengidentifikasi bagian tumbuhan", k1: "K1", k2: "K2"}] },
-            "Seni Rupa": { lm: ["Menggambar Bentuk"], tp: [{nama: "menggambar bentuk 2 dimensi", k1: "K1", k2: "K2"}] },
-            "Bahasa Inggris": { lm: ["Greetings"], tp: [{nama: "menyebutkan sapaan", k1: "K1", k2: "K2"}] }
+            "Pendidikan Pancasila": {
+                lm: ["Kerja Sama di Lingkunganku", "Pancasila dalam Diriku"],
+                tp: [
+                    { nama: "menjelaskan dan memberikan contoh kerja sama...", k1: "K1", k2: "K2" },
+                    { nama: "menunjukan sikap kompak dan bersatu...", k1: "K1", k2: "K2" },
+                    { nama: "menunjukan sikap bangga menjadi anak Indonesia...", k1: "K1", k2: "K2" },
+                    { nama: "mengidentifikasi dan menjelaskan makna sila-sila pancasila...", k1: "K1", k2: "K2" },
+                    { nama: "menunjukan sikap dan perilaku sesuai nilai sila-sila pancasila...", k1: "K1", k2: "K2" },
+                    { nama: "menjelaskan secara singkat sejarah perumusan pancasila...", k1: "K1", k2: "K2" },
+                    { nama: "menceritakan dan meneladai karakter para perumus pancasila", k1: "K1", k2: "K2" }
+                ]
+            },
+            "Bahasa Indonesia": {
+                lm: ["Bertukar dan Membayar", "Satu Titik", "Asal Usul", "Sahatlah Ragaku"],
+                tp: [
+                    { nama: "memahami informasi dari teks fabel...", k1: "K1", k2: "K2" },
+                    { nama: "menerapkan kaidah penulisan nilai uang", k1: "K1", k2: "K2" },
+                    { nama: "menulis teks prosedur", k1: "K1", k2: "K2" },
+                    { nama: "berdiskusi tentang kebutuhan dan keinginan", k1: "K1", k2: "K2" },
+                    { nama: "menggunakan kaidah kalimat efektif", k1: "K1", k2: "K2" },
+                    { nama: "memahami makna dan menulis puisi", k1: "K1", k2: "K2" },
+                    { nama: "mengidentifikasi majas metafora", k1: "K1", k2: "K2" },
+                    { nama: "menulis laporan perjalanan berstruktur", k1: "K1", k2: "K2" }
+                ]
+            },
+            "Matematika": {
+                lm: ["Pengukuran", "Geometri", "Analisis Data dan Peluang"],
+                tp: [
+                    { nama: "mengukur luas dengan satuan tidak baku dan baku", k1: "K1", k2: "K2" },
+                    { nama: "mengukur volume dengan satuan tidak baku dan baku", k1: "K1", k2: "K2" },
+                    { nama: "mendeskripsikan ciri-ciri bentuk bangun datar", k1: "K1", k2: "K2" },
+                    { nama: "menyusun komosisi dan dekomposisi bangun datar", k1: "K1", k2: "K2" },
+                    { nama: "menyajikan data dalam bentuk pictogram", k1: "K1", k2: "K2" },
+                    { nama: "menyajikan data dalam bentuk diagram batang", k1: "K1", k2: "K2" }
+                ]
+            },
+            "IPAS": {
+                lm: ["Ini Khas Daerahku", "Peranku di Lingkungan Sekolah...", "Keragaman Budaya...", "Menjadi Pahlawan..."],
+                tp: [
+                    { nama: "menganalisi bentang alam dengan keaneragaman hayati...", k1: "K1", k2: "K2" },
+                    { nama: "menerapkan peran, tugas serta tanggung jawab di sekolah...", k1: "K1", k2: "K2" },
+                    { nama: "menceritakan keragaman budaya dan kearifan lokal", k1: "K1", k2: "K2" },
+                    { nama: "menunjukan sikap peduli terhadap permasalahan lingkungan", k1: "K1", k2: "K2" },
+                    { nama: "berkontribusi dalam mitigasi perubahan", k1: "K1", k2: "K2" }
+                ]
+            },
+            "Seni Rupa": { lm: ["Seni Rupa 1", "Seni Rupa 2"], tp: [{nama: "menggambar bentuk 2 dimensi", k1: "K1", k2: "K2"}] },
+            "Bahasa Inggris": { lm: ["Greetings"], tp: [{nama: "menyebutkan sapaan", k1: "K1", k2: "K2"}] },
+            "Muatan Lokal": { lm: ["Mulok 1"], tp: [{nama: "TP Mulok 1", k1: "K1", k2: "K2"}] }
         };
         let currentSettingMapel = "Pendidikan Pancasila";
         let nilaiSiswa = {};
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-user').value;
+            const p = document.getElementById('login-pass').value;
+            
+            if(u === 'sdn04taman' && p === 'bayuprahastian') {
+                sessionStorage.setItem('siguru_logged_in', 'true');
+                document.getElementById('login-error').classList.add('hidden');
+                
+                document.getElementById('login-overlay').classList.add('opacity-0');
+                setTimeout(() => {
+                    document.getElementById('login-overlay').classList.add('hidden');
+                    initialSetupSemua();
+                }, 300);
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            if(confirm("Yakin ingin keluar dari sistem?")) {
+                sessionStorage.removeItem('siguru_logged_in');
+                window.location.reload();
+            }
+        }
+
+        function checkAuth() {
+            if(sessionStorage.getItem('siguru_logged_in') === 'true') {
+                document.getElementById('login-overlay').classList.add('hidden');
+                initialSetupSemua();
+            }
+        }
+
+        function initialSetupSemua() {
+            document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
+            initDataNilai();
+            initMockAbsen();
+            renderInputAbsenBulan();
+            renderRekapBulanan();
+            syncGlobalData();
+            initDropdownMapel(); 
+            renderLegger();      
+            updateJurnalMapel();
+            renderTabelJurnal();
+        }
 
         function initDataNilai() {
             globalSiswa.forEach((s, i) => {
@@ -1141,8 +1130,7 @@
                     cells += `<td class="border-r border-slate-300 border-b py-1.5">${na || '-'}</td>`;
                 }
 
-                // Ambil rekap absen dummy
-                let pctHadir = "100%";
+                let pctHadir = document.getElementById(`pct-inp-${i}`) ? document.getElementById(`pct-inp-${i}`).innerText : "100%";
                 
                 let d = nilaiSiswa[i].sikap;
                 let rtSikap = (d.dsk + d.ins + d.dsp + d.tgg)/4;
@@ -1229,7 +1217,7 @@
         // --- INIT APP ---
         window.onload = () => {
             pindahHalaman('dashboard', document.querySelector('[data-target="dashboard"]'));
-            checkAuth(); // Cek login & mulai sinkronisasi
+            checkAuth(); // Cek login & set up data
         };
     </script>
 </body>
