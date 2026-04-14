@@ -76,6 +76,9 @@
             .kop-surat { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid #000; }
             .print-sub-header { margin-top: 2px; margin-bottom: 5px; }
             
+            /* PERBAIKAN: Mengubah flex menjadi table agar TTD muncul utuh */
+            .print-signature { display: table !important; margin-top: 30px; page-break-inside: avoid !important; width: 100%; font-size: 9pt !important; }
+            
             /* Kertas F4 Landscape Margins */
             @page { size: 330mm 215mm landscape; margin: 10mm 15mm; }
         }
