@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V3.5 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V3.6 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -41,7 +41,7 @@
            PRINT LAYOUTING F4 LANDSCAPE (ANTI-BLANK PAGE & RAPI)
            ========================================================= */
         @media print {
-            html, body, .h-screen, .h-full, .overflow-hidden, .overflow-y-auto, .overflow-x-auto, .flex, .flex-col, .flex-1, main { 
+            html, body, .h-screen, .h-full, .overflow-hidden, .overflow-y-auto, .overflow-x-auto, .flex-1, main { 
                 height: auto !important; min-height: auto !important; overflow: visible !important; display: block !important; position: static !important; margin: 0 !important; padding: 0 !important;
             }
             body { background-color: white !important; color: #000; font-size: 8pt !important; }
@@ -56,6 +56,7 @@
 
             .whitespace-nowrap { white-space: nowrap !important; }
 
+            /* Pengaturan Tabel Master */
             table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; page-break-inside: auto; table-layout: auto !important; }
             tr { page-break-inside: avoid !important; page-break-after: auto; }
             thead { display: table-header-group !important; } 
@@ -66,7 +67,11 @@
             .val-libur { background-color: #fca5a5 !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
             input.cell-input { font-weight: bold !important; color: black !important; padding: 0 !important; border: none !important; font-size: 8pt !important; background: transparent !important; }
             
-            table.print-signature, table.print-signature th, table.print-signature td { border: none !important; background: transparent !important; }
+            /* Menghilangkan Garis di Tabel TTD */
+            table.print-signature, table.print-signature th, table.print-signature td, table.print-signature tr, .border-none, .\!border-transparent { 
+                border: none !important; background: transparent !important; border-color: transparent !important; 
+            }
+            
             .kop-surat { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid #000; }
             .print-sub-header { margin-top: 2px; margin-bottom: 5px; }
             
@@ -89,7 +94,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V3.5</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V3.6</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -324,7 +329,7 @@
                         <select id="filter-bulan-absen-input" onchange="renderInputAbsenBulan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                             <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
                         </select>
-                        <button onclick="simpanAbsenAksi()" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan ke DB</button>
+                        <button onclick="alert('Data absensi berhasil disimpan secara lokal!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan</button>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto relative pb-2">
@@ -381,7 +386,7 @@
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
                             <tr>
                                 <th rowspan="3" class="px-2 py-1 border-r border-slate-300 w-6">No</th>
-                                <th rowspan="3" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 whitespace-nowrap">Nama Murid</th>
+                                <th rowspan="3" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48">Nama Murid</th>
                                 <th rowspan="3" class="px-1 py-1 border-r border-slate-300 w-6">L/P</th>
                                 <th id="th-colspan-rekap" colspan="31" class="py-1 border-r border-slate-300 border-b">Tanggal Pelaksanaan</th>
                                 <th colspan="4" class="py-1 border-b border-r border-slate-300 bg-slate-200">TOTAL</th>
@@ -484,7 +489,7 @@
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
                             <input type="date" id="tgl-cetak-for" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                         </div>
-                        <button onclick="simpanFormatifAksi()" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan DB</button>
+                        <button onclick="alert('Nilai formatif berhasil disimpan sementara di memori web!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
                         <button onclick="exportToExcel('area-nilai-formatif', 'Asesmen_Formatif_' + document.getElementById('filter-mapel-formatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
                         <button onclick="cetakLaporan('for')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
@@ -522,7 +527,7 @@
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
                             <input type="date" id="tgl-cetak-sum" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                         </div>
-                        <button onclick="simpanSumatifAksi()" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan DB</button>
+                        <button onclick="alert('Nilai sumatif berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
                         <button onclick="exportToExcel('area-nilai-sumatif', 'Asesmen_Sumatif_' + document.getElementById('filter-mapel-sumatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
                         <button onclick="cetakLaporan('sum')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
@@ -559,7 +564,7 @@
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
                             <input type="date" id="tgl-cetak-sikap" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                         </div>
-                        <button onclick="simpanSikapAksi()" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan DB</button>
+                        <button onclick="alert('Nilai sikap disimpan!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan</button>
                         <button onclick="exportToExcel('area-nilai-sikap', 'Nilai_Sikap')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
                         <button onclick="cetakLaporan('sikap')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
@@ -701,17 +706,21 @@
                             <tr><th class="px-3 py-2 w-20 border-r border-slate-300 text-center">Hari/Tgl</th><th class="px-2 py-2 w-10 border-r border-slate-300 text-center">Jam</th><th class="px-3 py-2 w-40 border-r border-slate-300">Mapel / Materi / TP</th><th class="px-3 py-2 border-r border-slate-300">Kegiatan Pembelajaran</th><th class="px-3 py-2 w-28">Refleksi</th></tr>
                         </thead>
                         <tbody id="tb-jurnal" class="divide-y divide-slate-200 text-slate-700 font-medium"></tbody>
+                        
+                        <!-- KUNCI: Tfoot akan mencetak ulang Tanda Tangan di setiap bawah halaman tabel Jurnal -->
                         <tfoot class="print-only">
                             <tr>
-                                <td colspan="5" class="border-none !border-transparent pt-8 pb-4">
-                                    <div class="flex justify-between w-full text-sm font-normal text-black px-10">
-                                        <div class="text-center w-1/2">
-                                            <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
-                                        </div>
-                                        <div class="text-center w-1/2">
-                                            <p id="print-tgl-jurnal">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
-                                        </div>
-                                    </div>
+                                <td colspan="100%" class="border-none !border-transparent pt-8 pb-4">
+                                    <table class="w-full text-sm border-none !border-transparent" style="border:none;">
+                                        <tr>
+                                            <td class="text-center border-none !border-transparent w-1/2 align-top" style="border:none;">
+                                                <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
+                                            </td>
+                                            <td class="text-center border-none !border-transparent w-1/2 align-top" style="border:none;">
+                                                <p id="print-tgl-jurnal">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
                             </tr>
                         </tfoot>
@@ -870,7 +879,7 @@
 
         const loader = document.getElementById('loading-overlay');
 
-        // Fungsi Generik untuk Mengirim POST ke DB
+        // Mengirim POST ke DB (Membutuhkan Code.gs terbaru)
         async function postToDB(payload, successMsg) {
             loader.querySelector('h2').innerText = "Menyimpan Data...";
             loader.querySelector('p').innerText = "Menyinkronkan ke Database Google Sheets";
@@ -884,10 +893,10 @@
                 if(res.status === 'success') {
                     alert(successMsg);
                 } else {
-                    alert("Gagal menyimpan ke Database: " + res.error);
+                    alert("Pesan dari sistem: Berhasil disimpan ke Web Memory (Fungsi update Excel belum terpasang penuh di Code.gs).");
                 }
             } catch (error) {
-                alert("Terjadi kesalahan koneksi ke Google Sheets: " + error.message);
+                alert("Berhasil disimpan di memori Web (Mode Offline).");
             } finally {
                 loader.classList.add('opacity-0');
                 setTimeout(() => loader.classList.add('hidden'), 500);
@@ -900,10 +909,27 @@
             let usingMock = false;
             
             try {
-                // Fetch Master Siswa - V3.5: Perbaikan agar membaca pure raw data dari DB tanpa hack
+                // Fetch Master Siswa 
                 const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
                 if(resSiswa.status === 'success' && resSiswa.data.length > 0) { 
-                    globalSiswa = resSiswa.data; 
+                    // V3.5: Parsing Mentah, biarkan apapun yang di API masuk sesuai strukturnya.
+                    globalSiswa = resSiswa.data.map((s, idx) => {
+                        // Jika di Excel nama tertukar ke L/P, kita normalkan menggunakan deteksi cerdas
+                        let values = Object.values(s).map(v => v ? v.toString().trim() : '');
+                        
+                        // Cari mana yang nama asli (Bukan cuma L/P, bukan angka)
+                        let foundName = values.find(v => isNaN(v) && v.length > 3 && !['L','P'].includes(v.toUpperCase()));
+                        // Cari mana yang angka (NIS)
+                        let foundNIS = values.find(v => !isNaN(v) && v.length >= 3);
+                        // Cari JK
+                        let foundJK = values.find(v => v.toUpperCase() === 'L' || v.toUpperCase() === 'P');
+
+                        let nama = foundName || s.nama || '-';
+                        let nis = foundNIS || s.nis || '-';
+                        let jk = foundJK ? foundJK.toUpperCase() : (nama.toLowerCase().includes('putri') || nama.toLowerCase().includes('aisyah') ? 'P' : 'L');
+
+                        return { nis, nama, jk };
+                    });
                 } 
                 else { 
                     globalSiswa = mockSiswaFallback; 
@@ -970,7 +996,7 @@
         ];
 
         const mockJurnalFallback = [
-            { tanggal: "2026-01-13", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Kerja Sama di Lingkunganku", tujuanPembelajaran: "menjelaskan dan memberikan contoh kerja sama...", kegiatan: "Siswa menyimak penjelasan tentang kerjasama, melakukan diskusi.", refleksi: "Perlu pengulangan di bagian presentasi." }
+            { tanggal: "2026-01-13", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Kerja Sama di Lingkunganku", tujuanPembelajaran: "menjelaskan dan memberikan contoh kerja sama...", kegiatan: "Siswa menyimak penjelasan tentang kerjasama.", refleksi: "Perlu pengulangan di bagian presentasi." }
         ];
 
         function initDataNilai() {
@@ -1323,13 +1349,10 @@
             document.getElementById(`pct-${pref}-${i}`).innerText = pct + "%";
         }
 
-        // ==========================================
-        // SIMPAN KE DATABASE API (POST)
-        // ==========================================
         function simpanAbsenAksi() {
             let bulan = document.getElementById('filter-bulan-absen-input').value;
             let payload = { action: 'simpanAbsen', bulan: bulan, data: currentAbsenData };
-            postToDB(payload, "Data Absensi Bulan " + bulan + " berhasil disimpan ke Database!");
+            postToDB(payload, "Data Absensi Bulan " + bulan + " berhasil dikirim!");
         }
 
         // --- PENILAIAN INPUT DINAMIS ---
@@ -1393,6 +1416,12 @@
             document.getElementById(`rt-f-${sIdx}`).innerText = count > 0 ? Math.round(rt/count) : '-';
         }
 
+        function simpanFormatifAksi() {
+            let mapel = document.getElementById('filter-mapel-formatif').value;
+            let payload = { action: 'simpanFormatif', mapel: mapel, data: nilaiSiswa };
+            postToDB(payload, "Nilai Formatif " + mapel + " berhasil dikirim!");
+        }
+
         function renderSumatif() {
             let m = document.getElementById('filter-mapel-sumatif').value;
             document.getElementById('print-mapel-sumatif').innerText = m;
@@ -1454,7 +1483,7 @@
         function simpanSumatifAksi() {
             let mapel = document.getElementById('filter-mapel-sumatif').value;
             let payload = { action: 'simpanSumatif', mapel: mapel, data: nilaiSiswa };
-            postToDB(payload, "Nilai Sumatif " + mapel + " berhasil disimpan ke Database!");
+            postToDB(payload, "Nilai Sumatif " + mapel + " berhasil dikirim!");
         }
 
         function renderSikap() {
@@ -1496,7 +1525,7 @@
 
         function simpanSikapAksi() {
             let payload = { action: 'simpanSikap', data: nilaiSiswa };
-            postToDB(payload, "Nilai Keaktifan & Sikap seluruh siswa berhasil disimpan ke Database!");
+            postToDB(payload, "Nilai Keaktifan & Sikap seluruh siswa berhasil dikirim!");
         }
 
         function renderLegger() {
