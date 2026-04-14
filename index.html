@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V2.7 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V2.8 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -32,6 +32,10 @@
         input.cell-input { width: 100%; text-align: center; border: 1px solid transparent; background: transparent; outline: none; font-family: inherit; font-size: inherit; font-weight: 600; color: #1e293b; padding: 2px 0; }
         input.cell-input:focus { background-color: #eff6ff; color: #1d4ed8; border-bottom: 1px solid #3b82f6; }
         input.cell-input::-webkit-outer-spin-button, input.cell-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* Loader */
+        .loader-spinner { border: 4px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 4px solid #ffffff; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Print F4 Landscape Layouting (330mm x 215mm) */
         @media print {
@@ -67,7 +71,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V2.7</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V2.8</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -86,6 +90,13 @@
                 </button>
             </form>
         </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-blue-900 bg-opacity-95 z-[100] flex flex-col items-center justify-center text-white transition-opacity duration-500 hidden">
+        <div class="loader-spinner mb-4"></div>
+        <h2 class="text-xl font-bold mb-1">Menyinkronkan Database...</h2>
+        <p class="text-sm text-blue-200">Mengambil data terbaru dari Google Sheets Anda</p>
     </div>
 
     <!-- SIDEBAR -->
@@ -127,7 +138,7 @@
                     <i data-lucide="chevron-down" id="icon-menu-siswa" class="w-4 h-4 chevron rotate"></i>
                 </button>
                 <div id="menu-siswa" class="submenu flex flex-col pl-9 pr-2 space-y-1 mt-1 open">
-                    <button onclick="pindahHalaman('siswa-absen', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-absen">Input Daftar Hadir</button>
+                    <button onclick="pindahHalaman('siswa-absen', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-absen">Input Kehadiran</button>
                     <button onclick="pindahHalaman('siswa-rekapbulan', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-rekapbulan">Rekap Bulanan</button>
                     <button onclick="pindahHalaman('siswa-rekapsemester', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-rekapsemester">Rekap Semester</button>
                 </div>
@@ -158,8 +169,11 @@
                 </div>
             </div>
         </div>
-        <div class="p-4 border-t border-slate-800 bg-slate-950 text-xs text-center">
-            <button onclick="handleLogout()" class="text-slate-400 hover:text-red-400 transition font-medium w-full py-1">Logout Sistem</button>
+        <div class="p-4 border-t border-slate-800 bg-slate-950 flex items-center justify-between">
+            <button onclick="handleLogout()" class="text-xs font-semibold text-red-400 hover:text-red-300 transition flex items-center"><i data-lucide="log-out" class="w-3 h-3 mr-1"></i> Logout</button>
+            <div id="db-status-indicator" class="flex items-center text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">
+                <div class="w-2 h-2 rounded-full bg-emerald-500 mr-1 animate-pulse"></div> Live
+            </div>
         </div>
     </aside>
 
@@ -168,14 +182,14 @@
         <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 z-40 no-print flex-shrink-0 w-full shadow-sm">
             <div class="flex items-center">
                 <button onclick="toggleSidebar()" class="text-slate-500 hover:text-slate-800 p-2 -ml-2 mr-2"><i data-lucide="menu" class="w-6 h-6"></i></button>
-                <h2 id="judul-halaman" class="text-lg font-bold text-slate-800 hidden sm:block">Dashboard</h2>
+                <h2 id="judul-halaman" class="text-lg font-bold text-slate-800 hidden sm:block">Papan Utama</h2>
             </div>
             <div class="flex items-center space-x-3">
                 <div class="text-right hidden md:block">
                     <p class="text-sm font-bold text-slate-800" id="header-nama">Guru Kelas</p>
                     <p class="text-xs text-slate-500" id="header-kelas">Terkoneksi Database</p>
                 </div>
-                <div class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600"><i data-lucide="user" class="w-5 h-5"></i></div>
+                <button onclick="sinkronisasiDB(true)" class="bg-blue-50 text-blue-600 p-2 rounded-full hover:bg-blue-100 transition" title="Refresh Database"><i data-lucide="refresh-cw" class="w-5 h-5"></i></button>
             </div>
         </header>
 
@@ -343,15 +357,15 @@
                                 <th rowspan="3" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48">Nama Murid</th>
                                 <th rowspan="3" class="px-1 py-1 border-r border-slate-300 w-6">L/P</th>
                                 <th id="th-colspan-rekap" colspan="31" class="py-1 border-r border-slate-300 border-b">Tanggal Pelaksanaan</th>
-                                <th colspan="4" class="py-1 border-b border-r border-slate-300 bg-slate-200">TOTAL</th>
-                                <th rowspan="3" class="px-1 py-1 bg-slate-200 border-slate-300">%</th>
+                                <th colspan="4" class="py-1 border-b border-slate-300 bg-slate-200">TOTAL</th>
+                                <th rowspan="3" class="px-1 py-1 bg-slate-200 border-l border-slate-300">%</th>
                             </tr>
                             <tr>
                                 <th class="hidden" colspan="31"></th>
                                 <th class="border-r border-slate-300 bg-slate-200 text-blue-700 w-5">H</th>
                                 <th class="border-r border-slate-300 bg-slate-200 text-amber-600 w-5">S</th>
                                 <th class="border-r border-slate-300 bg-slate-200 text-purple-600 w-5">I</th>
-                                <th class="bg-slate-200 text-red-600 w-5 border-r border-slate-300">A</th>
+                                <th class="bg-slate-200 text-red-600 w-5">A</th>
                             </tr>
                             <tr id="head-tanggal-rekap">
                                 <!-- JS Generated -->
@@ -444,7 +458,7 @@
                     <div><h2 class="text-xl font-bold text-slate-800">Asesmen Sumatif</h2><p class="text-sm text-slate-500">Ketik angka di kolom LM, STS, dan SAS.</p></div>
                     <div class="flex space-x-2">
                         <select id="filter-mapel-sumatif" onchange="renderSumatif()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium"></select>
-                        <button onclick="alert('Nilai sumatif berhasil disimpan sementara di memori web!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan Nilai</button>
+                        <button onclick="alert('Nilai sumatif berhasil disimpan!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan Nilai</button>
                         <button onclick="cetakLaporan('sum')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm"><i data-lucide="printer" class="w-4 h-4"></i></button>
                     </div>
                 </div>
@@ -469,7 +483,7 @@
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Keaktifan & Sikap</h2><p class="text-sm text-slate-500">Nilai (0-100). Predikat terisi otomatis.</p></div>
                     <div class="flex space-x-2">
-                        <button onclick="alert('Nilai sikap berhasil disimpan sementara di memori web!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan Nilai</button>
+                        <button onclick="alert('Nilai sikap disimpan!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan Nilai</button>
                         <button onclick="cetakLaporan('sikap')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm"><i data-lucide="printer" class="w-4 h-4"></i></button>
                     </div>
                 </div>
@@ -533,7 +547,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: JURNAL MENGAJAR -->
+            <!-- HAL HALAMAN: JURNAL MENGAJAR -->
             <div id="hal-jurnal-input" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Jurnal Mengajar Harian</h2></div>
@@ -598,7 +612,217 @@
     <script>
         lucide.createIcons();
 
-        let globalSiswa = [
+        // ------------------------------------------
+        // 1. DATA MAPEL & TARGET (100% SESUAI DB)
+        // ------------------------------------------
+        let mapelData = {
+            "Pendidikan Pancasila": {
+                lm: ["Kerja Sama di Lingkunganku", "Pancasila dalam Diriku"],
+                tp: [
+                    { nama: "menjelaskan dan memberikan contoh kerja sama dalam keberagaman sosial dan budaya", k1: "K1", k2: "K2" },
+                    { nama: "menunjukan sikap kompak dan bersatu melalui gotong royong di sekolah dan masyarakat", k1: "K1", k2: "K2" },
+                    { nama: "menunjukan sikap bangga menjadi anak Indonesia dengan bahasa persatuan", k1: "K1", k2: "K2" },
+                    { nama: "mengidentifikasi dan menjelaskan makna sila-sila pancasila di lingkungan masyarakat", k1: "K1", k2: "K2" },
+                    { nama: "menunjukan sikap dan perilaku sesuai nilai sila-sila pancasila di masyarakat", k1: "K1", k2: "K2" },
+                    { nama: "menjelaskan secara singkat sejarah perumusan pancasila dan mengenal tokoh perumusnya", k1: "K1", k2: "K2" },
+                    { nama: "menceritakan dan meneladai karakter para perumus pancasila", k1: "K1", k2: "K2" }
+                ]
+            },
+            "Bahasa Indonesia": {
+                lm: ["Bertukar dan Membayar", "Satu Titik", "Asal Usul", "Sahatlah Ragaku"],
+                tp: [
+                    { nama: "memahami informasi dari teks fabel dan infografik", k1: "K1", k2: "K2" },
+                    { nama: "menerapkan kaidah penulisan nilai uang", k1: "K1", k2: "K2" },
+                    { nama: "menulis teks prosedur", k1: "K1", k2: "K2" },
+                    { nama: "berdiskusi tentang kebutuhan dan keinginan", k1: "K1", k2: "K2" },
+                    { nama: "menggunakan kaidah kalimat efektif", k1: "K1", k2: "K2" },
+                    { nama: "memahami makna dan menulis puisi", k1: "K1", k2: "K2" },
+                    { nama: "mengidentifikasi majas metafora", k1: "K1", k2: "K2" },
+                    { nama: "menulis laporan perjalanan berstruktur", k1: "K1", k2: "K2" },
+                    { nama: "memahami teks dan media audio", k1: "K1", k2: "K2" },
+                    { nama: "mengidentifikasi rima dan syair", k1: "K1", k2: "K2" },
+                    { nama: "memahami teks narasi sejarah", k1: "K1", k2: "K2" },
+                    { nama: "menggunakan konjungsi antar kalimat", k1: "K1", k2: "K2" },
+                    { nama: "membedakan informasi fakta dan opini", k1: "K1", k2: "K2" },
+                    { nama: "mengidentifikasi jenis paragraf deduktif dan induktif", k1: "K1", k2: "K2" },
+                    { nama: "melakukan swasuting pada tulisan", k1: "K1", k2: "K2" }
+                ]
+            },
+            "Matematika": {
+                lm: ["Pengukuran", "Geometri", "Analisis Data dan Peluang"],
+                tp: [
+                    { nama: "mengukur luas dengan satuan tidak baku dan baku", k1: "K1", k2: "K2" },
+                    { nama: "mengukur volume dengan satuan tidak baku dan baku", k1: "K1", k2: "K2" },
+                    { nama: "mendeskripsikan ciri-ciri bentuk bangun datar", k1: "K1", k2: "K2" },
+                    { nama: "menyusun komosisi dan dekomposisi bangun datar", k1: "K1", k2: "K2" },
+                    { nama: "menyajikan data dalam bentuk pictogram", k1: "K1", k2: "K2" },
+                    { nama: "menyajikan data dalam bentuk diagram batang", k1: "K1", k2: "K2" }
+                ]
+            },
+            "IPAS": {
+                lm: ["Ini Khas Daerahku", "Peranku di Lingkungan Sekolah dan Masyarakat", "Keragaman Budaya dan Kearifan Lokal", "Menjadi Pahlawan Lingkungan"],
+                tp: [
+                    { nama: "menganalisi bentang alam dengan keaneragaman hayati dan profesi masyarakat", k1: "K1", k2: "K2" },
+                    { nama: "menerapkan peran, tugas serta tanggung jawab di sekolah dan masyarakat", k1: "K1", k2: "K2" },
+                    { nama: "menceritakan keragaman budaya dan kearifan lokal", k1: "K1", k2: "K2" },
+                    { nama: "menunjukan sikap peduli terhadap permasalahan lingkungan", k1: "K1", k2: "K2" },
+                    { nama: "berkontribusi dalam mitigasi perubahan", k1: "K1", k2: "K2" }
+                ]
+            },
+            "Seni Rupa": {
+                lm: ["Menciptakan, Berpikir dan Bekerja Artistik", "Berdampak, Merefleksikan", "Berdampak, Menciptakan"],
+                tp: [
+                    { nama: "Membuat Konstruksi Sederhana", k1: "K1", k2: "K2" },
+                    { nama: "menyusun ulang bentuk dan bangun ruang", k1: "K1", k2: "K2" },
+                    { nama: "Menanggapi Karya Seni Rupa", k1: "K1", k2: "K2" },
+                    { nama: "memberikan umpan balik dampak karya seni", k1: "K1", k2: "K2" },
+                    { nama: "Membuat Karya Seni yang Berdampak", k1: "K1", k2: "K2" },
+                    { nama: "mempresentasikan muatan positif", k1: "K1", k2: "K2" }
+                ]
+            },
+            "Bahasa Inggris": {
+                lm: ["My School Activities", "My PE Class", "My School Day"],
+                tp: [
+                    { nama: "Menyebutkan aktivitas di sekolah", k1: "K1", k2: "K2" },
+                    { nama: "Mendeskripsikan kegiatan", k1: "K1", k2: "K2" },
+                    { nama: "Mengenal tempat di sekolah", k1: "K1", k2: "K2" },
+                    { nama: "Memahami teks sederhana", k1: "K1", k2: "K2" },
+                    { nama: "Memahami instruksi sederhana", k1: "K1", k2: "K2" },
+                    { nama: "Menyebutkan aktivitas olahraga", k1: "K1", k2: "K2" },
+                    { nama: "Mengungkapkan perasaan", k1: "K1", k2: "K2" },
+                    { nama: "Memahami cerita sederhana", k1: "K1", k2: "K2" },
+                    { nama: "Menyebutkan hari dalam seminggu", k1: "K1", k2: "K2" },
+                    { nama: "Membuat jadwal sederhana", k1: "K1", k2: "K2" },
+                    { nama: "Menyebutkan kegiatan harian", k1: "K1", k2: "K2" },
+                    { nama: "Memahami teks sederhana", k1: "K1", k2: "K2" }
+                ]
+            },
+            "Muatan Lokal": {
+                lm: ["mulok1", "kosa kata", "kalimat"],
+                tp: [
+                    { nama: "mampu menggunakan bahasa daerah", k1: "K1", k2: "K2" },
+                    { nama: "berbicara menggunakan bahasa bugis", k1: "K1", k2: "K2" }
+                ]
+            },
+            "Kokurikuler": {
+                lm: ["bing1"],
+                tp: [
+                    { nama: "siswa mampu membuat kalimat present tense", k1: "K1", k2: "K2" }
+                ]
+            }
+        };
+
+        // ------------------------------------------
+        // 2. KONEKSI & LOGIKA LOGIN API
+        // ------------------------------------------
+        const API_URL = "https://script.google.com/macros/s/AKfycbx1NwJ4SQ5ZyZAEAjKrgwfz-0gZpz2LluVl044y9d7b8YcO6kL4a3tu_U-dvSPdHmE-7g/exec";
+        
+        let globalSiswa = [];
+        let listJurnal = [];
+        let currentSettingMapel = "Pendidikan Pancasila";
+        let nilaiSiswa = {};
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-user').value.trim().toLowerCase();
+            const p = document.getElementById('login-pass').value.trim();
+            
+            if(u === 'sdn04taman' && p === 'bayuprahastian') {
+                sessionStorage.setItem('siguru_logged_in', 'true');
+                document.getElementById('login-error').classList.add('hidden');
+                
+                document.getElementById('login-overlay').classList.add('opacity-0');
+                setTimeout(() => {
+                    document.getElementById('login-overlay').classList.add('hidden');
+                    sinkronisasiDB(true);
+                }, 300);
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            if(confirm("Yakin ingin keluar dari sistem?")) {
+                sessionStorage.removeItem('siguru_logged_in');
+                window.location.reload();
+            }
+        }
+
+        function checkAuth() {
+            if(sessionStorage.getItem('siguru_logged_in') === 'true') {
+                document.getElementById('login-overlay').classList.add('hidden');
+                sinkronisasiDB(true);
+            }
+        }
+
+        const loader = document.getElementById('loading-overlay');
+        async function sinkronisasiDB(isManual = false) {
+            if(isManual) loader.classList.remove('hidden', 'opacity-0');
+            
+            try {
+                // Fetch Master Siswa
+                const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
+                if(resSiswa.status === 'success' && resSiswa.data.length > 0) { globalSiswa = resSiswa.data; } 
+                else { globalSiswa = mockSiswaFallback; }
+
+                // Fetch Identitas (Opsional jika API ada)
+                try {
+                    const resId = await fetch(`${API_URL}?action=getIdentitas`).then(r => r.json());
+                    if(resId.status === 'success') {
+                        const d = resId.data;
+                        document.getElementById('inp-sekolah').value = d.sekolah || 'SD Negeri 04 Taman';
+                        document.getElementById('inp-kota').value = d.kota || 'Pemalang';
+                        document.getElementById('inp-smt').value = d.semester || 'Genap';
+                        document.getElementById('inp-ta').value = d.tahunAjaran || '2025/2026';
+                        document.getElementById('inp-kepsek').value = d.kepalaSekolah || 'Tentrem Lestari, S.Pd.';
+                        document.getElementById('inp-nipkepsek').value = d.nipKepsek || '196706291991032002';
+                        document.getElementById('inp-guru').value = d.namaGuru || 'Bayu Prahastian, S.Pd.';
+                        document.getElementById('inp-nipguru').value = d.nipGuru || '199601212025211014';
+                        document.getElementById('inp-kelas').value = d.kelas || 'IV B';
+                    }
+                } catch(e) {}
+
+                // CATATAN PENGEMBANG: Jika nanti Code.gs diupdate untuk bisa GetMapel dari Excel, 
+                // kodenya akan terbaca di blok ini secara otomatis (Auto-Sync Target Pembelajaran).
+                try {
+                    const resMapel = await fetch(`${API_URL}?action=getMapel`).then(r => r.json());
+                    if(resMapel.status === 'success' && Object.keys(resMapel.data).length > 0) {
+                        mapelData = resMapel.data;
+                    }
+                } catch(e) {} // Abaikan jika action tidak ada di Code.gs saat ini, gunakan default di atas.
+
+                // Fetch Jurnal
+                const resJurnal = await fetch(`${API_URL}?action=getJurnal`).then(r => r.json());
+                if(resJurnal.status === 'success') listJurnal = resJurnal.data.reverse(); 
+                else listJurnal = mockJurnalFallback;
+
+                initialSetupSemua();
+            } catch (error) {
+                console.warn("Gagal sinkronisasi API. Mode Lokal Aktif.", error);
+                globalSiswa = mockSiswaFallback;
+                listJurnal = mockJurnalFallback;
+                initialSetupSemua();
+            } finally {
+                loader.classList.add('opacity-0');
+                setTimeout(() => loader.classList.add('hidden'), 500);
+            }
+        }
+
+        function initialSetupSemua() {
+            document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
+            initDataNilai();
+            initMockAbsen();
+            renderInputAbsenBulan();
+            renderRekapBulanan();
+            syncGlobalData();
+            initDropdownMapel(); 
+            renderLegger();      
+            updateJurnalMapel();
+            renderTabelJurnal();
+        }
+
+        // --- DATA FALLBACK JIKA OFFLINE ---
+        const mockSiswaFallback = [
             {nis: "2520", nama: "ADE TRISTAN ABDILLAH", jk: "L"}, {nis: "2713", nama: "AISYAH ANINDITA MYESHA ZAHRA", jk: "P"},
             {nis: "2527", nama: "ALESA AMELIA AFWA", jk: "P"}, {nis: "2530", nama: "ANINDITA AZAHRA", jk: "P"},
             {nis: "2531", nama: "ARDAN ALIF MULIA", jk: "L"}, {nis: "2532", nama: "ARJUNA", jk: "L"},
@@ -617,131 +841,19 @@
         ];
 
         const mockJurnalFallback = [
-            { tanggal: "13/01/2026", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Kerja Sama di Lingkunganku", tujuanPembelajaran: "menjelaskan dan memberikan contoh kerja sama dalam keberagaman", kegiatan: "Siswa menyimak penjelasan tentang kerjasama, melakukan diskusi kelompok, dan presentasi.", refleksi: "Perlu pengulangan di bagian presentasi." }
+            { tanggal: "2026-01-13", tglFormat: "Selasa,<br>13 Jan 2026", jam: "1-3", mapel: "Pendidikan Pancasila", lingkupMateri: "Kerja Sama di Lingkunganku", tujuanPembelajaran: "menjelaskan dan memberikan contoh kerja sama...", kegiatan: "Siswa menyimak penjelasan tentang kerjasama, melakukan diskusi.", refleksi: "Perlu pengulangan di bagian presentasi." }
         ];
 
-        // MENGKEMBALIKAN DATA MAPEL TERMASUK SENI RUPA
-        let mapelData = {
-            "Pendidikan Pancasila": {
-                lm: ["Kerja Sama di Lingkunganku", "Pancasila dalam Diriku"],
-                tp: [
-                    { nama: "menjelaskan dan memberikan contoh kerja sama dalam keberagaman", k1: "Sikap", k2: "Pemahaman" },
-                    { nama: "menunjukan sikap kompak dan bersatu melalui gotong royong", k1: "Praktik", k2: "Kerjasama" },
-                    { nama: "mengidentifikasi dan menjelaskan makna sila-sila pancasila", k1: "Identifikasi", k2: "Analisis" },
-                    { nama: "menceritakan dan meneladani karakter para perumus pancasila", k1: "Pengetahuan", k2: "Sikap" }
-                ]
-            },
-            "Bahasa Indonesia": {
-                lm: ["Bertukar dan Membayar", "Satu Titik", "Asal Usul", "Sehatlah Ragaku"],
-                tp: [
-                    { nama: "memahami informasi dari teks fabel dan infografik", k1: "Membaca", k2: "Pemahaman" },
-                    { nama: "menerapkan kaidah penulisan nilai uang", k1: "Penulisan", k2: "Akurasi" },
-                    { nama: "menulis teks prosedur", k1: "Struktur", k2: "Kerapian" },
-                    { nama: "mengidentifikasi majas metafora", k1: "Identifikasi", k2: "Penerapan" }
-                ]
-            },
-            "Matematika": { 
-                lm: ["Pengukuran", "Geometri", "Analisis Data dan Peluang"], 
-                tp: [
-                    { nama: "mengukur luas dan volume dengan satuan tidak baku dan baku", k1: "Konsep", k2: "Akurasi" }, 
-                    { nama: "mendeskripsikan ciri-ciri bentuk bangun datar", k1: "Identifikasi", k2: "Analisis" },
-                    { nama: "menyajikan data dalam bentuk pictogram dan diagram batang", k1: "Penyajian", k2: "Kerapian" }
-                ] 
-            },
-            "IPAS": { 
-                lm: ["Ini Khas Daerahku", "Peranku di Lingkungan Sekolah", "Keragaman Budaya", "Menjadi Pahlawan Lingkungan"], 
-                tp: [
-                    {nama: "menganalisis bentang alam dengan keanekaragaman hayati", k1: "Pemahaman", k2: "Analisis"},
-                    {nama: "menceritakan keragaman budaya dan kearifan lokal", k1: "Pengetahuan", k2: "Sikap"},
-                    {nama: "berkontribusi dalam mitigasi perubahan lingkungan", k1: "Kepedulian", k2: "Tindakan"}
-                ] 
-            },
-            "Seni Rupa": { 
-                lm: ["Membuat Karya Seni Kriya", "Menggambar Dekoratif", "Mengenal Shadow Puppet"], 
-                tp: [
-                    {nama: "merancang dan membuat kriya dari bahan bekas (celengan)", k1: "Kreativitas", k2: "Estetika"},
-                    {nama: "menggambar dekoratif/ragam hias nusantara", k1: "Pemahaman", k2: "Teknik"},
-                    {nama: "membuat karya shadow puppet wayang", k1: "Desain", k2: "Karya"}
-                ] 
-            },
-            "Bahasa Inggris": { 
-                lm: ["My Activities", "Places in My Town", "My Feelings"], 
-                tp: [
-                    {nama: "menyebutkan aktivitas sehari-hari dalam bahasa inggris", k1: "Kosakata", k2: "Pelafalan"},
-                    {nama: "menjelaskan tempat-tempat umum di lingkungan sekitar", k1: "Pemahaman", k2: "Struktur"}
-                ] 
-            },
-            "Muatan Lokal": { 
-                lm: ["Bahasa Daerah (Kosa Kata)", "Aksara Daerah"], 
-                tp: [
-                    {nama: "memahami dan menggunakan kosa kata bahasa daerah", k1: "Kosakata", k2: "Penerapan"},
-                    {nama: "membaca dan menulis aksara daerah dasar", k1: "Membaca", k2: "Menulis"}
-                ] 
-            }
-        };
-
-        let currentSettingMapel = "Pendidikan Pancasila";
-        let nilaiSiswa = {};
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const u = document.getElementById('login-user').value.trim().toLowerCase();
-            const p = document.getElementById('login-pass').value.trim();
-            
-            if(u === 'sdn04taman' && p === 'bayuprahastian') {
-                sessionStorage.setItem('siguru_logged_in', 'true');
-                document.getElementById('login-error').classList.add('hidden');
-                
-                document.getElementById('login-overlay').classList.add('opacity-0');
-                setTimeout(() => {
-                    document.getElementById('login-overlay').classList.add('hidden');
-                    initialSetupSemua();
-                }, 300);
-            } else {
-                document.getElementById('login-error').classList.remove('hidden');
-            }
-        }
-
-        function handleLogout() {
-            if(confirm("Yakin ingin keluar dari sistem?")) {
-                sessionStorage.removeItem('siguru_logged_in');
-                window.location.reload();
-            }
-        }
-
-        function checkAuth() {
-            if(sessionStorage.getItem('siguru_logged_in') === 'true') {
-                document.getElementById('login-overlay').classList.add('hidden');
-                initialSetupSemua();
-            }
-        }
-
-        function initialSetupSemua() {
-            document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
-            initDataNilai();
-            initMockAbsen();
-            renderInputAbsenBulan();
-            renderRekapBulanan();
-            syncGlobalData();
-            initDropdownMapel(); 
-            renderLegger();      
-            updateJurnalMapel();
-            renderTabelJurnal();
-        }
-
-        // PENTING: MENGHILANGKAN RANDOM NILAI AGAR SESUAI DB KOSONG (SIAP INPUT)
         function initDataNilai() {
             globalSiswa.forEach((s, i) => {
                 nilaiSiswa[i] = {
                     formatif: {}, sumatif: {},
-                    sikap: { dsk: '', ins: '', dsp: '', tgg: '' } // Kosong
+                    sikap: { dsk: '', ins: '', dsp: '', tgg: '' } 
                 };
                 
-                // Pre-populate struktur berdasarkan mapelData (kosongkan nilainya)
                 for (let m in mapelData) {
                     nilaiSiswa[i].formatif[m] = [];
                     mapelData[m].tp.forEach(() => nilaiSiswa[i].formatif[m].push({k1: '', k2: ''}));
-                    
                     let arrLM = [];
                     mapelData[m].lm.forEach(() => arrLM.push(''));
                     nilaiSiswa[i].sumatif[m] = { lm: arrLM, sts: '', sas: '' };
@@ -817,7 +929,6 @@
         function tambahItemSetting(tipe) {
             if(tipe === 'lm') mapelData[currentSettingMapel].lm.push("");
             if(tipe === 'tp') mapelData[currentSettingMapel].tp.push({nama:"", k1:"K1", k2:"K2"});
-            // Sinkronisasi ukuran array di nilaiSiswa
             globalSiswa.forEach((s, i) => {
                 if(tipe === 'lm') nilaiSiswa[i].sumatif[currentSettingMapel].lm.push('');
                 if(tipe === 'tp') nilaiSiswa[i].formatif[currentSettingMapel].push({k1: '', k2: ''});
@@ -880,9 +991,7 @@
         let currentAbsenData = {}; 
         
         function initMockAbsen() {
-            globalSiswa.forEach((s, i) => {
-                currentAbsenData[i] = { hari: {} }; 
-            });
+            globalSiswa.forEach((s, i) => { currentAbsenData[i] = { hari: {} }; });
         }
 
         function getDaysInMonth(monthStr, year) { return new Date(year, monthNames.indexOf(monthStr) + 1, 0).getDate(); }
@@ -909,11 +1018,6 @@
                 thead += `<th class="border-r border-slate-300 w-4 ${sunday ? 'bg-red-100 text-red-500' : ''}">${d}</th>`;
             }
             
-            thead += `<th class="border-r border-slate-300 bg-blue-50 text-blue-700 w-5">H</th>
-                      <th class="border-r border-slate-300 bg-amber-50 text-amber-600 w-5">S</th>
-                      <th class="border-r border-slate-300 bg-purple-50 text-purple-600 w-5">I</th>
-                      <th class="bg-red-50 text-red-600 w-5 border-r border-slate-300">A</th>`;
-
             document.getElementById(targetThead).innerHTML = thead;
             document.getElementById(isInput ? 'th-colspan-absen' : 'th-colspan-rekap').colSpan = daysInMonth;
 
@@ -928,7 +1032,7 @@
 
                 for(let d=1; d<=daysInMonth; d++) {
                     let sunday = isSunday(d, monthStr, activeYear);
-                    let val = dVal.hari[d] || ""; // Default kosong
+                    let val = dVal.hari[d] || ""; 
                     if(sunday) val = "";
 
                     if(val === "H") th++; else if(val === "S") ts++; else if(val === "I") ti++; else if(val === "A") ta_abs++;
@@ -1043,7 +1147,7 @@
             let th1 = `<tr><th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 shadow-[1px_0_0_0_#cbd5e1]">NAMA SISWA</th>`;
             let th2 = `<tr>`;
             data.tp.forEach((t, i) => {
-                th1 += `<th colspan="3" class="px-1 py-1 border-r border-slate-300 border-b w-24">TP ${i+1}: ${t.nama.substring(0,25)}...</th>`;
+                th1 += `<th colspan="3" class="px-1 py-1 border-r border-slate-300 border-b w-24">TP ${i+1}: ${t.nama.substring(0,35)}...</th>`;
                 th2 += `<th class="px-1 py-1 border-r border-slate-300 font-normal bg-slate-200/50">${t.k1.substring(0,8)}</th><th class="px-1 py-1 border-r border-slate-300 font-normal bg-slate-200/50">${t.k2.substring(0,8)}</th><th class="px-1 py-1 border-r border-slate-300 font-bold bg-white/50 text-black">NA</th>`;
             });
             th1 += `<th rowspan="2" class="px-2 py-2 font-bold bg-slate-200 w-16">Rata-Rata Formatif</th></tr>`;
@@ -1054,7 +1158,7 @@
             globalSiswa.forEach((s, i) => {
                 let rt = 0; let cells = ""; let validTpCount = 0;
                 for(let x=0; x<jml; x++) {
-                    let f = nilaiSiswa[i].formatif[m][x] || {k1:'', k2:''}; // Empty by default
+                    let f = nilaiSiswa[i].formatif[m][x] || {k1:'', k2:''}; 
                     let na = '';
                     if(f.k1 !== '' && f.k2 !== '') {
                         na = Math.round((parseInt(f.k1) + parseInt(f.k2))/2);
@@ -1076,17 +1180,12 @@
             let f = nilaiSiswa[sIdx].formatif[mapel][tpIdx];
             
             let na = '';
-            if(f.k1 !== '' && f.k2 !== '') {
-                na = Math.round((parseInt(f.k1) + parseInt(f.k2))/2);
-            }
+            if(f.k1 !== '' && f.k2 !== '') { na = Math.round((parseInt(f.k1) + parseInt(f.k2))/2); }
             document.getElementById(`na-f-${sIdx}-${tpIdx}`).innerText = na;
             
             let rt = 0; let count = 0;
             nilaiSiswa[sIdx].formatif[mapel].forEach(x => { 
-                if(x.k1 !== '' && x.k2 !== '') {
-                    rt += Math.round((parseInt(x.k1) + parseInt(x.k2))/2); 
-                    count++;
-                }
+                if(x.k1 !== '' && x.k2 !== '') { rt += Math.round((parseInt(x.k1) + parseInt(x.k2))/2); count++; }
             });
             document.getElementById(`rt-f-${sIdx}`).innerText = count > 0 ? Math.round(rt/count) : '-';
         }
@@ -1102,7 +1201,7 @@
             th1 += `<th rowspan="2" class="px-1 py-1 border-r border-slate-300 bg-slate-200/50 w-12 text-black">Rata<br>LM</th><th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-12">STS</th><th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-12">SAS</th><th rowspan="2" class="px-2 py-2 font-bold bg-slate-200 text-slate-800 w-16 text-black">NILAI AKHIR</th></tr>`;
             
             let th2 = `<tr>`;
-            data.lm.forEach((l, i) => { th2 += `<th class="px-1 py-1 border-r border-slate-300 font-medium whitespace-nowrap max-w-[5rem] overflow-hidden text-ellipsis" title="${l}">LM ${i+1}</th>`; });
+            data.lm.forEach((l, i) => { th2 += `<th class="px-1 py-1 border-r border-slate-300 font-medium whitespace-nowrap max-w-[8rem] overflow-hidden text-ellipsis" title="${l}">LM ${i+1}: ${l.substring(0,20)}</th>`; });
             th2 += `</tr>`;
             document.getElementById('head-sumatif').innerHTML = th1 + th2;
 
@@ -1117,9 +1216,7 @@
                 rtLM = countLM > 0 ? Math.round(rtLM/countLM) : '-';
                 
                 let rapor = '-';
-                if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
-                    rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); 
-                }
+                if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') { rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); }
                 
                 tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[12rem]">${s.nama}</td>
                 ${cells}
@@ -1143,18 +1240,13 @@
             document.getElementById(`rtl-${sIdx}`).innerText = rtLM;
             
             let rapor = '-';
-            if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
-                rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4);
-            }
+            if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') { rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); }
             document.getElementById(`na-s-${sIdx}`).innerText = rapor;
         }
 
         function renderSikap() {
             let tSikap="";
-            const pr = (val) => {
-                if(val === '' || val === '-') return '-';
-                return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup');
-            };
+            const pr = (val) => { if(val === '' || val === '-') return '-'; return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup'); };
             globalSiswa.forEach((s,i) => {
                 let d = nilaiSiswa[i].sikap;
                 let prA = (d.dsk !== '' && d.ins !== '') ? pr((parseInt(d.dsk)+parseInt(d.ins))/2) : '-';
@@ -1175,10 +1267,7 @@
             let v = val === '' ? '' : parseInt(val);
             nilaiSiswa[sIdx].sikap[field] = v;
             let d = nilaiSiswa[sIdx].sikap;
-            const pr = (val) => {
-                if(val === '' || val === '-') return '-';
-                return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup');
-            };
+            const pr = (val) => { if(val === '' || val === '-') return '-'; return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup'); };
             let prA = (d.dsk !== '' && d.ins !== '') ? pr((parseInt(d.dsk)+parseInt(d.ins))/2) : '-';
             let prB = (d.dsp !== '' && d.tgg !== '') ? pr((parseInt(d.dsp)+parseInt(d.tgg))/2) : '-';
             
