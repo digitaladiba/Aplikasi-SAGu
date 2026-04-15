@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V4.0 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V4.2 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -19,7 +19,6 @@
         .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
         
-        /* Toggle Absen */
         .cell-abs { cursor: pointer; transition: all 0.1s; font-weight: 600; text-align: center; }
         .cell-abs:hover { background-color: #e2e8f0; }
         .val-h { color: #2563eb; }
@@ -32,29 +31,29 @@
         input.cell-input:focus { background-color: #eff6ff; color: #1d4ed8; border-bottom: 1px solid #3b82f6; }
         input.cell-input::-webkit-outer-spin-button, input.cell-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-        /* Loader */
         .loader-spinner { border: 4px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 4px solid #ffffff; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* =========================================================
-           PRINT LAYOUTING (SUPER FORCE OVERRIDE UNTUK VERCEL)
+           PRINT LAYOUTING F4 LANDSCAPE
            ========================================================= */
         @media print {
-            html, body, #__next, .h-screen, .h-full, .flex, .flex-1, .overflow-hidden, .overflow-y-auto, main, .print-area { 
-                display: block !important; height: auto !important; min-height: auto !important; max-height: none !important;
-                overflow: visible !important; position: static !important; margin: 0 !important; padding: 0 !important; 
-            }
-            body { background-color: white !important; color: #000; font-size: 8pt !important; }
+            html, body { height: auto !important; min-height: auto !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; background-color: white !important; }
+            body { color: #000; font-size: 8pt !important; }
+            
+            body > .flex, .flex-1, main, .print-area { display: block !important; height: auto !important; overflow: visible !important; position: static !important; }
             
             #sidebar, header, .no-print, button, select, input[type="date"], #loading-overlay, #login-overlay, #mock-warning { display: none !important; }
-            .halaman:not(.block) { display: none !important; }
+            
+            .halaman.hidden { display: none !important; }
+            .halaman:not(.hidden) { display: block !important; }
             
             .sticky { position: static !important; box-shadow: none !important; z-index: auto !important; }
             td.sticky { background-color: transparent !important; }
             th.sticky { background-color: #e5e7eb !important; }
 
             .whitespace-nowrap { white-space: normal !important; } 
-            .w-48 { width: 150px !important; min-width: 150px !important; } 
+            .w-48 { width: 140px !important; min-width: 140px !important; } 
 
             table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; page-break-inside: auto; table-layout: auto !important; }
             tr { page-break-inside: avoid !important; page-break-after: auto; }
@@ -72,7 +71,7 @@
             .print-sub-header { margin-top: 2px; margin-bottom: 5px; }
             .print-signature { display: table !important; margin-top: 30px; page-break-inside: avoid !important; width: 100%; font-size: 9pt !important; }
             
-            @page { size: 330mm 215mm landscape; margin: 10mm 12mm; }
+            @page { size: 330mm 215mm landscape; margin: 10mm 15mm; }
         }
         .print-only { display: none; }
         @media print { .print-only { display: block; } }
@@ -89,7 +88,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V4.0</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V4.2</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -201,7 +200,6 @@
             <div class="flex items-center space-x-3">
                 <div class="text-right hidden md:block">
                     <p class="text-sm font-bold text-slate-800" id="header-nama">Guru Kelas</p>
-                    <!-- PILIHAN SEMESTER DUAL (BARU) -->
                     <select id="pilih-semester" onchange="gantiSemester()" class="text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded px-2 py-0.5 outline-none font-bold mt-0.5 cursor-pointer hover:bg-blue-100 transition">
                         <option value="Ganjil">Semester Ganjil</option>
                         <option value="Genap" selected>Semester Genap</option>
@@ -217,7 +215,7 @@
 
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 print-area w-full">
             
-            <!-- HALAMAN: Papan Utama (Dashboard) -->
+            <!-- HALAMAN: Papan Utama -->
             <div id="hal-dashboard" class="halaman page-transition block">
                 <div class="mb-6 no-print">
                     <h1 class="text-2xl font-bold text-slate-800">Statistik Data</h1>
@@ -326,7 +324,6 @@
                         <p class="text-xs text-slate-500 mb-6 bg-blue-50 border border-blue-100 p-3 rounded flex items-start"><i data-lucide="info" class="w-4 h-4 text-blue-500 mr-2 shrink-0 mt-0.5"></i> Masukkan URL (link) gambar dengan akhiran .png atau .jpg yang dapat diakses publik (seperti dari Google Drive atau Imgur). Gambar ini nantinya akan terintegrasi otomatis ke menu cetak Laporan dan Cover.</p>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <!-- Logo Kiri -->
                             <div class="space-y-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Logo Kiri (Cth: Tut Wuri / Pemda)</label>
                                 <input type="text" id="inp-media-logokiri" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-logokiri', 'ph-logokiri')">
@@ -336,7 +333,6 @@
                                 </div>
                             </div>
 
-                            <!-- Logo Kanan -->
                             <div class="space-y-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Logo Kanan (Cth: Logo Sekolah)</label>
                                 <input type="text" id="inp-media-logokanan" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-logokanan', 'ph-logokanan')">
@@ -346,7 +342,6 @@
                                 </div>
                             </div>
 
-                            <!-- TTD Kepsek -->
                             <div class="space-y-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Tanda Tangan Kepsek</label>
                                 <input type="text" id="inp-media-ttdkepsek" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-ttdkepsek', 'ph-ttdkepsek')">
@@ -356,7 +351,6 @@
                                 </div>
                             </div>
 
-                            <!-- TTD Guru -->
                             <div class="space-y-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Tanda Tangan Guru</label>
                                 <input type="text" id="inp-media-ttdguru" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-ttdguru', 'ph-ttdguru')">
@@ -366,7 +360,6 @@
                                 </div>
                             </div>
 
-                            <!-- Stempel Sekolah -->
                             <div class="space-y-2 md:col-span-2 md:w-1/2 md:mx-auto">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase text-center">URL Stempel Sekolah</label>
                                 <input type="text" id="inp-media-stempel" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-stempel', 'ph-stempel')">
@@ -391,16 +384,16 @@
                         <select id="filter-bulan-absen-input" onchange="renderInputAbsenBulan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                             <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
                         </select>
-                        <button onclick="alert('Otomatis tersimpan di memori browser Bapak/Ibu!'); renderLegger();" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan Data</button>
+                        <button onclick="simpanAbsenAksi()" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan ke DB</button>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto relative pb-2">
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
                             <tr>
-                                <th rowspan="3" class="px-2 py-2 border-r border-slate-300 w-6">No</th>
+                                <th rowspan="3" class="px-2 py-2 border-r border-slate-300 w-8">No</th>
                                 <th rowspan="3" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 shadow-[1px_0_0_0_#cbd5e1]">Nama Murid</th>
-                                <th rowspan="3" class="px-1 py-2 border-r border-slate-300 w-6">L/P</th>
+                                <th rowspan="3" class="px-1 py-2 border-r border-slate-300 w-8">L/P</th>
                                 <th id="th-colspan-absen" colspan="31" class="py-1 border-r border-slate-300 border-b">Tanggal Berjalan</th>
                                 <th colspan="4" class="py-1 border-b border-slate-300 bg-blue-50 text-blue-800">TOTAL</th>
                                 <th rowspan="3" class="px-1 py-2 border-l border-slate-300 bg-blue-50 text-blue-800">%</th>
@@ -421,7 +414,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: SISWA - REKAP BULANAN (READ ONLY + CETAK + EXCEL) -->
+            <!-- HALAMAN: SISWA - REKAP BULANAN -->
             <div id="hal-siswa-rekapbulan" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Rekap Bulanan (Cetak)</h2></div>
@@ -441,7 +434,7 @@
                 <div id="area-rekap-bulan" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
                         <h2 class="font-bold text-[10pt] uppercase" id="judul-cetak-rekap-bulan">DAFTAR HADIR SISWA BULAN JANUARI</h2>
-                        <p class="text-[8pt] print-sub-header">Tahun Ajaran 2025/2026 | Semester Genap | Kelas IV B</p>
+                        <p class="text-[8pt] print-sub-header">Tahun Ajaran <span class="print-ta">2025/2026</span> | Semester <span class="print-smt">Genap</span> | Kelas <span class="print-kelas">IV B</span></p>
                     </div>
                     <div class="px-3 pt-2 print-only text-right font-bold italic text-[8pt]" id="info-hari-efektif-cetak">Hari Efektif: 26 Hari</div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-[11px]">
@@ -497,7 +490,7 @@
                 <div id="area-rekap-semester" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
                         <h2 class="font-bold text-[10pt] uppercase">REKAPITULASI DAFTAR HADIR SEMESTER</h2>
-                        <p class="text-[8pt] print-sub-header">Tahun Ajaran 2025/2026</p>
+                        <p class="text-[8pt] print-sub-header">Tahun Ajaran <span class="print-ta">2025/2026</span></p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
@@ -550,7 +543,7 @@
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
                             <input type="date" id="tgl-cetak-for" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                         </div>
-                        <button onclick="alert('Data otomatis tersimpan di memori browser Bapak/Ibu. Silakan Ekspor Excel jika perlu backup file.'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan Data</button>
+                        <button onclick="simpanFormatifAksi()" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan DB</button>
                         <button onclick="exportToExcel('area-nilai-formatif', 'Asesmen_Formatif_' + document.getElementById('filter-mapel-formatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
                         <button onclick="cetakLaporan('for')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
@@ -588,7 +581,7 @@
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
                             <input type="date" id="tgl-cetak-sum" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                         </div>
-                        <button onclick="alert('Data otomatis tersimpan di memori browser Bapak/Ibu!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan Data</button>
+                        <button onclick="simpanSumatifAksi()" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan DB</button>
                         <button onclick="exportToExcel('area-nilai-sumatif', 'Asesmen_Sumatif_' + document.getElementById('filter-mapel-sumatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
                         <button onclick="cetakLaporan('sum')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
@@ -625,7 +618,7 @@
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
                             <input type="date" id="tgl-cetak-sikap" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                         </div>
-                        <button onclick="alert('Data otomatis tersimpan di memori browser Bapak/Ibu!'); renderLegger();" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan Data</button>
+                        <button onclick="simpanSikapAksi()" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan DB</button>
                         <button onclick="exportToExcel('area-nilai-sikap', 'Nilai_Sikap')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
                         <button onclick="cetakLaporan('sikap')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
@@ -633,7 +626,7 @@
                 <div id="area-nilai-sikap" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
                         <h2 class="font-bold text-[10pt] uppercase">REKAPITULASI PENILAIAN KEAKTIFAN DAN SIKAP</h2>
-                        <p class="text-[8pt] print-sub-header">Tahun Ajaran 2025/2026</p>
+                        <p class="text-[8pt] print-sub-header">Tahun Ajaran <span class="print-ta">2025/2026</span></p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
@@ -679,7 +672,7 @@
                 <div id="area-nilai-legger" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
                         <h2 class="font-bold text-[10pt] uppercase">Legger Nilai Rapor Akhir Semester</h2>
-                        <p class="text-[8pt] print-sub-header">Tahun Ajaran: 2025/2026 | Semester: Genap</p>
+                        <p class="text-[8pt] print-sub-header">Tahun Ajaran: <span class="print-ta">2025/2026</span> | Semester: <span class="print-smt">Genap</span></p>
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-[11px]">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
@@ -760,7 +753,7 @@
                 <div id="area-jurnal" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
                     <div class="print-only text-center kop-surat">
                         <h2 class="font-bold text-[10pt] uppercase">JURNAL HARIAN GURU KELAS</h2>
-                        <p class="text-[8pt] print-sub-header">Tahun Ajaran 2025/2026 | Semester Genap</p>
+                        <p class="text-[8pt] print-sub-header">Tahun Ajaran <span class="print-ta">2025/2026</span> | Semester <span class="print-smt">Genap</span></p>
                     </div>
                     <table class="w-full text-left border-collapse text-[10px] sm:text-[11px]" id="tabel-jurnal-print">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold uppercase">
@@ -788,6 +781,68 @@
                 </div>
             </div>
 
+            <!-- HALAMAN: KELENGKAPAN KELAS -->
+            <div id="hal-identitas-media" class="halaman page-transition hidden no-print">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden max-w-4xl">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                        <h2 class="font-bold text-slate-800">Kelengkapan Kelas</h2>
+                        <button onclick="simpanMediaAksi()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center">
+                            <i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-xs text-slate-500 mb-6 bg-blue-50 border border-blue-100 p-3 rounded flex items-start"><i data-lucide="info" class="w-4 h-4 text-blue-500 mr-2 shrink-0 mt-0.5"></i> Masukkan URL (link) gambar dengan akhiran .png atau .jpg yang dapat diakses publik (seperti dari Google Drive atau Imgur). Gambar ini nantinya akan terintegrasi otomatis ke menu cetak Laporan dan Cover.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Logo Kiri (Cth: Tut Wuri / Pemda)</label>
+                                <input type="text" id="inp-media-logokiri" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-logokiri', 'ph-logokiri')">
+                                <div class="w-full h-32 bg-slate-50 border border-slate-200 border-dashed rounded flex items-center justify-center p-2 relative">
+                                    <img id="prev-logokiri" class="max-h-full max-w-full hidden object-contain drop-shadow-sm">
+                                    <span id="ph-logokiri" class="text-xs text-slate-400 font-medium">Preview Logo Kiri</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Logo Kanan (Cth: Logo Sekolah)</label>
+                                <input type="text" id="inp-media-logokanan" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-logokanan', 'ph-logokanan')">
+                                <div class="w-full h-32 bg-slate-50 border border-slate-200 border-dashed rounded flex items-center justify-center p-2 relative">
+                                    <img id="prev-logokanan" class="max-h-full max-w-full hidden object-contain drop-shadow-sm">
+                                    <span id="ph-logokanan" class="text-xs text-slate-400 font-medium">Preview Logo Kanan</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Tanda Tangan Kepsek</label>
+                                <input type="text" id="inp-media-ttdkepsek" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-ttdkepsek', 'ph-ttdkepsek')">
+                                <div class="w-full h-24 bg-slate-50 border border-slate-200 border-dashed rounded flex items-center justify-center p-2 relative">
+                                    <img id="prev-ttdkepsek" class="max-h-full max-w-full hidden object-contain">
+                                    <span id="ph-ttdkepsek" class="text-xs text-slate-400 font-medium">Preview TTD Kepsek</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Tanda Tangan Guru</label>
+                                <input type="text" id="inp-media-ttdguru" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-ttdguru', 'ph-ttdguru')">
+                                <div class="w-full h-24 bg-slate-50 border border-slate-200 border-dashed rounded flex items-center justify-center p-2 relative">
+                                    <img id="prev-ttdguru" class="max-h-full max-w-full hidden object-contain">
+                                    <span id="ph-ttdguru" class="text-xs text-slate-400 font-medium">Preview TTD Guru</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2 md:col-span-2 md:w-1/2 md:mx-auto">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase text-center">URL Stempel Sekolah</label>
+                                <input type="text" id="inp-media-stempel" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-stempel', 'ph-stempel')">
+                                <div class="w-full h-24 bg-slate-50 border border-slate-200 border-dashed rounded flex items-center justify-center p-2 relative">
+                                    <img id="prev-stempel" class="max-h-full max-w-full hidden object-contain mix-blend-multiply opacity-80">
+                                    <span id="ph-stempel" class="text-xs text-slate-400 font-medium">Preview Stempel</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -797,9 +852,8 @@
         // ------------------------------------------
         // 1. STATE DUAL SEMESTER & DATA MAPEL
         // ------------------------------------------
-        let currentSemester = "Genap"; // Default
+        let currentSemester = "Genap"; 
         
-        // Memori utama untuk memisahkan data Ganjil & Genap
         let appData = {
             "Ganjil": { absen: {}, nilai: {} },
             "Genap": { absen: {}, nilai: {} }
@@ -911,11 +965,8 @@
         let listJurnal = [];
         let currentSettingMapel = "Pendidikan Pancasila";
         
-        // Pointers ke memori aktif (Ganjil/Genap)
         let nilaiSiswa = {}; 
         let currentAbsenData = {};
-        
-        // Data Media Sekolah
         let mediaData = { logoKiri: "", logoKanan: "", ttdKepsek: "", ttdGuru: "", stempel: "" };
 
         function handleLogin(e) {
@@ -953,7 +1004,6 @@
 
         const loader = document.getElementById('loading-overlay');
 
-        // Save ke LocalStorage Browser
         function saveToLocal() {
             localStorage.setItem('siguru_appData_v4', JSON.stringify(appData));
         }
@@ -963,19 +1013,17 @@
             loader.querySelector('p').innerText = "Menyinkronkan ke Database Google Sheets";
             loader.classList.remove('hidden', 'opacity-0');
             try {
-                // Untuk Jurnal, kirim ke API. Untuk nilai/absen, simpan lokal.
-                if(payload.action === 'simpanJurnal') {
+                if(payload.action === 'simpanJurnal' || payload.action === 'simpanMedia') {
                     const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
                     const res = await response.json();
                     if(res.status === 'success') alert(successMsg);
                 } else {
-                    // Paksa simpan ke LocalStorage agar aman
                     saveToLocal();
-                    alert("Data berhasil diamankan di memori Browser untuk Semester " + currentSemester + ". (Jangan lupa Ekspor ke Excel sebagai backup file).");
+                    alert("Data berhasil diamankan di memori Browser untuk Semester " + currentSemester + ". (Gunakan tombol Ekspor Excel jika perlu di backup di laptop)");
                 }
             } catch (error) {
                 saveToLocal();
-                alert("Disimpan ke penyimpanan lokal Browser.");
+                alert("Berhasil disimpan ke penyimpanan lokal Browser.");
             } finally {
                 loader.classList.add('opacity-0');
                 setTimeout(() => loader.classList.add('hidden'), 500);
@@ -988,6 +1036,7 @@
             let usingMock = false;
             
             try {
+                // Fetch Master Siswa (V3.8: SUPER FIX L/P RAW DATA MAPPING)
                 const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
                 if(resSiswa.status === 'success' && resSiswa.data.length > 0) { 
                     globalSiswa = resSiswa.data.map(s => {
@@ -995,20 +1044,23 @@
                         let namaFinal = s.nama ? s.nama.toString().trim() : '-';
                         let jkFinal = s.jk;
 
+                        // Perbaikan jika kolom nama di excel diisi angka (NIS), dan L/P diisi Nama
                         if (s.jk && s.jk.length > 2) {
                             namaFinal = s.jk.toString().trim();
                             nisFinal = s.nama;
                         }
 
+                        // Penentuan L/P: Kamus Nama Perempuan (Ditambah Nayluna)
                         let n = namaFinal.toLowerCase();
                         let isFemale = ['aisyah', 'alesa', 'anindita', 'azahrah', 'bilqis', 'dian', 'asih', 'kayla', 'nida', 'putri', 'shaqila', 'tiara', 'zahra', 'amelia', 'nayluna'].some(name => n.includes(name));
                         
+                        // Cek RAW JK asli, jika ada dan valid (L/P), gunakan itu
                         if (s.jk && (s.jk.toString().trim().toUpperCase() === 'L' || s.jk.toString().trim().toUpperCase() === 'P')) {
                             jkFinal = s.jk.toString().trim().toUpperCase();
                         } else if (s.nama && (s.nama.toString().trim().toUpperCase() === 'L' || s.nama.toString().trim().toUpperCase() === 'P')) {
                             jkFinal = s.nama.toString().trim().toUpperCase();
                         } else {
-                            jkFinal = isFemale ? 'P' : 'L'; 
+                            jkFinal = isFemale ? 'P' : 'L'; // Fallback cerdas berdasarkan nama
                         }
 
                         return { nis: nisFinal, nama: namaFinal, jk: jkFinal };
@@ -1019,6 +1071,7 @@
                     usingMock = true; 
                 }
 
+                // Fetch Identitas
                 try {
                     const resId = await fetch(`${API_URL}?action=getIdentitas`).then(r => r.json());
                     if(resId.status === 'success') {
@@ -1034,7 +1087,7 @@
                     }
                 } catch(e) {}
 
-                // Fetch Media
+                // Fetch Media (Kelengkapan Kelas)
                 try {
                     const resMedia = await fetch(`${API_URL}?action=getMedia`).then(r => r.json());
                     if(resMedia.status === 'success') {
@@ -1054,7 +1107,23 @@
                 } catch(e) {}
 
                 // Fetch Jurnal
+                const resJurnal = await fetch(`${API_URL}?action=getJurnal`).then(r => r.json());
+                if(resJurnal.status === 'success') listJurnal = resJurnal.data.reverse(); 
+                else listJurnal = mockJurnalFallback;
 
+                initialSetupSemua(usingMock);
+            } catch (error) {
+                console.warn("Gagal sinkronisasi API.", error);
+                globalSiswa = mockSiswaFallback;
+                listJurnal = mockJurnalFallback;
+                initialSetupSemua(true);
+            } finally {
+                loader.classList.add('opacity-0');
+                setTimeout(() => loader.classList.add('hidden'), 500);
+            }
+        }
+
+        const mockSiswaFallback = [];
         const mockJurnalFallback = [];
 
         function initialSetupSemua(usingMock) {
@@ -1067,16 +1136,15 @@
             let savedData = localStorage.getItem('siguru_appData_v4');
             if (savedData) {
                 appData = JSON.parse(savedData);
-                // Validasi jika jumlah siswa berubah di DB
                 let savedStudentCount = Object.keys(appData["Genap"].absen).length;
                 if(savedStudentCount !== globalSiswa.length) {
-                    initDataNilai(); // Rebuild structure jika beda jumlah siswa
+                    initDataNilai(); 
                 }
             } else {
-                initDataNilai(); // Build pertama kali
+                initDataNilai(); 
             }
 
-            gantiSemester(true); // Load state Genap/Ganjil
+            gantiSemester(true); 
             
             initDropdownMapel(); 
             updateJurnalMapel();
@@ -1112,14 +1180,12 @@
         function gantiSemester(isInit = false) {
             currentSemester = document.getElementById('pilih-semester').value;
             
-            // Arahkan pointer data ke memori semester yang dipilih
             currentAbsenData = appData[currentSemester].absen;
             nilaiSiswa = appData[currentSemester].nilai;
             
             document.getElementById('inp-smt').value = currentSemester;
             syncGlobalData();
             
-            // Render ulang semua tampilan
             renderInputAbsenBulan();
             renderRekapBulanan();
             renderFormatif();
@@ -1229,7 +1295,6 @@
             if(tipe === 'lm') mapelData[currentSettingMapel].lm.push("");
             if(tipe === 'tp') mapelData[currentSettingMapel].tp.push({nama:"", k1:"K1", k2:"K2"});
             
-            // Tambahkan kerangka ke dua semester agar seimbang
             globalSiswa.forEach((s, i) => {
                 if(tipe === 'lm') {
                     appData["Ganjil"].nilai[i].sumatif[currentSettingMapel].lm.push('');
@@ -1482,7 +1547,7 @@
             
             currentAbsenData[studentIdx].hari[day] = cell.innerText;
             recalcTotalRow(cell.parentElement, studentIdx, true);
-            saveToLocal(); // Simpan otomatis setiap klik
+            saveToLocal(); 
         }
 
         function recalcTotalRow(tr, i, isInput) {
@@ -1572,7 +1637,7 @@
                 if(x.k1 !== '' && x.k2 !== '') { rt += Math.round((parseInt(x.k1) + parseInt(x.k2))/2); count++; }
             });
             document.getElementById(`rt-f-${sIdx}`).innerText = count > 0 ? Math.round(rt/count) : '-';
-            saveToLocal(); // Auto save
+            saveToLocal(); 
         }
 
         function simpanFormatifAksi() {
@@ -1637,7 +1702,7 @@
                 rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4);
             }
             document.getElementById(`na-s-${sIdx}`).innerText = rapor;
-            saveToLocal(); // Auto save
+            saveToLocal(); 
         }
 
         function simpanSumatifAksi() {
@@ -1681,7 +1746,7 @@
             
             document.getElementById(`pr-a-${sIdx}`).innerText = prA;
             document.getElementById(`pr-b-${sIdx}`).innerText = prB;
-            saveToLocal(); // Auto save
+            saveToLocal(); 
         }
 
         function simpanSikapAksi() {
@@ -1712,14 +1777,7 @@
                     cells += `<td class="border-r border-slate-300 border-b py-1.5">${na}</td>`;
                 }
 
-                // Kalkulasi Kehadiran Global Semester
-                let dVal = currentAbsenData[i];
-                let hariHadir = 0; let hariTotal = 0;
-                for(let d in dVal.hari) {
-                    if(dVal.hari[d] !== "") hariTotal++;
-                    if(dVal.hari[d] === "H") hariHadir++;
-                }
-                let pctHadir = hariTotal > 0 ? Math.round((hariHadir/hariTotal)*100) + "%" : "-";
+                let pctHadir = document.getElementById(`pct-inp-${i}`) ? document.getElementById(`pct-inp-${i}`).innerText : "-";
                 
                 let d = nilaiSiswa[i].sikap;
                 let prSikap = '-';
