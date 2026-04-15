@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V4.5 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V4.8 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -35,7 +35,7 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* =========================================================
-           PRINT LAYOUTING F4 LANDSCAPE (STABIL)
+           PRINT LAYOUTING F4 LANDSCAPE (STABIL & RAPI)
            ========================================================= */
         @media print {
             html, body { height: auto !important; min-height: auto !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; background-color: white !important; }
@@ -145,7 +145,7 @@
                     <button onclick="pindahHalaman('identitas-profil', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="identitas-profil">Profil Kelas</button>
                     <button onclick="pindahHalaman('identitas-target', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="identitas-target">Lingkup Materi & TP</button>
                     <button onclick="pindahHalaman('identitas-media', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="identitas-media">Kelengkapan Kelas</button>
-                    <!-- HALAMAN BARU: Data Induk Siswa -->
+                    <!-- DATA INDUK SISWA -->
                     <button onclick="pindahHalaman('data-siswa', this); renderDataSiswa();" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="data-siswa">Data Induk Siswa</button>
                 </div>
             </div>
@@ -211,8 +211,8 @@
             </div>
         </header>
 
-        <div id="mock-warning" class="hidden bg-amber-50 text-amber-700 border-b border-amber-200 px-4 py-2 text-[11px] font-bold text-center w-full no-print flex justify-center items-center">
-            <i data-lucide="cloud-off" class="w-4 h-4 mr-2"></i> Memori Lokal Web Aktif. Semua ketikan otomatis disimpan ke perangkat ini.
+        <div id="mock-warning" class="hidden bg-red-50 text-red-600 border-b border-red-200 px-4 py-2 text-[11px] font-bold text-center w-full no-print flex justify-center items-center">
+            <i data-lucide="alert-triangle" class="w-4 h-4 mr-2"></i> Mode Offline Web. Gagal memuat data dari Database Google Sheets.
         </div>
 
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 print-area w-full">
@@ -255,7 +255,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: DATA INDUK SISWA -->
+            <!-- HALAMAN BARU: DATA INDUK SISWA -->
             <div id="hal-data-siswa" class="halaman page-transition hidden w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
                     <div>
@@ -274,21 +274,23 @@
                     </div>
                 </div>
                 <div id="area-data-siswa" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative pb-4">
+                    <!-- KOP CETAK DATA INDUK -->
                     <div class="print-only flex justify-between items-center kop-surat px-4">
                         <img src="" class="w-16 h-16 object-contain hidden img-logokiri">
                         <div class="text-center flex-1 px-4">
-                            <h2 class="font-bold text-[11pt] uppercase">DATA SISWA KELAS <span class="print-kelas">IV B</span></h2>
+                            <h2 class="font-bold text-[11pt] uppercase">DATA PESERTA DIDIK KELAS <span class="print-kelas">IV B</span></h2>
                             <p class="text-[9pt] print-sub-header">TAHUN AJARAN <span class="print-ta">2025/2026</span><br><span class="print-sekolah font-bold">SD NEGERI 04 TAMAN</span></p>
                         </div>
                         <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
+                    
                     <table class="w-full text-center border-collapse text-[9px] sm:text-[10px] min-w-[1400px] print:min-w-full">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
                             <tr>
                                 <th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-6">No</th>
                                 <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-16">NIS</th>
                                 <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-16">NISN</th>
-                                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-40 shadow-[1px_0_0_0_#cbd5e1] print-w-auto whitespace-nowrap">Nama Siswa</th>
+                                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-40 shadow-[1px_0_0_0_#cbd5e1] print-w-auto whitespace-nowrap">Nama Peserta Didik</th>
                                 <th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-6">J. Kel<br>L/P</th>
                                 <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-20">T. Lahir</th>
                                 <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-20">Tgl. Lahir</th>
@@ -405,7 +407,7 @@
                         </button>
                     </div>
                     <div class="p-6">
-                        <p class="text-xs text-slate-500 mb-6 bg-blue-50 border border-blue-100 p-3 rounded flex items-start"><i data-lucide="info" class="w-4 h-4 text-blue-500 mr-2 shrink-0 mt-0.5"></i> Masukkan URL (link) gambar dengan akhiran .png atau .jpg yang dapat diakses publik (seperti dari Google Drive atau Imgur). Gambar ini nantinya akan terintegrasi otomatis ke menu cetak Laporan dan Cover.</p>
+                        <p class="text-xs text-slate-500 mb-6 bg-blue-50 border border-blue-100 p-3 rounded flex items-start"><i data-lucide="info" class="w-4 h-4 text-blue-500 mr-2 shrink-0 mt-0.5"></i> Masukkan URL (link) gambar dengan akhiran .png atau .jpg yang dapat diakses publik (seperti dari Google Drive atau Imgur). Gambar ini terintegrasi otomatis ke Laporan dan Cover.</p>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div class="space-y-2">
@@ -416,6 +418,7 @@
                                     <span id="ph-logokiri" class="text-xs text-slate-400 font-medium">Preview Logo Kiri</span>
                                 </div>
                             </div>
+
                             <div class="space-y-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Logo Kanan (Cth: Logo Sekolah)</label>
                                 <input type="text" id="inp-media-logokanan" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-logokanan', 'ph-logokanan')">
@@ -424,6 +427,7 @@
                                     <span id="ph-logokanan" class="text-xs text-slate-400 font-medium">Preview Logo Kanan</span>
                                 </div>
                             </div>
+
                             <div class="space-y-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Tanda Tangan Kepsek</label>
                                 <input type="text" id="inp-media-ttdkepsek" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-ttdkepsek', 'ph-ttdkepsek')">
@@ -432,6 +436,7 @@
                                     <span id="ph-ttdkepsek" class="text-xs text-slate-400 font-medium">Preview TTD Kepsek</span>
                                 </div>
                             </div>
+
                             <div class="space-y-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Tanda Tangan Guru</label>
                                 <input type="text" id="inp-media-ttdguru" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-ttdguru', 'ph-ttdguru')">
@@ -440,6 +445,7 @@
                                     <span id="ph-ttdguru" class="text-xs text-slate-400 font-medium">Preview TTD Guru</span>
                                 </div>
                             </div>
+
                             <div class="space-y-2 md:col-span-2 md:w-1/2 md:mx-auto">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase text-center">URL Stempel Sekolah</label>
                                 <input type="text" id="inp-media-stempel" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-stempel', 'ph-stempel')">
@@ -959,7 +965,7 @@
         lucide.createIcons();
 
         // ------------------------------------------
-        // 1. DATA MAPEL & TARGET DEFAULT
+        // 1. DATA MAPEL & TARGET
         // ------------------------------------------
         let mapelData = {};
 
@@ -1023,10 +1029,10 @@
                 if(res.status === 'success') {
                     alert(successMsg);
                 } else {
-                    alert("Pesan dari sistem: Tersimpan di memori browser.");
+                    alert("Gagal menyimpan ke Database: " + res.error);
                 }
             } catch (error) {
-                alert("Berhasil disimpan di memori Web.");
+                alert("Terjadi kesalahan koneksi ke Google Sheets. Disimpan ke memori browser lokal sementara.");
             } finally {
                 loader.classList.add('opacity-0');
                 setTimeout(() => loader.classList.add('hidden'), 500);
@@ -1047,30 +1053,11 @@
                     }
                 } catch(e) {}
 
-                // Fetch Master Siswa
-                const resSiswa = await fetch(`${API_URL}?action=getSiswaLengkap`).then(r => r.json());
+                // Fetch Master Siswa (DARI ENDPOINT YANG SUDAH KITA PERBAIKI)
+                const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
                 if(resSiswa.status === 'success' && resSiswa.data.length > 0) { 
-                    globalSiswa = resSiswa.data.map(s => {
-                        return { 
-                            nis: s.nis || '', 
-                            nisn: s.nisn || '', 
-                            nama: s.nama || '', 
-                            jk: s.jk || 'L',
-                            tLahir: s.tLahir || '',
-                            tglLahir: s.tglLahir || '',
-                            usia: s.usia || '',
-                            agama: s.agama || '',
-                            alamat: s.alamat || '',
-                            namaAyah: s.namaAyah || '',
-                            namaIbu: s.namaIbu || '',
-                            pekAyah: s.pekAyah || '',
-                            pekIbu: s.pekIbu || '',
-                            pendAyah: s.pendAyah || '',
-                            pendIbu: s.pendIbu || ''
-                        };
-                    });
-                } 
-                else { 
+                    globalSiswa = resSiswa.data;
+                } else { 
                     globalSiswa = []; 
                     usingMock = true; 
                 }
@@ -1249,7 +1236,7 @@
         }
 
         function simpanDataSiswaAksi() {
-            let payload = { action: 'simpanDataSiswa', data: globalSiswa };
+            let payload = { action: 'simpanDataInduk', data: globalSiswa };
             postToDB(payload, "Data Induk Siswa berhasil disimpan ke Database Excel!");
         }
 
