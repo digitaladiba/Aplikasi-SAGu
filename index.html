@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V4.5 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V4.0 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -19,7 +19,6 @@
         .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
         
-        /* Toggle Absen */
         .cell-abs { cursor: pointer; transition: all 0.1s; font-weight: 600; text-align: center; }
         .cell-abs:hover { background-color: #e2e8f0; }
         .val-h { color: #2563eb; }
@@ -32,12 +31,11 @@
         input.cell-input:focus { background-color: #eff6ff; color: #1d4ed8; border-bottom: 1px solid #3b82f6; }
         input.cell-input::-webkit-outer-spin-button, input.cell-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-        /* Loader */
         .loader-spinner { border: 4px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 4px solid #ffffff; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* =========================================================
-           PRINT LAYOUTING F4 LANDSCAPE
+           PRINT LAYOUTING F4 LANDSCAPE (STABIL & RAPI)
            ========================================================= */
         @media print {
             html, body { height: auto !important; min-height: auto !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; background-color: white !important; }
@@ -73,7 +71,7 @@
             .print-sub-header { margin-top: 2px; margin-bottom: 5px; }
             .print-signature { display: table !important; margin-top: 30px; page-break-inside: avoid !important; width: 100%; font-size: 9pt !important; }
             
-            @page { size: 330mm 215mm landscape; margin: 10mm 12mm; }
+            @page { size: 330mm 215mm landscape; margin: 10mm 15mm; }
         }
         .print-only { display: none; }
         @media print { .print-only { display: block; } }
@@ -90,7 +88,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V4.5</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V4.0</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -138,13 +136,14 @@
             <div>
                 <button onclick="toggleAccordion('menu-identitas')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
                     <div class="flex items-center space-x-3"><i data-lucide="school" class="w-5 h-5"></i><span>Identitas</span></div>
-                    <i data-lucide="chevron-down" id="icon-menu-identitas" class="w-4 h-4 chevron rotate"></i>
+                    <i data-lucide="chevron-down" id="icon-menu-identitas" class="w-4 h-4 chevron"></i>
                 </button>
-                <div id="menu-identitas" class="submenu flex flex-col pl-9 pr-2 space-y-1 mt-1 open">
+                <div id="menu-identitas" class="submenu flex flex-col pl-9 pr-2 space-y-1 mt-1">
                     <button onclick="pindahHalaman('identitas-profil', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="identitas-profil">Profil Kelas</button>
                     <button onclick="pindahHalaman('identitas-target', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="identitas-target">Lingkup Materi & TP</button>
+                    <!-- HALAMAN BARU: Kelengkapan Kelas -->
                     <button onclick="pindahHalaman('identitas-media', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="identitas-media">Kelengkapan Kelas</button>
-                    <!-- HALAMAN BARU: DATA SISWA -->
+                    <!-- HALAMAN BARU: Data Siswa -->
                     <button onclick="pindahHalaman('data-siswa', this); renderDataSiswa();" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="data-siswa">Data Induk Siswa</button>
                 </div>
             </div>
@@ -154,9 +153,9 @@
             <div>
                 <button onclick="toggleAccordion('menu-siswa')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
                     <div class="flex items-center space-x-3"><i data-lucide="calendar-check" class="w-5 h-5"></i><span>Daftar Hadir</span></div>
-                    <i data-lucide="chevron-down" id="icon-menu-siswa" class="w-4 h-4 chevron"></i>
+                    <i data-lucide="chevron-down" id="icon-menu-siswa" class="w-4 h-4 chevron rotate"></i>
                 </button>
-                <div id="menu-siswa" class="submenu flex flex-col pl-9 pr-2 space-y-1 mt-1">
+                <div id="menu-siswa" class="submenu flex flex-col pl-9 pr-2 space-y-1 mt-1 open">
                     <button onclick="pindahHalaman('siswa-absen', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-absen">Input Kehadiran</button>
                     <button onclick="pindahHalaman('siswa-rekapbulan', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-rekapbulan">Rekap Bulanan</button>
                     <button onclick="pindahHalaman('siswa-rekapsemester', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-rekapsemester">Rekap Semester</button>
@@ -209,6 +208,10 @@
                 <button onclick="sinkronisasiDB(true)" class="w-10 h-10 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center transition" title="Sinkronisasi Data Ulang"><i data-lucide="refresh-cw" class="w-5 h-5"></i></button>
             </div>
         </header>
+
+        <div id="mock-warning" class="hidden bg-amber-50 text-amber-700 border-b border-amber-200 px-4 py-2 text-[11px] font-bold text-center w-full no-print flex justify-center items-center">
+            <i data-lucide="cloud-off" class="w-4 h-4 mr-2"></i> Mode Offline Web. Tidak dapat mengambil data dari Excel.
+        </div>
 
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 print-area w-full">
             
@@ -266,17 +269,17 @@
                 </div>
                 <div id="area-data-siswa" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative pb-4">
                     <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[11pt] uppercase">DATA SISWA KELAS <span class="print-kelas">IV B</span></h2>
+                        <h2 class="font-bold text-[11pt] uppercase">DATA PESERTA DIDIK KELAS <span class="print-kelas">IV B</span></h2>
                         <p class="text-[9pt] print-sub-header">TAHUN AJARAN <span class="print-ta">2025/2026</span><br><span class="print-sekolah font-bold">SD NEGERI 04 TAMAN</span></p>
                     </div>
-                    <table class="w-full text-center border-collapse text-[9px] sm:text-[10px] min-w-[1200px]">
+                    <table class="w-full text-center border-collapse text-[9px] sm:text-[10px] min-w-[1200px] print:min-w-full">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
                             <tr>
                                 <th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-6">No</th>
                                 <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-16">NIS</th>
                                 <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-16">NISN</th>
-                                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-40 shadow-[1px_0_0_0_#cbd5e1] print-w-auto whitespace-nowrap">Nama Siswa</th>
-                                <th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-6">J. Kel<br>L/P</th>
+                                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-40 shadow-[1px_0_0_0_#cbd5e1] print-w-auto whitespace-nowrap">Nama Peserta Didik</th>
+                                <th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-6">L/P</th>
                                 <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-20">T. Lahir</th>
                                 <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-20">Tgl. Lahir</th>
                                 <th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-8">Usia</th>
@@ -297,28 +300,27 @@
                             </tr>
                         </thead>
                         <tbody id="tb-data-siswa" class="divide-y divide-slate-200 text-slate-800"></tbody>
-                        <tfoot class="print-only text-left text-xs">
+                    </table>
+                    
+                    <div class="print-only mt-4 px-4 w-full">
+                        <table class="w-full border-none !border-transparent text-[9pt]">
                             <tr>
-                                <td colspan="100%" class="border-none !border-transparent pt-4 pb-2 text-left pl-4">
-                                    <div class="font-bold mb-1">Catatan : Usia</div>
-                                    <div class="flex w-full justify-between items-end">
-                                        <div class="leading-relaxed">
-                                            L : <span id="print-sum-l">0</span><br>
-                                            P : <span id="print-sum-p">0</span><br>
-                                            J : <span id="print-sum-j">0</span>
-                                        </div>
-                                        <div class="text-center pr-12">
-                                            <p id="print-tgl-siswa">Pemalang, ...</p>
-                                            <p>Guru Kelas <span class="print-kelas">IV B</span></p>
-                                            <br><br><br>
-                                            <p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p>
-                                            <p>NIP. <span class="print-nipguru">199601212025211014</span></p>
-                                        </div>
-                                    </div>
+                                <td class="text-left align-top border-none !border-transparent w-1/2">
+                                    <p class="font-bold mb-1">Catatan : Usia</p>
+                                    <p>L : <span id="print-sum-l">0</span></p>
+                                    <p>P : <span id="print-sum-p">0</span></p>
+                                    <p>J : <span id="print-sum-j">0</span></p>
+                                </td>
+                                <td class="text-center align-top border-none !border-transparent w-1/2">
+                                    <p id="print-tgl-siswa">Pemalang, ...</p>
+                                    <p>Guru Kelas <span class="print-kelas">IV B</span></p>
+                                    <br><br><br>
+                                    <p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p>
+                                    <p>NIP. <span class="print-nipguru">-</span></p>
                                 </td>
                             </tr>
-                        </tfoot>
-                    </table>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -401,7 +403,6 @@
                                     <span id="ph-logokiri" class="text-xs text-slate-400 font-medium">Preview Logo Kiri</span>
                                 </div>
                             </div>
-
                             <div class="space-y-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Logo Kanan (Cth: Logo Sekolah)</label>
                                 <input type="text" id="inp-media-logokanan" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-logokanan', 'ph-logokanan')">
@@ -410,7 +411,6 @@
                                     <span id="ph-logokanan" class="text-xs text-slate-400 font-medium">Preview Logo Kanan</span>
                                 </div>
                             </div>
-
                             <div class="space-y-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Tanda Tangan Kepsek</label>
                                 <input type="text" id="inp-media-ttdkepsek" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-ttdkepsek', 'ph-ttdkepsek')">
@@ -419,7 +419,6 @@
                                     <span id="ph-ttdkepsek" class="text-xs text-slate-400 font-medium">Preview TTD Kepsek</span>
                                 </div>
                             </div>
-
                             <div class="space-y-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Tanda Tangan Guru</label>
                                 <input type="text" id="inp-media-ttdguru" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-ttdguru', 'ph-ttdguru')">
@@ -428,7 +427,6 @@
                                     <span id="ph-ttdguru" class="text-xs text-slate-400 font-medium">Preview TTD Guru</span>
                                 </div>
                             </div>
-
                             <div class="space-y-2 md:col-span-2 md:w-1/2 md:mx-auto">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase text-center">URL Stempel Sekolah</label>
                                 <input type="text" id="inp-media-stempel" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-stempel', 'ph-stempel')">
@@ -857,7 +855,7 @@
         lucide.createIcons();
 
         // ------------------------------------------
-        // 1. STATE & DATA MAPEL
+        // 1. DATA MAPEL & TARGET
         // ------------------------------------------
         let mapelData = {
             "Pendidikan Pancasila": {
@@ -1172,7 +1170,7 @@
                     <td class="border-r border-slate-300 border-b p-1 text-center font-medium">${i+1}</td>
                     <td class="border-r border-slate-300 border-b"><input type="text" class="w-full bg-transparent outline-none text-center text-[10px] focus:bg-blue-50 focus:border-b focus:border-blue-500 px-1 py-1" value="${s.nis}" oninput="updSiswa(${i}, 'nis', this.value)"></td>
                     <td class="border-r border-slate-300 border-b"><input type="text" class="w-full bg-transparent outline-none text-center text-[10px] focus:bg-blue-50 focus:border-b focus:border-blue-500 px-1 py-1" value="${s.nisn}" oninput="updSiswa(${i}, 'nisn', this.value)"></td>
-                    <td class="border-r border-slate-300 border-b sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] print-w-auto"><input type="text" class="w-full bg-transparent outline-none text-left text-[10px] font-bold focus:bg-blue-50 focus:border-b focus:border-blue-500 px-2 py-1" value="${s.nama}" oninput="updSiswa(${i}, 'nama', this.value)"></td>
+                    <td class="border-r border-slate-300 border-b sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] print-w-auto whitespace-nowrap"><input type="text" class="w-full bg-transparent outline-none text-left text-[10px] font-bold focus:bg-blue-50 focus:border-b focus:border-blue-500 px-2 py-1" value="${s.nama}" oninput="updSiswa(${i}, 'nama', this.value)"></td>
                     <td class="border-r border-slate-300 border-b"><input type="text" class="w-full bg-transparent outline-none text-center text-[10px] font-bold focus:bg-blue-50 focus:border-b focus:border-blue-500 px-1 py-1 uppercase ${s.jk.toUpperCase()==='P'?'text-pink-600':'text-blue-600'}" value="${s.jk}" maxlength="1" oninput="updSiswa(${i}, 'jk', this.value)"></td>
                     <td class="border-r border-slate-300 border-b"><input type="text" class="w-full bg-transparent outline-none text-center text-[10px] focus:bg-blue-50 focus:border-b focus:border-blue-500 px-1 py-1" value="${s.tLahir}" oninput="updSiswa(${i}, 'tLahir', this.value)"></td>
                     <td class="border-r border-slate-300 border-b"><input type="text" class="w-full bg-transparent outline-none text-center text-[10px] focus:bg-blue-50 focus:border-b focus:border-blue-500 px-1 py-1" value="${s.tglLahir}" placeholder="dd-mm-yyyy" oninput="updSiswa(${i}, 'tglLahir', this.value)"></td>
@@ -1213,7 +1211,7 @@
         function tambahSiswa() {
             let newSiswa = {nis: '', nisn: '', nama: '', jk: 'L', tLahir: '', tglLahir: '', usia: '', agama: '', alamat: '', namaAyah: '', namaIbu: '', pekAyah: '', pekIbu: '', pendAyah: '', pendIbu: ''};
             globalSiswa.push(newSiswa);
-            initDataNilai(); // Menambahkan array absensi/nilai untuk siswa baru
+            initDataNilai(); 
             initMockAbsen();
             renderDataSiswa();
         }
@@ -1222,7 +1220,6 @@
             if(!confirm('Hapus data siswa ini secara permanen?')) return;
             globalSiswa.splice(index, 1);
             
-            // Re-index data absen dan nilai agar tidak tertinggal
             let newAbsen = {};
             let newNilai = {};
             globalSiswa.forEach((s, i) => {
@@ -1532,8 +1529,8 @@
                 tbody += `
                 <tr id="tr-${isInput?'inp':'rek'}-${i}">
                     <td class="border-r border-slate-300 border-b">${i+1}</td>
-                    <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] w-48 whitespace-nowrap overflow-hidden text-ellipsis">${s.nama}</td>
-                    <td class="border-r border-slate-300 border-b font-bold text-[9px] ${s.jk==='L'?'text-blue-500':'text-pink-500'}">${s.jk}</td>
+                    <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[11rem] w-48">${s.nama}</td>
+                    <td class="border-r border-slate-300 border-b font-bold text-[9px] ${s.jk.toUpperCase()==='P'?'text-pink-500':'text-blue-500'}">${s.jk}</td>
                     ${cells}
                     <td class="border-r border-slate-300 border-b font-bold text-blue-700 bg-slate-50" id="tot-h-${isInput?'inp':'rek'}-${i}">${th}</td>
                     <td class="border-r border-slate-300 border-b font-bold text-amber-500 bg-slate-50" id="tot-s-${isInput?'inp':'rek'}-${i}">${ts}</td>
@@ -1654,7 +1651,7 @@
                               <td class="border-r border-slate-300 border-b font-bold bg-slate-50" id="na-f-${i}-${x}">${na}</td>`;
                 }
                 rt = validTpCount > 0 ? Math.round(rt/validTpCount) : '-';
-                tb += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white w-48 whitespace-nowrap overflow-hidden text-ellipsis">${s.nama}</td>${cells}<td class="border-b border-slate-300 font-bold text-slate-800 bg-slate-100" id="rt-f-${i}">${rt}</td></tr>`;
+                tb += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white whitespace-nowrap overflow-hidden text-ellipsis max-w-[12rem] w-48">${s.nama}</td>${cells}<td class="border-b border-slate-300 font-bold text-slate-800 bg-slate-100" id="rt-f-${i}">${rt}</td></tr>`;
             });
             document.getElementById('tb-formatif').innerHTML = tb;
         }
@@ -1711,7 +1708,7 @@
                     rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); 
                 }
                 
-                tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white w-48 whitespace-nowrap overflow-hidden text-ellipsis">${s.nama}</td>
+                tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white whitespace-nowrap overflow-hidden text-ellipsis max-w-[12rem] w-48">${s.nama}</td>
                 ${cells}
                 <td class="border-r border-slate-300 border-b bg-slate-50 font-bold" id="rtl-${i}">${rtLM}</td>
                 <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${smt.sts}" oninput="updSum(${i}, '${m}', 'sts', 0, this.value)"></td>
@@ -1810,7 +1807,13 @@
                     cells += `<td class="border-r border-slate-300 border-b py-1.5">${na}</td>`;
                 }
 
-                let pctHadir = document.getElementById(`pct-inp-${i}`) ? document.getElementById(`pct-inp-${i}`).innerText : "-";
+                let dVal = currentAbsenData[i] || {hari:{}};
+                let hariHadir = 0; let hariTotal = 0;
+                for(let d in dVal.hari) {
+                    if(dVal.hari[d] !== "") hariTotal++;
+                    if(dVal.hari[d] === "H") hariHadir++;
+                }
+                let pctHadir = hariTotal > 0 ? Math.round((hariHadir/hariTotal)*100) + "%" : "-";
                 
                 let d = nilaiSiswa[i].sikap;
                 let prSikap = '-';
