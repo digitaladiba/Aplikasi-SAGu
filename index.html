@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V4.3 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V4.4 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -35,13 +35,13 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* =========================================================
-           PRINT LAYOUTING F4 LANDSCAPE
+           PRINT LAYOUTING F4 LANDSCAPE & PORTRAIT (COVER)
            ========================================================= */
         @media print {
             html, body { height: auto !important; min-height: auto !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; background-color: white !important; }
             body { color: #000; font-size: 8pt !important; }
             
-            body > .flex, .flex-1, main, .print-area { display: block !important; height: auto !important; overflow: visible !important; position: static !important; }
+            body > .flex, .flex-1, main, .print-area { display: block !important; height: auto !important; overflow: visible !important; position: static !important; margin: 0 auto !important; }
             
             #sidebar, header, .no-print, button, select, input[type="date"], #loading-overlay, #login-overlay, #mock-warning { display: none !important; }
             
@@ -71,6 +71,10 @@
             .print-sub-header { margin-top: 2px; margin-bottom: 5px; }
             .print-signature { display: table !important; margin-top: 30px; page-break-inside: avoid !important; width: 100%; font-size: 9pt !important; }
             
+            /* Background transparan untuk Cover Rapor */
+            #area-cetak-cover { border: none !important; padding: 0 !important; max-width: none !important; width: 100% !important; }
+            
+            /* Kertas F4 Default. (Untuk Cover, pengguna dapat mengatur ke Portrait di Setting Print) */
             @page { size: 330mm 215mm landscape; margin: 10mm 15mm; }
         }
         .print-only { display: none; }
@@ -88,7 +92,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V4.3 (Safe Mode)</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V4.4 (Cover)</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -169,6 +173,8 @@
                     <button onclick="pindahHalaman('nilai-sumatif', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="nilai-sumatif">Asesmen Sumatif</button>
                     <button onclick="pindahHalaman('nilai-sikap', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="nilai-sikap">Keaktifan & Sikap</button>
                     <button onclick="pindahHalaman('nilai-legger', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="nilai-legger">Kelola Nilai Rapor</button>
+                    <!-- MENU BARU: CETAK COVER -->
+                    <button onclick="pindahHalaman('cetak-cover', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="cetak-cover">Cetak Cover Rapor</button>
                 </div>
             </div>
 
@@ -321,7 +327,7 @@
                         </button>
                     </div>
                     <div class="p-6">
-                        <p class="text-xs text-slate-500 mb-6 bg-blue-50 border border-blue-100 p-3 rounded flex items-start"><i data-lucide="info" class="w-4 h-4 text-blue-500 mr-2 shrink-0 mt-0.5"></i> Masukkan URL (link) gambar dengan akhiran .png atau .jpg yang dapat diakses publik (seperti dari Google Drive atau Imgur). Gambar ini nantinya akan terintegrasi otomatis ke menu cetak Laporan dan Cover.</p>
+                        <p class="text-xs text-slate-500 mb-6 bg-blue-50 border border-blue-100 p-3 rounded flex items-start"><i data-lucide="info" class="w-4 h-4 text-blue-500 mr-2 shrink-0 mt-0.5"></i> Masukkan URL (link) gambar dengan akhiran .png atau .jpg yang dapat diakses publik (seperti dari Google Drive atau Imgur). Gambar ini terintegrasi otomatis ke Laporan dan Cover.</p>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div class="space-y-2">
@@ -704,6 +710,83 @@
                 </div>
             </div>
 
+            <!-- HALAMAN BARU: CETAK COVER -->
+            <div id="hal-cetak-cover" class="halaman page-transition hidden w-full">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
+                    <div><h2 class="text-xl font-bold text-slate-800">Cetak Cover Laporan</h2></div>
+                    <div class="flex space-x-2 items-end">
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 mb-0.5">Pilih Siswa:</label>
+                            <select id="pilih-siswa-cover" onchange="renderCover()" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium min-w-[200px]"></select>
+                        </div>
+                        <button onclick="cetakLaporan('cover')" class="bg-slate-800 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> Cetak Cover</button>
+                    </div>
+                </div>
+
+                <div id="area-cetak-cover" class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 print-area mx-auto max-w-3xl relative" style="min-height: 297mm; display: flex; flex-direction: column;">
+                    
+                    <div class="flex justify-between items-center border-b-4 border-double border-slate-800 pb-4 mb-12 w-full">
+                        <div class="w-24 h-24 flex-shrink-0 flex items-center justify-center">
+                            <img id="cover-logo-kiri" src="" class="max-h-full max-w-full object-contain hidden">
+                        </div>
+                        <div class="flex-1 text-center px-4">
+                            <h3 class="text-lg font-bold uppercase tracking-wider">Pemerintah <span class="cover-kota">Kabupaten/Kota</span></h3>
+                            <h2 class="text-2xl font-black uppercase tracking-widest mt-1">Dinas Pendidikan</h2>
+                            <h1 class="text-3xl font-black uppercase text-blue-800 mt-2 cover-sekolah">SD N 04 TAMAN</h1>
+                        </div>
+                        <div class="w-24 h-24 flex-shrink-0 flex items-center justify-center">
+                            <img id="cover-logo-kanan" src="" class="max-h-full max-w-full object-contain hidden">
+                        </div>
+                    </div>
+
+                    <div class="text-center flex-1 flex flex-col justify-center mb-16">
+                        <h2 class="text-4xl font-black uppercase tracking-[0.2em] text-slate-800 mb-6">Laporan Hasil Belajar</h2>
+                        <h3 class="text-xl font-semibold text-slate-600 uppercase tracking-widest">Peserta Didik Sekolah Dasar</h3>
+                        <h3 class="text-xl font-semibold text-slate-600 uppercase tracking-widest mt-2">(SD)</h3>
+                        
+                        <div class="w-40 h-40 mx-auto my-12 flex items-center justify-center">
+                            <img id="cover-logo-tengah" src="" class="max-h-full max-w-full object-contain opacity-80 hidden">
+                        </div>
+                    </div>
+
+                    <div class="w-3/4 mx-auto border-2 border-slate-800 p-6 rounded-lg mb-16 bg-slate-50 relative z-10">
+                        <p class="text-center text-sm font-bold text-slate-500 mb-4 uppercase tracking-widest">Nama Peserta Didik</p>
+                        <h2 id="cover-nama-siswa" class="text-2xl font-black text-center text-slate-800 uppercase tracking-wide mb-6 pb-2 border-b border-slate-300">NAMA SISWA</h2>
+                        
+                        <div class="flex justify-center items-center space-x-4">
+                            <p class="text-sm font-bold text-slate-500 uppercase">NIS / NISN :</p>
+                            <p id="cover-nis-siswa" class="text-lg font-bold text-slate-800 tracking-wider">-</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto w-full pt-8">
+                        <table class="w-full text-sm border-none !border-transparent" style="border:none;">
+                            <tr>
+                                <td class="text-center border-none !border-transparent w-1/2 align-bottom" style="border:none; padding:10px;">
+                                    <p class="mb-1">Mengetahui,</p>
+                                    <p class="font-bold">Kepala Sekolah</p>
+                                    <div class="h-24 my-2 flex items-center justify-center relative">
+                                        <img id="cover-ttd-kepsek" src="" class="max-h-full max-w-full object-contain hidden z-10 relative">
+                                        <img id="cover-stempel" src="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-28 w-28 object-contain mix-blend-multiply opacity-70 hidden z-0 pointer-events-none">
+                                    </div>
+                                    <p class="font-bold underline cover-kepsek">Tentrem Lestari, S.Pd.</p>
+                                    <p>NIP. <span class="cover-nipkepsek">-</span></p>
+                                </td>
+                                <td class="text-center border-none !border-transparent w-1/2 align-bottom" style="border:none; padding:10px;">
+                                    <p class="mb-1" id="cover-tgl">Pemalang, ...</p>
+                                    <p class="font-bold">Guru Kelas <span class="cover-kelas">IV B</span></p>
+                                    <div class="h-24 my-2 flex items-center justify-center">
+                                        <img id="cover-ttd-guru" src="" class="max-h-full max-w-full object-contain hidden">
+                                    </div>
+                                    <p class="font-bold underline cover-guru">Bayu Prahastian, S.Pd.</p>
+                                    <p>NIP. <span class="cover-nipguru">199601212025211014</span></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <!-- HALAMAN: JURNAL MENGAJAR -->
             <div id="hal-jurnal-input" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
@@ -957,7 +1040,7 @@
                     if(res.status === 'success') alert(successMsg);
                 } else {
                     saveToLocal();
-                    alert("Data berhasil diamankan di memori Browser untuk Semester " + currentSemester + ". (Gunakan tombol Ekspor Excel jika perlu di backup di laptop)");
+                    alert("Data berhasil diamankan di memori Browser untuk Semester " + currentSemester + ".");
                 }
             } catch (error) {
                 saveToLocal();
@@ -1057,7 +1140,6 @@
         const mockSiswaFallback = [];
         const mockJurnalFallback = [];
 
-        // V4.3 FIX: Safe Data Loading & Merging
         function initialSetupSemua(usingMock) {
             if(usingMock) document.getElementById('mock-warning').classList.remove('hidden');
             else document.getElementById('mock-warning').classList.add('hidden');
@@ -1067,8 +1149,6 @@
             let savedData = localStorage.getItem('siguru_appData_v4');
             if (savedData) {
                 appData = JSON.parse(savedData);
-                // V4.3 FIX: Lakukan merge (penggabungan) dengan hati-hati. 
-                // Jangan pernah melakukan wipe/reset keseluruhan data meskipun jumlah siswa berbeda.
                 mergeDataNilai(); 
             } else {
                 initDataNilai(); 
@@ -1079,9 +1159,9 @@
             initDropdownMapel(); 
             updateJurnalMapel();
             renderTabelJurnal();
+            updateDropdownSiswaCover();
         }
 
-        // Fungsi baru untuk menyisipkan data siswa/mapel baru tanpa menghapus data lama
         function mergeDataNilai() {
             ["Ganjil", "Genap"].forEach(smt => {
                 if(!appData[smt]) appData[smt] = { absen: {}, nilai: {} };
@@ -1179,6 +1259,7 @@
             if(idHalaman.includes('siswa')) judul = "Administrasi Kehadiran";
             if(idHalaman.includes('nilai')) judul = "Pengolahan Nilai (Rapor)";
             if(idHalaman.includes('jurnal')) { judul = "Jurnal Mengajar"; renderTabelJurnal(); updateJurnalMapel(); }
+            if(idHalaman.includes('cover')) { judul = "Cetak Cover Rapor"; updateDropdownSiswaCover(); }
             document.getElementById('judul-halaman').innerText = judul;
 
             document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -1206,6 +1287,11 @@
                 img.src = "";
                 img.classList.add('hidden');
                 if(ph) ph.classList.remove('hidden');
+            }
+            
+            // Update the cover preview dynamically if visible
+            if (document.getElementById('hal-cetak-cover') && !document.getElementById('hal-cetak-cover').classList.contains('hidden')) {
+                renderCover();
             }
         }
 
@@ -1310,22 +1396,25 @@
             let kls = document.getElementById('inp-kelas').value;
             let smt = document.getElementById('inp-smt').value;
             let ta = document.getElementById('inp-ta').value;
+            let kota = document.getElementById('inp-kota').value;
 
             document.getElementById('header-nama').innerText = guru;
             document.getElementById('header-kelas').innerText = `Kelas ${kls} | ${document.getElementById('inp-sekolah').value}`;
             
-            document.querySelectorAll('.print-kepsek').forEach(e => e.innerText = sep);
-            document.querySelectorAll('.print-nipkepsek').forEach(e => e.innerText = sNip);
-            document.querySelectorAll('.print-guru').forEach(e => e.innerText = guru);
-            document.querySelectorAll('.print-nipguru').forEach(e => e.innerText = gNip);
-            document.querySelectorAll('.print-kelas').forEach(e => e.innerText = kls);
+            document.querySelectorAll('.print-kepsek, .cover-kepsek').forEach(e => e.innerText = sep);
+            document.querySelectorAll('.print-nipkepsek, .cover-nipkepsek').forEach(e => e.innerText = sNip);
+            document.querySelectorAll('.print-guru, .cover-guru').forEach(e => e.innerText = guru);
+            document.querySelectorAll('.print-nipguru, .cover-nipguru').forEach(e => e.innerText = gNip);
+            document.querySelectorAll('.print-kelas, .cover-kelas').forEach(e => e.innerText = kls);
             document.querySelectorAll('.print-sub-header').forEach(e => {
                 if(!e.innerText.includes("Mata Pelajaran")) { e.innerText = `Tahun Ajaran ${ta} | Semester ${smt} | Kelas ${kls}`; }
             });
+            document.querySelectorAll('.cover-sekolah').forEach(e => e.innerText = document.getElementById('inp-sekolah').value);
+            document.querySelectorAll('.cover-kota').forEach(e => e.innerText = kota);
 
             let today = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
-            let kota = document.getElementById('inp-kota').value;
-            document.querySelectorAll('[id^="print-tgl-"]').forEach(e => e.innerText = `${kota}, ${today}`);
+            
+            document.querySelectorAll('[id^="print-tgl-"], #cover-tgl').forEach(e => e.innerText = `${kota}, ${today}`);
         }
 
         // --- EKSPOR KE EXCEL (HTML to XLS) ---
@@ -1738,7 +1827,13 @@
                     cells += `<td class="border-r border-slate-300 border-b py-1.5">${na}</td>`;
                 }
 
-                let pctHadir = document.getElementById(`pct-inp-${i}`) ? document.getElementById(`pct-inp-${i}`).innerText : "-";
+                let dVal = currentAbsenData[i];
+                let hariHadir = 0; let hariTotal = 0;
+                for(let d in dVal.hari) {
+                    if(dVal.hari[d] !== "") hariTotal++;
+                    if(dVal.hari[d] === "H") hariHadir++;
+                }
+                let pctHadir = hariTotal > 0 ? Math.round((hariHadir/hariTotal)*100) + "%" : "-";
                 
                 let d = nilaiSiswa[i].sikap;
                 let prSikap = '-';
@@ -1757,100 +1852,24 @@
             document.getElementById('tb-legger').innerHTML = tLeg;
         }
 
-        // --- JURNAL ---
-        function updateJurnalMapel() {
-            let opts = "<option value=''>-- Pilih Mata Pelajaran --</option>";
-            for(let m in mapelData) opts += `<option value="${m}">${m}</option>`;
-            document.getElementById('jurnal-mapel').innerHTML = opts;
-            updateJurnalDropdowns();
-            document.getElementById('jurnal-tgl').valueAsDate = new Date();
-        }
-
-        function updateJurnalDropdowns() {
-            let mapel = document.getElementById('jurnal-mapel').value;
-            let lmSelect = document.getElementById('jurnal-lm');
-            let tpSelect = document.getElementById('jurnal-tp');
-
-            lmSelect.innerHTML = "<option value=''>-- Pilih Lingkup Materi --</option>";
-            tpSelect.innerHTML = "<option value=''>-- Pilih Tujuan Pembelajaran --</option>";
-
-            if(mapel && mapelData[mapel]) {
-                mapelData[mapel].lm.forEach(lm => { if(lm.trim() !== "") lmSelect.innerHTML += `<option value="${lm}">${lm}</option>`; });
-                mapelData[mapel].tp.forEach(tp => { if(tp.nama.trim() !== "") tpSelect.innerHTML += `<option value="${tp.nama}">${tp.nama}</option>`; });
-            }
-        }
-
-        function simpanJurnalAksi() {
-            let tgl = document.getElementById('jurnal-tgl').value;
-            let jam = document.getElementById('jurnal-jam').value;
-            let mapel = document.getElementById('jurnal-mapel').value;
-            let lm = document.getElementById('jurnal-lm').value;
-            let tp = document.getElementById('jurnal-tp').value;
-            let kegiatan = document.getElementById('jurnal-kegiatan').value;
-            let refleksi = document.getElementById('jurnal-refleksi').value || "-";
-
-            if(!tgl || !jam || !mapel || !kegiatan) { alert("Harap lengkapi semua isian wajib!"); return; }
-
-            let d = new Date(tgl);
-            let hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"][d.getDay()];
-            let bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"][d.getMonth()];
-            let tglFormat = `${hari},<br>${d.getDate()} ${bulan} ${d.getFullYear()}`;
-
-            let payload = { action: 'simpanJurnal', data: { tanggal: tgl, jam: jam, mapel: mapel, lingkupMateri: lm, tujuanPembelajaran: tp, kegiatan: kegiatan, refleksi: refleksi } };
-            
-            postToDB(payload, "Jurnal berhasil disimpan ke Database!");
-            
-            listJurnal.unshift({ tanggal: tgl, tglFormat, jam, mapel, lingkupMateri: lm, tujuanPembelajaran: tp, kegiatan, refleksi });
-            document.getElementById('dash-total-jurnal').innerText = listJurnal.length;
-            renderTabelJurnal();
-            document.getElementById('form-jurnal').classList.add('hidden');
-        }
-
-        function renderTabelJurnal() {
-            let tbody = "";
-            listJurnal.forEach(j => {
-                let formatTgl = j.tglFormat || j.tanggal;
-                tbody += `<tr class="align-top hover:bg-slate-50">
-                    <td class="px-3 py-2 font-semibold text-slate-800 text-center border-r border-slate-300">${formatTgl}</td>
-                    <td class="px-2 py-2 text-center border-r border-slate-300 font-bold text-slate-600 bg-slate-50">${j.jam}</td>
-                    <td class="px-3 py-2 border-r border-slate-300"><div class="font-bold text-blue-700 mb-1">${j.mapel}</div>${j.lingkupMateri && j.lingkupMateri !== '-' ? `<div class="text-[8pt] text-slate-500"><b>LM:</b> ${j.lingkupMateri}</div>` : ''}${j.tujuanPembelajaran && j.tujuanPembelajaran !== '-' ? `<div class="text-[8pt] text-slate-500 mt-0.5"><b>TP:</b> ${j.tujuanPembelajaran}</div>` : ''}</td>
-                    <td class="px-3 py-2 border-r border-slate-300"><p class="text-[8pt]">${j.kegiatan}</p></td>
-                    <td class="px-3 py-2 text-[8pt] italic text-slate-600">${j.refleksi}</td>
-                </tr>`;
+        // --- CETAK COVER RAPOR ---
+        function updateDropdownSiswaCover() {
+            let select = document.getElementById('pilih-siswa-cover');
+            if(!select) return;
+            select.innerHTML = '<option value="">-- Pilih Siswa --</option>';
+            globalSiswa.forEach((s, idx) => {
+                select.innerHTML += `<option value="${idx}">${s.nama} (${s.nis})</option>`;
             });
-            document.getElementById('tb-jurnal').innerHTML = tbody;
         }
 
-        function cetakLaporan(tipe) {
-            syncGlobalData(); 
+        function renderCover() {
+            let select = document.getElementById('pilih-siswa-cover');
+            if(!select) return;
+            let idx = select.value;
             
-            let kota = document.getElementById('inp-kota').value;
-            let overrideDate = (inputId, targetId) => {
-                let val = document.getElementById(inputId).value;
-                if(val) {
-                    let d = new Date(val);
-                    let f = new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
-                    document.getElementById(targetId).innerText = `${kota}, ${f}`;
-                }
-            };
-
-            if(tipe === 'abs') overrideDate('tgl-cetak-rekap-bulan', 'print-tgl-rekap');
-            if(tipe === 'smt') overrideDate('tgl-cetak-rekap-smt', 'print-tgl-smt');
-            if(tipe === 'for') overrideDate('tgl-cetak-for', 'print-tgl-for');
-            if(tipe === 'sum') overrideDate('tgl-cetak-sum', 'print-tgl-sum');
-            if(tipe === 'sikap') overrideDate('tgl-cetak-sikap', 'print-tgl-sikap');
-            if(tipe === 'legger') overrideDate('tgl-cetak-legger', 'print-tgl-legger');
-            if(tipe === 'jurnal') overrideDate('tgl-cetak-jurnal', 'print-tgl-jurnal');
-
-            if(!document.getElementById('hal-nilai-legger').classList.contains('hidden')) renderLegger();
-            
-            setTimeout(() => { window.print(); }, 300);
-        }
-
-        window.onload = () => {
-            pindahHalaman('dashboard', document.querySelector('[data-target="dashboard"]'));
-            checkAuth(); 
-        };
-    </script>
-</body>
-</html>
+            if(idx !== "") {
+                document.getElementById('cover-nama-siswa').innerText = globalSiswa[idx].nama;
+                document.getElementById('cover-nis-siswa').innerText = globalSiswa[idx].nis;
+            } else {
+                document.getElementById('cover-nama-siswa').innerText = "NAMA PESERTA DIDIK";
+                document.getElementById('cover-nis-siswa').innerText = "-";
