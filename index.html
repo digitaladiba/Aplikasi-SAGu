@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V4.2 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V4.3 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -88,7 +88,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V4.2</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas V4.3 (Safe Mode)</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -210,7 +210,7 @@
         </header>
 
         <div id="mock-warning" class="hidden bg-amber-50 text-amber-700 border-b border-amber-200 px-4 py-2 text-[11px] font-bold text-center w-full no-print flex justify-center items-center">
-            <i data-lucide="cloud-off" class="w-4 h-4 mr-2"></i> Mode Auto-Save Aktif. Data otomatis tersimpan di memori browser (Bisa Export ke Excel).
+            <i data-lucide="cloud-off" class="w-4 h-4 mr-2"></i> Koneksi Database terputus. Menampilkan data dari Memori Lokal Browser (Aman untuk diedit & diekspor).
         </div>
 
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 print-area w-full">
@@ -384,7 +384,7 @@
                         <select id="filter-bulan-absen-input" onchange="renderInputAbsenBulan()" class="border border-slate-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                             <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
                         </select>
-                        <button onclick="simpanAbsenAksi()" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan ke DB</button>
+                        <button onclick="simpanAbsenAksi()" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan DB</button>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto relative pb-2">
@@ -781,68 +781,6 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: KELENGKAPAN KELAS -->
-            <div id="hal-identitas-media" class="halaman page-transition hidden no-print">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden max-w-4xl">
-                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                        <h2 class="font-bold text-slate-800">Kelengkapan Kelas</h2>
-                        <button onclick="simpanMediaAksi()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center">
-                            <i data-lucide="save" class="w-4 h-4 mr-2"></i> Simpan
-                        </button>
-                    </div>
-                    <div class="p-6">
-                        <p class="text-xs text-slate-500 mb-6 bg-blue-50 border border-blue-100 p-3 rounded flex items-start"><i data-lucide="info" class="w-4 h-4 text-blue-500 mr-2 shrink-0 mt-0.5"></i> Masukkan URL (link) gambar dengan akhiran .png atau .jpg yang dapat diakses publik (seperti dari Google Drive atau Imgur). Gambar ini nantinya akan terintegrasi otomatis ke menu cetak Laporan dan Cover.</p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div class="space-y-2">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Logo Kiri (Cth: Tut Wuri / Pemda)</label>
-                                <input type="text" id="inp-media-logokiri" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-logokiri', 'ph-logokiri')">
-                                <div class="w-full h-32 bg-slate-50 border border-slate-200 border-dashed rounded flex items-center justify-center p-2 relative">
-                                    <img id="prev-logokiri" class="max-h-full max-w-full hidden object-contain drop-shadow-sm">
-                                    <span id="ph-logokiri" class="text-xs text-slate-400 font-medium">Preview Logo Kiri</span>
-                                </div>
-                            </div>
-
-                            <div class="space-y-2">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Logo Kanan (Cth: Logo Sekolah)</label>
-                                <input type="text" id="inp-media-logokanan" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-logokanan', 'ph-logokanan')">
-                                <div class="w-full h-32 bg-slate-50 border border-slate-200 border-dashed rounded flex items-center justify-center p-2 relative">
-                                    <img id="prev-logokanan" class="max-h-full max-w-full hidden object-contain drop-shadow-sm">
-                                    <span id="ph-logokanan" class="text-xs text-slate-400 font-medium">Preview Logo Kanan</span>
-                                </div>
-                            </div>
-
-                            <div class="space-y-2">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Tanda Tangan Kepsek</label>
-                                <input type="text" id="inp-media-ttdkepsek" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-ttdkepsek', 'ph-ttdkepsek')">
-                                <div class="w-full h-24 bg-slate-50 border border-slate-200 border-dashed rounded flex items-center justify-center p-2 relative">
-                                    <img id="prev-ttdkepsek" class="max-h-full max-w-full hidden object-contain">
-                                    <span id="ph-ttdkepsek" class="text-xs text-slate-400 font-medium">Preview TTD Kepsek</span>
-                                </div>
-                            </div>
-
-                            <div class="space-y-2">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Tanda Tangan Guru</label>
-                                <input type="text" id="inp-media-ttdguru" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-ttdguru', 'ph-ttdguru')">
-                                <div class="w-full h-24 bg-slate-50 border border-slate-200 border-dashed rounded flex items-center justify-center p-2 relative">
-                                    <img id="prev-ttdguru" class="max-h-full max-w-full hidden object-contain">
-                                    <span id="ph-ttdguru" class="text-xs text-slate-400 font-medium">Preview TTD Guru</span>
-                                </div>
-                            </div>
-
-                            <div class="space-y-2 md:col-span-2 md:w-1/2 md:mx-auto">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase text-center">URL Stempel Sekolah</label>
-                                <input type="text" id="inp-media-stempel" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-stempel', 'ph-stempel')">
-                                <div class="w-full h-24 bg-slate-50 border border-slate-200 border-dashed rounded flex items-center justify-center p-2 relative">
-                                    <img id="prev-stempel" class="max-h-full max-w-full hidden object-contain mix-blend-multiply opacity-80">
-                                    <span id="ph-stempel" class="text-xs text-slate-400 font-medium">Preview Stempel</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </main>
     </div>
 
@@ -1036,7 +974,6 @@
             let usingMock = false;
             
             try {
-                // Fetch Master Siswa (V3.8: SUPER FIX L/P RAW DATA MAPPING)
                 const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
                 if(resSiswa.status === 'success' && resSiswa.data.length > 0) { 
                     globalSiswa = resSiswa.data.map(s => {
@@ -1044,23 +981,20 @@
                         let namaFinal = s.nama ? s.nama.toString().trim() : '-';
                         let jkFinal = s.jk;
 
-                        // Perbaikan jika kolom nama di excel diisi angka (NIS), dan L/P diisi Nama
                         if (s.jk && s.jk.length > 2) {
                             namaFinal = s.jk.toString().trim();
                             nisFinal = s.nama;
                         }
 
-                        // Penentuan L/P: Kamus Nama Perempuan (Ditambah Nayluna)
                         let n = namaFinal.toLowerCase();
                         let isFemale = ['aisyah', 'alesa', 'anindita', 'azahrah', 'bilqis', 'dian', 'asih', 'kayla', 'nida', 'putri', 'shaqila', 'tiara', 'zahra', 'amelia', 'nayluna'].some(name => n.includes(name));
                         
-                        // Cek RAW JK asli, jika ada dan valid (L/P), gunakan itu
                         if (s.jk && (s.jk.toString().trim().toUpperCase() === 'L' || s.jk.toString().trim().toUpperCase() === 'P')) {
                             jkFinal = s.jk.toString().trim().toUpperCase();
                         } else if (s.nama && (s.nama.toString().trim().toUpperCase() === 'L' || s.nama.toString().trim().toUpperCase() === 'P')) {
                             jkFinal = s.nama.toString().trim().toUpperCase();
                         } else {
-                            jkFinal = isFemale ? 'P' : 'L'; // Fallback cerdas berdasarkan nama
+                            jkFinal = isFemale ? 'P' : 'L'; 
                         }
 
                         return { nis: nisFinal, nama: namaFinal, jk: jkFinal };
@@ -1071,7 +1005,6 @@
                     usingMock = true; 
                 }
 
-                // Fetch Identitas
                 try {
                     const resId = await fetch(`${API_URL}?action=getIdentitas`).then(r => r.json());
                     if(resId.status === 'success') {
@@ -1087,7 +1020,6 @@
                     }
                 } catch(e) {}
 
-                // Fetch Media (Kelengkapan Kelas)
                 try {
                     const resMedia = await fetch(`${API_URL}?action=getMedia`).then(r => r.json());
                     if(resMedia.status === 'success') {
@@ -1106,7 +1038,6 @@
                     }
                 } catch(e) {}
 
-                // Fetch Jurnal
                 const resJurnal = await fetch(`${API_URL}?action=getJurnal`).then(r => r.json());
                 if(resJurnal.status === 'success') listJurnal = resJurnal.data.reverse(); 
                 else listJurnal = mockJurnalFallback;
@@ -1126,20 +1057,19 @@
         const mockSiswaFallback = [];
         const mockJurnalFallback = [];
 
+        // V4.3 FIX: Safe Data Loading & Merging
         function initialSetupSemua(usingMock) {
             if(usingMock) document.getElementById('mock-warning').classList.remove('hidden');
             else document.getElementById('mock-warning').classList.add('hidden');
 
             document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
             
-            // CEK LOCAL STORAGE UNTUK DATA GANJIL/GENAP
             let savedData = localStorage.getItem('siguru_appData_v4');
             if (savedData) {
                 appData = JSON.parse(savedData);
-                let savedStudentCount = Object.keys(appData["Genap"].absen).length;
-                if(savedStudentCount !== globalSiswa.length) {
-                    initDataNilai(); 
-                }
+                // V4.3 FIX: Lakukan merge (penggabungan) dengan hati-hati. 
+                // Jangan pernah melakukan wipe/reset keseluruhan data meskipun jumlah siswa berbeda.
+                mergeDataNilai(); 
             } else {
                 initDataNilai(); 
             }
@@ -1151,7 +1081,38 @@
             renderTabelJurnal();
         }
 
-        // Membangun kerangka data untuk kedua semester
+        // Fungsi baru untuk menyisipkan data siswa/mapel baru tanpa menghapus data lama
+        function mergeDataNilai() {
+            ["Ganjil", "Genap"].forEach(smt => {
+                if(!appData[smt]) appData[smt] = { absen: {}, nilai: {} };
+                
+                globalSiswa.forEach((s, i) => {
+                    if(!appData[smt].absen[i]) appData[smt].absen[i] = { hari: {} };
+                    if(!appData[smt].nilai[i]) {
+                        appData[smt].nilai[i] = {
+                            formatif: {}, sumatif: {},
+                            sikap: { dsk: '', ins: '', dsp: '', tgg: '' } 
+                        };
+                    }
+                    
+                    for (let m in mapelData) {
+                        if(!appData[smt].nilai[i].formatif[m]) appData[smt].nilai[i].formatif[m] = [];
+                        while(appData[smt].nilai[i].formatif[m].length < mapelData[m].tp.length) {
+                            appData[smt].nilai[i].formatif[m].push({k1: '', k2: ''});
+                        }
+                        
+                        if(!appData[smt].nilai[i].sumatif[m]) {
+                            appData[smt].nilai[i].sumatif[m] = { lm: [], sts: '', sas: '' };
+                        }
+                        while(appData[smt].nilai[i].sumatif[m].lm.length < mapelData[m].lm.length) {
+                            appData[smt].nilai[i].sumatif[m].lm.push('');
+                        }
+                    }
+                });
+            });
+            saveToLocal();
+        }
+
         function initDataNilai() {
             ["Ganjil", "Genap"].forEach(smt => {
                 appData[smt] = { absen: {}, nilai: {} };
@@ -1496,7 +1457,7 @@
                 tbody += `
                 <tr id="tr-${isInput?'inp':'rek'}-${i}">
                     <td class="border-r border-slate-300 border-b">${i+1}</td>
-                    <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[11rem] w-48">${s.nama}</td>
+                    <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] w-48 whitespace-nowrap overflow-hidden text-ellipsis">${s.nama}</td>
                     <td class="border-r border-slate-300 border-b font-bold text-[9px] ${s.jk==='L'?'text-blue-500':'text-pink-500'}">${s.jk}</td>
                     ${cells}
                     <td class="border-r border-slate-300 border-b font-bold text-blue-700 bg-slate-50" id="tot-h-${isInput?'inp':'rek'}-${i}">${th}</td>
@@ -1618,7 +1579,7 @@
                               <td class="border-r border-slate-300 border-b font-bold bg-slate-50" id="na-f-${i}-${x}">${na}</td>`;
                 }
                 rt = validTpCount > 0 ? Math.round(rt/validTpCount) : '-';
-                tb += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white whitespace-nowrap w-48">${s.nama}</td>${cells}<td class="border-b border-slate-300 font-bold text-slate-800 bg-slate-100" id="rt-f-${i}">${rt}</td></tr>`;
+                tb += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white w-48 whitespace-nowrap overflow-hidden text-ellipsis">${s.nama}</td>${cells}<td class="border-b border-slate-300 font-bold text-slate-800 bg-slate-100" id="rt-f-${i}">${rt}</td></tr>`;
             });
             document.getElementById('tb-formatif').innerHTML = tb;
         }
@@ -1676,7 +1637,7 @@
                     rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); 
                 }
                 
-                tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white whitespace-nowrap w-48">${s.nama}</td>
+                tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white w-48 whitespace-nowrap overflow-hidden text-ellipsis">${s.nama}</td>
                 ${cells}
                 <td class="border-r border-slate-300 border-b bg-slate-50 font-bold" id="rtl-${i}">${rtLM}</td>
                 <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${smt.sts}" oninput="updSum(${i}, '${m}', 'sts', 0, this.value)"></td>
