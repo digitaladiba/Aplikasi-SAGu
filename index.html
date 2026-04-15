@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V4.5 - Sistem Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -53,9 +53,12 @@
             th.sticky { background-color: #e5e7eb !important; }
 
             .whitespace-nowrap { white-space: normal !important; } 
-            .w-48 { width: 140px !important; min-width: 140px !important; } 
 
             table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; page-break-inside: auto; table-layout: auto !important; }
+            
+            /* Khusus Tabel Data Siswa yang kolomnya sangat banyak */
+            #tb-data-siswa, #tb-data-siswa input { font-size: 7pt !important; }
+            
             tr { page-break-inside: avoid !important; page-break-after: auto; }
             thead { display: table-header-group !important; } 
             tfoot { display: table-footer-group !important; }
@@ -63,7 +66,7 @@
             th, td { border: 1px solid #000 !important; padding: 3px !important; color: black !important; }
             th { background-color: #e5e7eb !important; -webkit-print-color-adjust: exact; color-adjust: exact; font-weight: bold; text-align: center; }
             .val-libur { background-color: #fca5a5 !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
-            input.cell-input { font-weight: bold !important; color: black !important; padding: 0 !important; border: none !important; font-size: 8pt !important; background: transparent !important; }
+            input.cell-input { font-weight: bold !important; color: black !important; padding: 0 !important; border: none !important; background: transparent !important; }
             
             table.print-signature, table.print-signature th, table.print-signature td, table.print-signature tr { border: none !important; background: transparent !important; border-color: transparent !important; }
             
@@ -142,8 +145,7 @@
                     <button onclick="pindahHalaman('identitas-profil', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="identitas-profil">Profil Kelas</button>
                     <button onclick="pindahHalaman('identitas-target', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="identitas-target">Lingkup Materi & TP</button>
                     <button onclick="pindahHalaman('identitas-media', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="identitas-media">Kelengkapan Kelas</button>
-                    <!-- HALAMAN BARU: Data Induk Siswa -->
-                    <button onclick="pindahHalaman('data-siswa', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="data-siswa">Data Induk Siswa</button>
+                    <button onclick="pindahHalaman('data-siswa', this); renderDataSiswa();" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="data-siswa">Data Induk Siswa</button>
                 </div>
             </div>
             
@@ -252,14 +254,18 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: DATA INDUK SISWA -->
+            <!-- HALAMAN BARU: DATA INDUK SISWA -->
             <div id="hal-data-siswa" class="halaman page-transition hidden w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
                     <div>
                         <h2 class="text-xl font-bold text-slate-800">Data Induk Siswa</h2>
-                        <p class="text-sm text-slate-500">Kelola dan edit data siswa secara menyeluruh.</p>
+                        <p class="text-sm text-slate-500">Kelola dan edit data siswa yang terhubung ke seluruh sistem.</p>
                     </div>
                     <div class="flex space-x-2 items-end">
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
+                            <input type="date" id="tgl-cetak-siswa" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium">
+                        </div>
                         <button onclick="tambahSiswa()" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-indigo-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="user-plus" class="w-4 h-4 mr-1"></i> Tambah</button>
                         <button onclick="simpanDataSiswaAksi()" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan DB</button>
                         <button onclick="exportToExcel('area-data-siswa', 'Data_Siswa')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
@@ -267,9 +273,13 @@
                     </div>
                 </div>
                 <div id="area-data-siswa" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative pb-4">
-                    <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[11pt] uppercase">DATA PESERTA DIDIK KELAS <span class="print-kelas">IV B</span></h2>
-                        <p class="text-[9pt] print-sub-header">TAHUN AJARAN <span class="print-ta">2025/2026</span><br><span class="print-sekolah font-bold">SD NEGERI 04 TAMAN</span></p>
+                    <div class="print-only text-center kop-surat flex justify-between items-center">
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokiri">
+                        <div class="text-center flex-1 px-4">
+                            <h2 class="font-bold text-[11pt] uppercase">DATA PESERTA DIDIK KELAS <span class="print-kelas">IV B</span></h2>
+                            <p class="text-[9pt] print-sub-header">TAHUN AJARAN <span class="print-ta">2025/2026</span><br><span class="print-sekolah font-bold">SD NEGERI 04 TAMAN</span></p>
+                        </div>
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <table class="w-full text-center border-collapse text-[9px] sm:text-[10px] min-w-[1200px] print:min-w-full">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
@@ -278,13 +288,13 @@
                                 <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-16">NIS</th>
                                 <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-16">NISN</th>
                                 <th rowspan="2" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-40 shadow-[1px_0_0_0_#cbd5e1] print-w-auto whitespace-nowrap">Nama Siswa</th>
-                                <th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-6">J. Kel<br>L/P</th>
-                                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-20">T. Lahir</th>
-                                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-20">Tgl. Lahir</th>
+                                <th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-8">J. Kel L/P</th>
+                                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-16">T. Lahir</th>
+                                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-16">Tgl. Lahir</th>
                                 <th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-8">Usia</th>
                                 <th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-10">Agm</th>
-                                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-32">Alamat</th>
-                                <th colspan="2" class="px-2 py-1 border-r border-slate-300 border-b">Nama Orang Tua</th>
+                                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-24">Alamat</th>
+                                <th colspan="2" class="px-2 py-1 border-r border-slate-300 border-b">Nama orang Tua</th>
                                 <th colspan="2" class="px-2 py-1 border-r border-slate-300 border-b">Pekerjaan Orangtua</th>
                                 <th colspan="2" class="px-2 py-1 border-slate-300 border-b border-r">Pendidikan</th>
                                 <th rowspan="2" class="px-2 py-1 bg-red-50 text-red-600 border-l border-slate-300 no-print w-10">Aksi</th>
@@ -313,7 +323,10 @@
                                 <td class="text-center align-top border-none !border-transparent w-1/2">
                                     <p id="print-tgl-siswa">Pemalang, ...</p>
                                     <p>Guru Kelas <span class="print-kelas">IV B</span></p>
-                                    <br><br><br>
+                                    <div class="h-16 flex items-center justify-center relative my-2">
+                                        <img src="" class="max-h-full max-w-full object-contain hidden img-ttdguru relative z-10">
+                                        <img src="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-20 w-20 object-contain mix-blend-multiply opacity-60 hidden img-stempel z-0">
+                                    </div>
                                     <p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p>
                                     <p>NIP. <span class="print-nipguru">-</span></p>
                                 </td>
@@ -391,7 +404,7 @@
                         </button>
                     </div>
                     <div class="p-6">
-                        <p class="text-xs text-slate-500 mb-6 bg-blue-50 border border-blue-100 p-3 rounded flex items-start"><i data-lucide="info" class="w-4 h-4 text-blue-500 mr-2 shrink-0 mt-0.5"></i> Masukkan URL (link) gambar dengan akhiran .png atau .jpg yang dapat diakses publik (seperti dari Google Drive atau Imgur). Gambar ini terintegrasi otomatis ke Laporan dan Cover.</p>
+                        <p class="text-xs text-slate-500 mb-6 bg-blue-50 border border-blue-100 p-3 rounded flex items-start"><i data-lucide="info" class="w-4 h-4 text-blue-500 mr-2 shrink-0 mt-0.5"></i> Masukkan URL (link) gambar dengan akhiran .png atau .jpg yang dapat diakses publik (seperti dari Google Drive atau Imgur). Gambar ini nantinya akan terintegrasi otomatis ke menu cetak.</p>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div class="space-y-2">
@@ -402,7 +415,6 @@
                                     <span id="ph-logokiri" class="text-xs text-slate-400 font-medium">Preview Logo Kiri</span>
                                 </div>
                             </div>
-
                             <div class="space-y-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Logo Kanan (Cth: Logo Sekolah)</label>
                                 <input type="text" id="inp-media-logokanan" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-logokanan', 'ph-logokanan')">
@@ -411,7 +423,6 @@
                                     <span id="ph-logokanan" class="text-xs text-slate-400 font-medium">Preview Logo Kanan</span>
                                 </div>
                             </div>
-
                             <div class="space-y-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Tanda Tangan Kepsek</label>
                                 <input type="text" id="inp-media-ttdkepsek" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-ttdkepsek', 'ph-ttdkepsek')">
@@ -420,7 +431,6 @@
                                     <span id="ph-ttdkepsek" class="text-xs text-slate-400 font-medium">Preview TTD Kepsek</span>
                                 </div>
                             </div>
-
                             <div class="space-y-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Tanda Tangan Guru</label>
                                 <input type="text" id="inp-media-ttdguru" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-ttdguru', 'ph-ttdguru')">
@@ -429,7 +439,6 @@
                                     <span id="ph-ttdguru" class="text-xs text-slate-400 font-medium">Preview TTD Guru</span>
                                 </div>
                             </div>
-
                             <div class="space-y-2 md:col-span-2 md:w-1/2 md:mx-auto">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase text-center">URL Stempel Sekolah</label>
                                 <input type="text" id="inp-media-stempel" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-stempel', 'ph-stempel')">
@@ -484,7 +493,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: SISWA - REKAP BULANAN (READ ONLY + CETAK + EXCEL) -->
+            <!-- HALAMAN: SISWA - REKAP BULANAN -->
             <div id="hal-siswa-rekapbulan" class="halaman page-transition hidden w-full">
                 <div class="flex justify-between items-end mb-4 no-print flex-wrap gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Rekap Bulanan (Cetak)</h2></div>
@@ -502,9 +511,13 @@
                     </div>
                 </div>
                 <div id="area-rekap-bulan" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
-                    <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[10pt] uppercase" id="judul-cetak-rekap-bulan">DAFTAR HADIR SISWA BULAN JANUARI</h2>
-                        <p class="text-[8pt] print-sub-header">Tahun Ajaran <span class="print-ta">2025/2026</span> | Semester <span class="print-smt">Genap</span> | Kelas <span class="print-kelas">IV B</span></p>
+                    <div class="print-only flex justify-between items-center kop-surat">
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokiri">
+                        <div class="text-center flex-1 px-4">
+                            <h2 class="font-bold text-[11pt] uppercase">DAFTAR HADIR SISWA BULAN JANUARI</h2>
+                            <p class="text-[9pt] print-sub-header">Tahun Ajaran <span class="print-ta">2025/2026</span> | Semester <span class="print-smt">Genap</span> | Kelas <span class="print-kelas">IV B</span></p>
+                        </div>
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <div class="px-3 pt-2 print-only text-right font-bold italic text-[8pt]" id="info-hari-efektif-cetak">Hari Efektif: 26 Hari</div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-[11px]">
@@ -534,10 +547,19 @@
                     <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
-                                <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
+                                <p>Mengetahui,</p><p>Kepala Sekolah</p>
+                                <div class="h-20 flex items-center justify-center relative my-2">
+                                    <img src="" class="max-h-full max-w-full object-contain hidden img-ttdkepsek relative z-10">
+                                    <img src="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-24 w-24 object-contain mix-blend-multiply opacity-60 hidden img-stempel z-0">
+                                </div>
+                                <p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
-                                <p id="print-tgl-rekap">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
+                                <p id="print-tgl-rekap">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p>
+                                <div class="h-20 flex items-center justify-center my-2">
+                                    <img src="" class="max-h-full max-w-full object-contain hidden img-ttdguru">
+                                </div>
+                                <p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
                     </table>
@@ -558,9 +580,13 @@
                     </div>
                 </div>
                 <div id="area-rekap-semester" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
-                    <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[10pt] uppercase">REKAPITULASI DAFTAR HADIR SEMESTER</h2>
-                        <p class="text-[8pt] print-sub-header">Tahun Ajaran <span class="print-ta">2025/2026</span></p>
+                    <div class="print-only flex justify-between items-center kop-surat">
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokiri">
+                        <div class="text-center flex-1 px-4">
+                            <h2 class="font-bold text-[10pt] uppercase">REKAPITULASI DAFTAR HADIR SEMESTER</h2>
+                            <p class="text-[8pt] print-sub-header">Tahun Ajaran <span class="print-ta">2025/2026</span></p>
+                        </div>
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
@@ -590,10 +616,19 @@
                     <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
-                                <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
+                                <p>Mengetahui,</p><p>Kepala Sekolah</p>
+                                <div class="h-20 flex items-center justify-center relative my-2">
+                                    <img src="" class="max-h-full max-w-full object-contain hidden img-ttdkepsek relative z-10">
+                                    <img src="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-24 w-24 object-contain mix-blend-multiply opacity-60 hidden img-stempel z-0">
+                                </div>
+                                <p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
-                                <p id="print-tgl-smt">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
+                                <p id="print-tgl-smt">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p>
+                                <div class="h-20 flex items-center justify-center my-2">
+                                    <img src="" class="max-h-full max-w-full object-contain hidden img-ttdguru">
+                                </div>
+                                <p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
                     </table>
@@ -613,15 +648,19 @@
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
                             <input type="date" id="tgl-cetak-for" class="border border-slate-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white font-medium">
                         </div>
-                        <button onclick="simpanFormatifAksi()" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan DB</button>
+                        <button onclick="simpanFormatifAksi()" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Simpan Laporan</button>
                         <button onclick="exportToExcel('area-nilai-formatif', 'Asesmen_Formatif_' + document.getElementById('filter-mapel-formatif').value)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center mb-[1px]"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1"></i> Excel</button>
                         <button onclick="cetakLaporan('for')" class="bg-slate-800 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-slate-900 shadow-sm flex items-center mb-[1px]"><i data-lucide="printer" class="w-4 h-4 mr-1"></i> Cetak F4</button>
                     </div>
                 </div>
                 <div id="area-nilai-formatif" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
-                    <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[10pt] uppercase">DAFTAR NILAI ASESMEN FORMATIF</h2>
-                        <p class="text-[8pt] print-sub-header">Mata Pelajaran: <span id="print-mapel-formatif"></span></p>
+                    <div class="print-only flex justify-between items-center kop-surat">
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokiri">
+                        <div class="text-center flex-1 px-4">
+                            <h2 class="font-bold text-[10pt] uppercase">DAFTAR NILAI ASESMEN FORMATIF</h2>
+                            <p class="text-[8pt] print-sub-header">Mata Pelajaran: <span id="print-mapel-formatif"></span></p>
+                        </div>
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs">
                         <thead id="head-formatif" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold"></thead>
@@ -631,10 +670,19 @@
                     <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
-                                <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
+                                <p>Mengetahui,</p><p>Kepala Sekolah</p>
+                                <div class="h-20 flex items-center justify-center relative my-2">
+                                    <img src="" class="max-h-full max-w-full object-contain hidden img-ttdkepsek relative z-10">
+                                    <img src="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-24 w-24 object-contain mix-blend-multiply opacity-60 hidden img-stempel z-0">
+                                </div>
+                                <p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
-                                <p id="print-tgl-for">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
+                                <p id="print-tgl-for">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p>
+                                <div class="h-20 flex items-center justify-center my-2">
+                                    <img src="" class="max-h-full max-w-full object-contain hidden img-ttdguru">
+                                </div>
+                                <p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
                     </table>
@@ -657,9 +705,13 @@
                     </div>
                 </div>
                 <div id="area-nilai-sumatif" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
-                    <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[10pt] uppercase">DAFTAR NILAI ASESMEN SUMATIF</h2>
-                        <p class="text-[8pt] print-sub-header">Mata Pelajaran: <span id="print-mapel-sumatif"></span></p>
+                    <div class="print-only flex justify-between items-center kop-surat">
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokiri">
+                        <div class="text-center flex-1 px-4">
+                            <h2 class="font-bold text-[10pt] uppercase">DAFTAR NILAI ASESMEN SUMATIF</h2>
+                            <p class="text-[8pt] print-sub-header">Mata Pelajaran: <span id="print-mapel-sumatif"></span></p>
+                        </div>
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs">
                         <thead id="head-sumatif" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold"></thead>
@@ -669,10 +721,19 @@
                     <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
-                                <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
+                                <p>Mengetahui,</p><p>Kepala Sekolah</p>
+                                <div class="h-20 flex items-center justify-center relative my-2">
+                                    <img src="" class="max-h-full max-w-full object-contain hidden img-ttdkepsek relative z-10">
+                                    <img src="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-24 w-24 object-contain mix-blend-multiply opacity-60 hidden img-stempel z-0">
+                                </div>
+                                <p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
-                                <p id="print-tgl-sum">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
+                                <p id="print-tgl-sum">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p>
+                                <div class="h-20 flex items-center justify-center my-2">
+                                    <img src="" class="max-h-full max-w-full object-contain hidden img-ttdguru">
+                                </div>
+                                <p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
                     </table>
@@ -694,9 +755,13 @@
                     </div>
                 </div>
                 <div id="area-nilai-sikap" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
-                    <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[10pt] uppercase">REKAPITULASI PENILAIAN KEAKTIFAN DAN SIKAP</h2>
-                        <p class="text-[8pt] print-sub-header">Tahun Ajaran <span class="print-ta">2025/2026</span></p>
+                    <div class="print-only flex justify-between items-center kop-surat">
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokiri">
+                        <div class="text-center flex-1 px-4">
+                            <h2 class="font-bold text-[10pt] uppercase">REKAPITULASI PENILAIAN KEAKTIFAN DAN SIKAP</h2>
+                            <p class="text-[8pt] print-sub-header">Tahun Ajaran <span class="print-ta">2025/2026</span></p>
+                        </div>
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
@@ -716,10 +781,19 @@
                     <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
-                                <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
+                                <p>Mengetahui,</p><p>Kepala Sekolah</p>
+                                <div class="h-20 flex items-center justify-center relative my-2">
+                                    <img src="" class="max-h-full max-w-full object-contain hidden img-ttdkepsek relative z-10">
+                                    <img src="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-24 w-24 object-contain mix-blend-multiply opacity-60 hidden img-stempel z-0">
+                                </div>
+                                <p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
-                                <p id="print-tgl-sikap">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
+                                <p id="print-tgl-sikap">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p>
+                                <div class="h-20 flex items-center justify-center my-2">
+                                    <img src="" class="max-h-full max-w-full object-contain hidden img-ttdguru">
+                                </div>
+                                <p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
                     </table>
@@ -740,9 +814,13 @@
                     </div>
                 </div>
                 <div id="area-nilai-legger" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
-                    <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[10pt] uppercase">Legger Nilai Rapor Akhir Semester</h2>
-                        <p class="text-[8pt] print-sub-header">Tahun Ajaran: <span class="print-ta">2025/2026</span></p>
+                    <div class="print-only flex justify-between items-center kop-surat">
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokiri">
+                        <div class="text-center flex-1 px-4">
+                            <h2 class="font-bold text-[10pt] uppercase">Legger Nilai Rapor Akhir Semester</h2>
+                            <p class="text-[8pt] print-sub-header">Tahun Ajaran: <span class="print-ta">2025/2026</span></p>
+                        </div>
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-[11px]">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
@@ -764,10 +842,19 @@
                     <table class="w-full mt-8 text-sm print-signature hidden border-none !border-transparent">
                         <tr>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
-                                <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
+                                <p>Mengetahui,</p><p>Kepala Sekolah</p>
+                                <div class="h-20 flex items-center justify-center relative my-2">
+                                    <img src="" class="max-h-full max-w-full object-contain hidden img-ttdkepsek relative z-10">
+                                    <img src="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-24 w-24 object-contain mix-blend-multiply opacity-60 hidden img-stempel z-0">
+                                </div>
+                                <p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                             </td>
                             <td class="text-center border-none !border-transparent w-1/2 align-top">
-                                <p id="print-tgl-legger">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
+                                <p id="print-tgl-legger">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p>
+                                <div class="h-20 flex items-center justify-center my-2">
+                                    <img src="" class="max-h-full max-w-full object-contain hidden img-ttdguru">
+                                </div>
+                                <p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                             </td>
                         </tr>
                     </table>
@@ -821,9 +908,13 @@
                 </div>
 
                 <div id="area-jurnal" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative">
-                    <div class="print-only text-center kop-surat">
-                        <h2 class="font-bold text-[10pt] uppercase">JURNAL HARIAN GURU KELAS</h2>
-                        <p class="text-[8pt] print-sub-header">Tahun Ajaran <span class="print-ta">2025/2026</span></p>
+                    <div class="print-only flex justify-between items-center kop-surat">
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokiri">
+                        <div class="text-center flex-1 px-4">
+                            <h2 class="font-bold text-[10pt] uppercase">JURNAL HARIAN GURU KELAS</h2>
+                            <p class="text-[8pt] print-sub-header">Tahun Ajaran <span class="print-ta">2025/2026</span></p>
+                        </div>
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <table class="w-full text-left border-collapse text-[10px] sm:text-[11px]" id="tabel-jurnal-print">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold uppercase">
@@ -837,10 +928,19 @@
                                     <table class="w-full text-sm border-none !border-transparent" style="border:none;">
                                         <tr>
                                             <td class="text-center border-none !border-transparent w-1/2 align-top" style="border:none;">
-                                                <p>Mengetahui,</p><p>Kepala Sekolah</p><br><br><br><p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
+                                                <p>Mengetahui,</p><p>Kepala Sekolah</p>
+                                                <div class="h-20 flex items-center justify-center relative my-2">
+                                                    <img src="" class="max-h-full max-w-full object-contain hidden img-ttdkepsek relative z-10">
+                                                    <img src="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-24 w-24 object-contain mix-blend-multiply opacity-60 hidden img-stempel z-0">
+                                                </div>
+                                                <p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p><p>NIP. <span class="print-nipkepsek">-</span></p>
                                             </td>
                                             <td class="text-center border-none !border-transparent w-1/2 align-top" style="border:none;">
-                                                <p id="print-tgl-jurnal">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p><br><br><br><p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
+                                                <p id="print-tgl-jurnal">Pemalang, ...</p><p>Guru Kelas <span class="print-kelas">IV B</span></p>
+                                                <div class="h-20 flex items-center justify-center my-2">
+                                                    <img src="" class="max-h-full max-w-full object-contain hidden img-ttdguru">
+                                                </div>
+                                                <p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p><p>NIP. <span class="print-nipguru">199601212025211014</span></p>
                                             </td>
                                         </tr>
                                     </table>
@@ -858,7 +958,7 @@
         lucide.createIcons();
 
         // ------------------------------------------
-        // 1. DATA MAPEL & TARGET (Murni dari Database)
+        // 1. DATA MAPEL DEFAULT (Hanya dipakai jika DB kosong)
         // ------------------------------------------
         let mapelData = {};
 
@@ -882,8 +982,12 @@
             if(u === 'sdn04taman' && p === 'bayuprahastian') {
                 sessionStorage.setItem('siguru_logged_in', 'true');
                 document.getElementById('login-error').classList.add('hidden');
+                
                 document.getElementById('login-overlay').classList.add('opacity-0');
-                setTimeout(() => { document.getElementById('login-overlay').classList.add('hidden'); sinkronisasiDB(true); }, 300);
+                setTimeout(() => {
+                    document.getElementById('login-overlay').classList.add('hidden');
+                    sinkronisasiDB(true);
+                }, 300);
             } else {
                 document.getElementById('login-error').classList.remove('hidden');
             }
@@ -910,12 +1014,18 @@
             loader.querySelector('p').innerText = "Menyinkronkan ke Database Google Sheets";
             loader.classList.remove('hidden', 'opacity-0');
             try {
-                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
                 const res = await response.json();
-                if(res.status === 'success') alert(successMsg);
-                else alert("Gagal menyimpan ke Database: " + res.error);
+                if(res.status === 'success') {
+                    alert(successMsg);
+                } else {
+                    alert("Gagal menyimpan ke Database: " + res.error);
+                }
             } catch (error) {
-                alert("Terjadi kesalahan koneksi ke Google Sheets. Disimpan ke memori browser.");
+                alert("Terjadi kesalahan koneksi ke Google Sheets. Disimpan ke memori browser lokal sementara.");
             } finally {
                 loader.classList.add('opacity-0');
                 setTimeout(() => loader.classList.add('hidden'), 500);
@@ -927,20 +1037,40 @@
             let usingMock = false;
             
             try {
-                // Fetch Mapel/Target (DARI DATABASE)
+                // Fetch Mapel/Target DARI DATABASE
                 try {
                     const resMapel = await fetch(`${API_URL}?action=getMapel`).then(r => r.json());
                     if(resMapel.status === 'success' && Object.keys(resMapel.data).length > 0) {
                         mapelData = resMapel.data;
-                        currentSettingMapel = Object.keys(mapelData)[0]; // Set default
+                        currentSettingMapel = Object.keys(mapelData)[0]; 
                     }
                 } catch(e) {}
 
-                // Fetch Master Siswa (DARI DATABASE)
+                // Fetch Master Siswa
                 const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
                 if(resSiswa.status === 'success' && resSiswa.data.length > 0) { 
-                    globalSiswa = resSiswa.data; 
-                } else { 
+                    globalSiswa = resSiswa.data.map(s => {
+                        return { 
+                            nis: s.nis || '', 
+                            nisn: s.nisn || '', 
+                            nama: s.nama || '', 
+                            jk: s.jk || 'L',
+                            tLahir: s.tLahir || '',
+                            tglLahir: s.tglLahir || '',
+                            usia: s.usia || '',
+                            agama: s.agama || '',
+                            alamat: s.alamat || '',
+                            namaAyah: s.namaAyah || '',
+                            namaIbu: s.namaIbu || '',
+                            pekAyah: s.pekAyah || '',
+                            pekIbu: s.pekIbu || '',
+                            pendAyah: s.pendAyah || '',
+                            pendIbu: s.pendIbu || ''
+                        };
+                    });
+                } 
+                else { 
+                    globalSiswa = []; 
                     usingMock = true; 
                 }
 
@@ -970,6 +1100,7 @@
                         document.getElementById('inp-media-ttdkepsek').value = mediaData.ttdKepsek || "";
                         document.getElementById('inp-media-ttdguru').value = mediaData.ttdGuru || "";
                         document.getElementById('inp-media-stempel').value = mediaData.stempel || "";
+                        
                         previewMedia(mediaData.logoKiri, 'prev-logokiri', 'ph-logokiri');
                         previewMedia(mediaData.logoKanan, 'prev-logokanan', 'ph-logokanan');
                         previewMedia(mediaData.ttdKepsek, 'prev-ttdkepsek', 'ph-ttdkepsek');
@@ -985,7 +1116,9 @@
 
                 initialSetupSemua(usingMock);
             } catch (error) {
-                console.warn("Gagal sinkronisasi API.", error);
+                console.warn("Gagal sinkronisasi API. Mode Offline Aktif.", error);
+                globalSiswa = [];
+                listJurnal = [];
                 initialSetupSemua(true);
             } finally {
                 loader.classList.add('opacity-0');
@@ -994,11 +1127,13 @@
         }
 
         function initialSetupSemua(usingMock) {
-            if(usingMock) document.getElementById('mock-warning').classList.remove('hidden');
-            else document.getElementById('mock-warning').classList.add('hidden');
+            if(usingMock) {
+                document.getElementById('mock-warning').classList.remove('hidden');
+            } else {
+                document.getElementById('mock-warning').classList.add('hidden');
+            }
 
             document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
-            
             initDataNilai();
             initMockAbsen();
             renderDataSiswa();
@@ -1014,7 +1149,10 @@
         function initDataNilai() {
             globalSiswa.forEach((s, i) => {
                 if(!nilaiSiswa[i]) {
-                    nilaiSiswa[i] = { formatif: {}, sumatif: {}, sikap: { dsk: '', ins: '', dsp: '', tgg: '' } };
+                    nilaiSiswa[i] = {
+                        formatif: {}, sumatif: {},
+                        sikap: { dsk: '', ins: '', dsp: '', tgg: '' } 
+                    };
                 }
                 for (let m in mapelData) {
                     if(!nilaiSiswa[i].formatif[m]) nilaiSiswa[i].formatif[m] = [];
@@ -1155,7 +1293,7 @@
             if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('-translate-x-full');
         }
 
-        // --- KELENGKAPAN KELAS ---
+        // --- MEDIA & VISUAL ---
         function previewMedia(url, imgId, phId) {
             const img = document.getElementById(imgId);
             const ph = document.getElementById(phId);
@@ -1179,6 +1317,20 @@
 
             let payload = { action: 'simpanMedia', data: mediaData };
             postToDB(payload, "Pengaturan Kelengkapan Kelas berhasil disimpan ke Database!");
+        }
+        
+        function bindMediaToPrint() {
+            const setImg = (cls, url) => {
+                document.querySelectorAll(cls).forEach(img => {
+                    if(url && url.trim() !== "") { img.src = url; img.classList.remove('hidden'); }
+                    else { img.src = ""; img.classList.add('hidden'); }
+                });
+            };
+            setImg('.img-logokiri', mediaData.logoKiri);
+            setImg('.img-logokanan', mediaData.logoKanan);
+            setImg('.img-ttdkepsek', mediaData.ttdKepsek);
+            setImg('.img-ttdguru', mediaData.ttdGuru);
+            setImg('.img-stempel', mediaData.stempel);
         }
 
         // --- TARGET PEMBELAJARAN ---
@@ -1278,6 +1430,8 @@
             let today = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
             let kota = document.getElementById('inp-kota').value;
             document.querySelectorAll('[id^="print-tgl-"]').forEach(e => e.innerText = `${kota}, ${today}`);
+            
+            bindMediaToPrint(); 
         }
 
         // --- EKSPOR KE EXCEL (HTML to XLS) ---
@@ -1410,7 +1564,7 @@
                 <tr id="tr-${isInput?'inp':'rek'}-${i}">
                     <td class="border-r border-slate-300 border-b">${i+1}</td>
                     <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] w-48 whitespace-nowrap overflow-hidden text-ellipsis">${s.nama}</td>
-                    <td class="border-r border-slate-300 border-b font-bold text-[9px] ${s.jk.toUpperCase()==='P'?'text-pink-500':'text-blue-500'}">${s.jk}</td>
+                    <td class="border-r border-slate-300 border-b font-bold text-[9px] ${s.jk==='L'?'text-blue-500':'text-pink-500'}">${s.jk}</td>
                     ${cells}
                     <td class="border-r border-slate-300 border-b font-bold text-blue-700 bg-slate-50" id="tot-h-${isInput?'inp':'rek'}-${i}">${th}</td>
                     <td class="border-r border-slate-300 border-b font-bold text-amber-500 bg-slate-50" id="tot-s-${isInput?'inp':'rek'}-${i}">${ts}</td>
@@ -1791,7 +1945,7 @@
 
             if(tipe === 'siswa') {
                 overrideDate('tgl-cetak-siswa', '#print-tgl-siswa');
-                renderDataSiswa();
+                renderDataSiswa(); // Prepare the table exactly before print
             }
             if(tipe === 'abs') overrideDate('tgl-cetak-rekap-bulan', '#print-tgl-rekap');
             if(tipe === 'smt') overrideDate('tgl-cetak-rekap-smt', '#print-tgl-smt');
