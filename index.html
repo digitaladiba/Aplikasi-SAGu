@@ -2406,7 +2406,7 @@
         }
 
         function promptApiKey() {
-            let key = prompt("Masukkan API Key Gemini Anda (Diawali 'AIzaSy...'). Dapatkan gratis di aistudio.google.com:", localStorage.getItem('gemini_api_key') || "");
+            let key = prompt("Masukkan API Key Gemini Anda (Dapatkan gratis di aistudio.google.com):", localStorage.getItem('gemini_api_key') || "");
             if(key !== null) {
                 localStorage.setItem('gemini_api_key', key.trim());
                 if(key.trim() !== "") {
@@ -2649,7 +2649,7 @@ STRUKTUR MODUL:
                 document.getElementById('apma-loading').classList.add('hidden');
                 document.getElementById('apma-result-wrapper').classList.remove('hidden');
                 document.getElementById('apma-result-wrapper').classList.add('flex');
-                document.getElementById('apma-result-text').innerHTML = `<div class="bg-red-50 text-red-600 p-5 rounded-lg font-medium border border-red-200"><i data-lucide="alert-triangle" class="w-6 h-6 inline mr-2 mb-1 align-middle"></i> Gagal menghasilkan modul:<br><span class="font-bold text-sm mt-2 block">API key tidak valid. Pastikan Anda memasukkan API Key yang benar (Biasa diawali huruf 'AIza...').</span><span class="text-xs text-red-500 block mt-1">Saran: Klik tombol <b>Coba Lagi</b>, lalu klik ikon roda gigi (⚙️) di atas untuk mengatur ulang Key Anda (Dapatkan dari aistudio.google.com).</span><br><span class="text-xs italic opacity-70 block">Log Sistem: ${err.message}</span></div>`;
+                document.getElementById('apma-result-text').innerHTML = `<div class="bg-red-50 text-red-600 p-5 rounded-lg font-medium border border-red-200"><i data-lucide="alert-triangle" class="w-6 h-6 inline mr-2 mb-1 align-middle"></i> Gagal menghasilkan modul:<br><span class="font-bold text-sm mt-2 block">API key tidak valid atau Limit Tercapai.</span><span class="text-xs text-red-500 block mt-1">Saran: Pastikan API Key yang Anda masukkan benar dan tidak terpotong. Klik tombol <b>Coba Lagi</b>, lalu klik ikon roda gigi (⚙️) di atas untuk memperbarui Key Anda.</span><br><span class="text-xs italic opacity-70 block">Log Sistem: ${err.message}</span></div>`;
                 lucide.createIcons();
             }
         }
