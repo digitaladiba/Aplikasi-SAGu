@@ -963,7 +963,7 @@
                     
                     <!-- Warning API Key -->
                     <div id="apma-api-warning" class="hidden bg-amber-50 text-amber-700 px-4 py-2.5 text-[11px] sm:text-xs font-bold flex justify-between items-center border-b border-amber-100">
-                        <span><i data-lucide="alert-triangle" class="w-4 h-4 inline mr-1 align-text-bottom"></i> API Key Gemini belum diatur. Fitur AI tidak dapat berjalan.</span>
+                        <span><i data-lucide="alert-triangle" class="w-4 h-4 inline mr-1 align-text-bottom"></i> API Key Gemini belum diatur atau salah. Fitur AI tidak dapat berjalan.</span>
                         <button onclick="promptApiKey()" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded shadow-sm transition whitespace-nowrap ml-2">Atur API Key</button>
                     </div>
 
@@ -1111,6 +1111,39 @@
                                                 <option value="Cooperative Learning">Cooperative Learning</option>
                                                 <option value="Pembelajaran Berdiferensiasi">Pembelajaran Berdiferensiasi</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- FITUR UPLOAD MATERI MANDIRI -->
+                                <div class="border border-slate-200 rounded-xl p-5 bg-white mb-6">
+                                    <div class="flex items-start space-x-3 mb-4">
+                                        <input type="checkbox" id="apma-use-materi" class="mt-1 w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer" onchange="document.getElementById('apma-upload-container').classList.toggle('hidden', !this.checked)">
+                                        <div>
+                                            <label for="apma-use-materi" class="text-sm font-bold text-slate-800 cursor-pointer block">Punya materi sendiri? Upload file nya di sini</label>
+                                            <p class="text-[11px] sm:text-xs text-slate-500 mt-1">Centang jika Anda ingin menggunakan buku teks atau dokumen pribadi sebagai sumber utama modul.</p>
+                                        </div>
+                                    </div>
+
+                                    <div id="apma-upload-container" class="hidden">
+                                        <p class="text-xs font-bold text-slate-500 mb-2">Upload Sumber Materi (Opsional)</p>
+                                        <div id="apma-dropzone" class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center bg-slate-50 hover:bg-slate-100 cursor-pointer transition relative" onclick="document.getElementById('apma-file-input').click()">
+                                            <input type="file" id="apma-file-input" class="hidden" accept=".pdf, .jpg, .jpeg, .png" onchange="handleApmaFileUpload(event)">
+                                            
+                                            <div id="apma-upload-prompt" class="flex flex-col items-center pointer-events-none">
+                                                <i data-lucide="image-plus" class="w-8 h-8 text-slate-400 mb-2"></i>
+                                                <p class="text-sm text-slate-600 mb-1"><span class="text-blue-600 font-bold">Klik untuk upload</span> atau drag and drop</p>
+                                                <p class="text-xs text-slate-400 font-medium mb-2">PDF, JPG, PNG (Maks 5MB)</p>
+                                                <p class="text-[10px] text-slate-400 italic">Modul akan dibuat berdasarkan konten file ini.</p>
+                                            </div>
+
+                                            <div id="apma-file-preview" class="hidden flex flex-col items-center">
+                                                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-2 shadow-sm">
+                                                    <i data-lucide="file-check-2" class="w-6 h-6"></i>
+                                                </div>
+                                                <p id="apma-file-name" class="text-sm font-bold text-slate-700 mb-2 truncate max-w-xs"></p>
+                                                <button onclick="removeApmaFile(event)" class="text-xs bg-white text-red-600 px-3 py-1.5 rounded-lg font-bold hover:bg-red-50 transition border border-red-200 shadow-sm relative z-10">Hapus File</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -2308,6 +2341,8 @@
         }
 
         // --- FUNGSI APMA AI (WIZARD INTEGRATION) ---
+        let apmaUploadedFile = null;
+
         function initApmaData() {
             // Auto-fill dari identitas kelas
             document.getElementById('apma-nama-guru').value = document.getElementById('inp-guru').value || '';
@@ -2323,6 +2358,7 @@
             
             // Set view ke step 1
             apmaNextStep(1);
+            setupDragAndDrop();
             lucide.createIcons();
         }
 
@@ -2370,7 +2406,7 @@
         }
 
         function promptApiKey() {
-            let key = prompt("Masukkan API Key Gemini Anda (Dapatkan gratis di aistudio.google.com):", localStorage.getItem('gemini_api_key') || "");
+            let key = prompt("Masukkan API Key Gemini Anda (Diawali 'AIzaSy...'). Dapatkan gratis di aistudio.google.com:", localStorage.getItem('gemini_api_key') || "");
             if(key !== null) {
                 localStorage.setItem('gemini_api_key', key.trim());
                 if(key.trim() !== "") {
@@ -2382,6 +2418,70 @@
             }
         }
 
+        // --- Logika File Upload APMA ---
+        function setupDragAndDrop() {
+            const dropzone = document.getElementById('apma-dropzone');
+            if(!dropzone) return;
+            
+            dropzone.addEventListener('dragover', (e) => { 
+                e.preventDefault(); 
+                dropzone.classList.add('bg-blue-50', 'border-blue-400'); 
+            });
+            dropzone.addEventListener('dragleave', (e) => { 
+                e.preventDefault(); 
+                dropzone.classList.remove('bg-blue-50', 'border-blue-400'); 
+            });
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('bg-blue-50', 'border-blue-400');
+                if(e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    document.getElementById('apma-file-input').files = e.dataTransfer.files;
+                    handleApmaFileUpload({ target: { files: e.dataTransfer.files } });
+                }
+            });
+        }
+
+        function handleApmaFileUpload(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+            if(!allowedTypes.includes(file.type)) {
+                alert('Format file tidak didukung! Harap upload PDF, JPG, atau PNG.');
+                return;
+            }
+
+            if(file.size > 5 * 1024 * 1024) { // 5MB limit untuk inline data
+                alert('Ukuran file terlalu besar! Maksimal ukuran file adalah 5MB.');
+                return;
+            }
+
+            apmaUploadedFile = file;
+            document.getElementById('apma-file-name').innerText = file.name;
+            document.getElementById('apma-upload-prompt').classList.add('hidden');
+            document.getElementById('apma-file-preview').classList.remove('hidden');
+            document.getElementById('apma-file-preview').classList.add('flex');
+        }
+
+        function removeApmaFile(e) {
+            if(e) e.stopPropagation();
+            apmaUploadedFile = null;
+            document.getElementById('apma-file-input').value = '';
+            document.getElementById('apma-file-preview').classList.add('hidden');
+            document.getElementById('apma-file-preview').classList.remove('flex');
+            document.getElementById('apma-upload-prompt').classList.remove('hidden');
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // --- Simulasi Progress Loading APMA ---
         let loadingInterval;
         function simulateApmaLoading() {
             let pctElement = document.getElementById('apma-loading-pct');
@@ -2412,22 +2512,20 @@
             // Validasi Step 2
             let materi = document.getElementById('apma-materi').value.trim();
             let metode = document.getElementById('apma-metode').value;
-            if(!materi) {
-                alert("Materi Pokok / Judul Modul tidak boleh kosong!");
-                return;
-            }
-            if(metode === "") {
-                alert("Silakan pilih Model Pembelajaran terlebih dahulu!");
+            let useMateri = document.getElementById('apma-use-materi').checked;
+
+            if(!materi) { alert("Materi Pokok / Judul Modul tidak boleh kosong!"); return; }
+            if(metode === "") { alert("Silakan pilih Model Pembelajaran terlebih dahulu!"); return; }
+
+            if(useMateri && !apmaUploadedFile) {
+                alert("Anda mencentang 'Punya materi sendiri' namun belum mengunggah file. Silakan upload file atau hilangkan centang.");
                 return;
             }
 
             // Ambil Dimensi Profil yang dicentang
             let dimensiChecked = [];
             document.querySelectorAll('.apma-dimensi:checked').forEach(el => dimensiChecked.push(el.value));
-            if(dimensiChecked.length === 0) {
-                alert("Wajib memilih minimal 1 Dimensi Profil Lulusan!");
-                return;
-            }
+            if(dimensiChecked.length === 0) { alert("Wajib memilih minimal 1 Dimensi Profil Lulusan!"); return; }
 
             const data = {
                 guru: document.getElementById('apma-nama-guru').value.trim() || '-',
@@ -2446,13 +2544,13 @@
             };
 
             apmaNextStep(3);
-            simulateApmaLoading(); // Mulai simulasi loading persentase
+            simulateApmaLoading(); 
             document.getElementById('apma-result-wrapper').classList.add('hidden');
             document.getElementById('apma-result-text').innerHTML = "";
 
             const modeText = data.isOnline ? "Daring / Online (menggunakan platform virtual seperti Zoom/GMeet)" : "Luring / Tatap Muka";
+            const attachmentInstruction = (useMateri && apmaUploadedFile) ? `\nSUMBER MATERI UTAMA: Anda DIBERIKAN SEBUAH FILE (PDF/Gambar). Jadikan file tersebut sebagai REFERENSI UTAMA DAN SUMBER KONTEN dalam menyusun modul ini.` : "";
 
-            // Prompt dioptimalkan khusus untuk menghasilkan output Tabel HTML layaknya di screenshot web aslinya
             const promptSistem = `Anda adalah APMA (Aplikasi Modul Ajar) versi 2.2. Tugas Anda adalah membuat Modul Ajar (RPP) yang sangat rapi, profesional, dan siap digunakan.
 
 INFORMASI PEMBELAJARAN:
@@ -2468,41 +2566,62 @@ INFORMASI PEMBELAJARAN:
 - Lama Waktu per Pertemuan: ${data.waktu}
 - Model Pembelajaran: ${data.metode}
 - Mode Pembelajaran: ${modeText}
-- Dimensi Profil Lulusan yang difokuskan: ${data.dimensi}
+- Dimensi Profil Lulusan yang difokuskan: ${data.dimensi}${attachmentInstruction}
 
 FORMAT OUTPUT (SANGAT PENTING):
 1. JANGAN gunakan tag Markdown kode (\`\`\`html). Langsung berikan HTML nya.
 2. Gunakan tag H2, H3, P, UL, LI, B, STRONG.
-3. WAJIB GUNAKAN TABEL HTML untuk bagian 'A. Informasi Umum' dan 'C. Kegiatan Pembelajaran' agar mudah dibaca.
-   - Contoh struktur tabel Informasi Umum: <table style="width:100%; border-collapse: collapse; margin-bottom: 20px;"><tr><th style="border: 1px solid #cbd5e1; padding: 10px; text-align:left; background-color:#f8fafc;">Komponen</th><th style="border: 1px solid #cbd5e1; padding: 10px; text-align:left; background-color:#f8fafc;">Keterangan</th></tr>...</table>
-   - Kolom untuk tabel Kegiatan Pembelajaran: Kegiatan (Pendahuluan/Inti/Penutup), Deskripsi, Alokasi Waktu.
+3. WAJIB GUNAKAN TABEL HTML untuk bagian 'A. Informasi Umum' dan 'C. Kegiatan Pembelajaran' agar rapi saat didownload ke Word.
+   - Contoh struktur tabel: <table style="width:100%; border-collapse: collapse; margin-bottom: 20px;"><tr><th style="border: 1px solid black; padding: 8px; text-align:left;">Komponen</th><th style="border: 1px solid black; padding: 8px; text-align:left;">Keterangan</th></tr>...</table>
 
 STRUKTUR MODUL:
-<h2 style="text-align: center; color: #1e293b; font-weight: bold; font-size: 20px;">MODUL AJAR ${data.mapel.toUpperCase()}</h2>
-<h3 style="text-align: center; color: #334155; margin-bottom: 20px; font-weight: bold;">"${data.materi}"</h3>
+<h2 style="text-align: center; font-weight: bold; font-size: 20px;">MODUL AJAR ${data.mapel.toUpperCase()}</h2>
+<h3 style="text-align: center; margin-bottom: 20px; font-weight: bold;">"${data.materi}"</h3>
 
-<h3 style="color: #1e293b; font-weight: bold; margin-top: 20px; margin-bottom: 10px;">A. Informasi Umum</h3>
+<h3 style="font-weight: bold; margin-top: 20px; margin-bottom: 10px;">A. Informasi Umum</h3>
 (Berisi tabel Komponen & Keterangan)
 
-<h3 style="color: #1e293b; font-weight: bold; margin-top: 30px; margin-bottom: 10px;">B. Komponen Inti</h3>
+<h3 style="font-weight: bold; margin-top: 30px; margin-bottom: 10px;">B. Komponen Inti</h3>
 <p><b>1. Tujuan Pembelajaran</b></p>
 (Tulis tujuan)
 <p><b>2. Kriteria Ketercapaian Tujuan Pembelajaran (KKTP)</b></p>
 (Tulis kriteria)
 <p><b>3. Pemahaman Bermakna & Pertanyaan Pemantik</b></p>
-(Tulis pemahaman bermakna dan pertanyaan pemantik yang relevan)
+(Tulis pemahaman bermakna dan pertanyaan pemantik)
 
-<h3 style="color: #1e293b; font-weight: bold; margin-top: 30px; margin-bottom: 10px;">C. Kegiatan Pembelajaran</h3>
-(Buat tabel bergaris untuk menjabarkan langkah-langkah kegiatan sesuai sintaks model ${data.metode})
+<h3 style="font-weight: bold; margin-top: 30px; margin-bottom: 10px;">C. Kegiatan Pembelajaran</h3>
+(Buat tabel bergaris untuk menjabarkan langkah-langkah kegiatan: Pendahuluan, Inti sesuai sintaks ${data.metode}, dan Penutup. Kolom: Kegiatan, Deskripsi, Alokasi Waktu)
 
-<h3 style="color: #1e293b; font-weight: bold; margin-top: 30px; margin-bottom: 10px;">D. Asesmen & Lampiran</h3>
-(Buat daftar: Asesmen Formatif, Asesmen Sumatif, Lembar Kerja (LKPD) singkat, dan Daftar Pustaka referensi buku).`;
+<h3 style="font-weight: bold; margin-top: 30px; margin-bottom: 10px;">D. Asesmen & Lampiran</h3>
+(Buat daftar: Asesmen Formatif, Asesmen Sumatif, Lembar Kerja Peserta Didik (LKPD), dan Daftar Pustaka).`;
+
+            let partsArray = [{ text: promptSistem }];
+
+            // Inject File jika ada
+            if(useMateri && apmaUploadedFile) {
+                try {
+                    let base64String = await fileToBase64(apmaUploadedFile);
+                    let base64Data = base64String.split(',')[1];
+                    partsArray.unshift({
+                        inlineData: {
+                            mimeType: apmaUploadedFile.type,
+                            data: base64Data
+                        }
+                    });
+                } catch(e) {
+                    console.error(e);
+                    alert("Gagal membaca file untuk dilampirkan.");
+                    clearInterval(loadingInterval);
+                    document.getElementById('apma-loading').classList.add('hidden');
+                    return;
+                }
+            }
 
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: promptSistem }] }] })
+                    body: JSON.stringify({ contents: [{ parts: partsArray }] })
                 });
 
                 const resData = await response.json();
@@ -2510,7 +2629,7 @@ STRUKTUR MODUL:
 
                 let aiResponse = resData.candidates[0].content.parts[0].text;
                 
-                // Hapus block markdown HTML jika Gemini tidak patuh pada instruksi
+                // Bersihkan tag ```html jika API bandel
                 aiResponse = aiResponse.replace(/```html/gi, '').replace(/```/gi, '');
 
                 clearInterval(loadingInterval);
@@ -2530,7 +2649,7 @@ STRUKTUR MODUL:
                 document.getElementById('apma-loading').classList.add('hidden');
                 document.getElementById('apma-result-wrapper').classList.remove('hidden');
                 document.getElementById('apma-result-wrapper').classList.add('flex');
-                document.getElementById('apma-result-text').innerHTML = `<div class="bg-red-50 text-red-600 p-5 rounded-lg font-medium border border-red-200"><i data-lucide="alert-triangle" class="w-6 h-6 inline mr-2 mb-1 align-middle"></i> Gagal menghasilkan modul:<br><span class="font-normal text-sm block mt-2">${err.message}</span><br><span class="text-sm mt-2 block">Saran: Gunakan API Key yang valid dan pastikan kuota Gemini API Anda belum habis.</span></div>`;
+                document.getElementById('apma-result-text').innerHTML = `<div class="bg-red-50 text-red-600 p-5 rounded-lg font-medium border border-red-200"><i data-lucide="alert-triangle" class="w-6 h-6 inline mr-2 mb-1 align-middle"></i> Gagal menghasilkan modul:<br><span class="font-bold text-sm mt-2 block">API key tidak valid. Pastikan Anda memasukkan API Key yang benar (Biasa diawali huruf 'AIza...').</span><span class="text-xs text-red-500 block mt-1">Saran: Klik tombol <b>Coba Lagi</b>, lalu klik ikon roda gigi (⚙️) di atas untuk mengatur ulang Key Anda (Dapatkan dari aistudio.google.com).</span><br><span class="text-xs italic opacity-70 block">Log Sistem: ${err.message}</span></div>`;
                 lucide.createIcons();
             }
         }
@@ -2543,7 +2662,7 @@ STRUKTUR MODUL:
             }
 
             // Membungkus HTML untuk docx agar rapi saat dibuka di Microsoft Word
-            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Modul Ajar APMA</title><style>body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5; } table { width: 100%; border-collapse: collapse; margin-bottom: 20px; } th, td { border: 1px solid black; padding: 8px; text-align: left; vertical-align: top; } th { background-color: #f2f2f2; font-weight: bold; } h2, h3 { color: #000; } </style></head><body>";
+            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='[http://www.w3.org/TR/REC-html40](http://www.w3.org/TR/REC-html40)'><head><meta charset='utf-8'><title>Modul Ajar APMA</title><style>body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5; } table { width: 100%; border-collapse: collapse; margin-bottom: 20px; } th, td { border: 1px solid black; padding: 8px; text-align: left; vertical-align: top; } th { background-color: #f2f2f2; font-weight: bold; } h2, h3 { color: #000; } </style></head><body>";
             const footer = "</body></html>";
             const fullHtml = header + htmlContent + footer;
             
