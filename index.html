@@ -56,7 +56,6 @@
 
             table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; page-break-inside: auto; table-layout: auto !important; }
             
-            /* Khusus Tabel Data Siswa yang kolomnya sangat banyak */
             #tb-data-siswa, #tb-data-siswa input { font-size: 7.5pt !important; }
             
             tr { page-break-inside: avoid !important; page-break-after: auto; }
@@ -75,7 +74,6 @@
         .print-only { display: none; }
         @media print { .print-only { display: block; } }
         
-        /* Loading Animation specific to APMA */
         .apma-spinner { width: 48px; height: 48px; border: 5px solid #e2e8f0; border-bottom-color: #2563eb; border-radius: 50%; display: inline-block; box-sizing: border-box; animation: spin 1s linear infinite; }
     </style>
 </head>
@@ -267,7 +265,6 @@
                         <h2 class="text-xl font-bold text-slate-800">Data Induk Siswa</h2>
                         <p class="text-sm text-slate-500">Kelola dan edit data siswa yang terhubung ke seluruh sistem.</p>
                     </div>
-                    <!-- TOMBOL UI RAPI DAN SIMETRIS -->
                     <div class="flex flex-wrap gap-2 items-end mt-2 md:mt-0">
                         <div class="flex flex-col text-left">
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
@@ -978,7 +975,7 @@
                             <div class="flex items-center justify-between">
                                 <h2 class="text-lg sm:text-xl font-bold text-slate-800 flex items-center flex-wrap gap-2">
                                     Aplikasi Modul Ajar - APMA 
-                                    <span class="text-[9px] sm:text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200">v2.3</span>
+                                    <span class="text-[9px] sm:text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200">v2.4</span>
                                 </h2>
                                 <button onclick="toggleApmaSettings()" class="text-slate-400 hover:text-blue-600 transition p-1 bg-slate-50 hover:bg-blue-50 rounded" title="Pengaturan AI">
                                     <i data-lucide="settings" class="w-5 h-5"></i>
@@ -1004,12 +1001,12 @@
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 mb-1.5">Pilih Versi Model (Jika Error)</label>
                                 <select id="apma-model-select" class="w-full border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm font-medium outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-50 bg-white">
-                                    <option value="gemini-1.5-flash">Gemini 1.5 Flash (Standar - Cepat)</option>
+                                    <option value="gemini-1.5-flash">Gemini 1.5 Flash (Sangat Cepat & Stabil)</option>
                                     <option value="gemini-1.5-pro">Gemini 1.5 Pro (Lebih Pintar & Detail)</option>
-                                    <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B (Sangat Ringan)</option>
-                                    <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Eksperimental Terbaru)</option>
+                                    <option value="gemini-2.0-flash">Gemini 2.0 Flash (Model Terbaru)</option>
+                                    <option value="gemini-2.5-flash">Gemini 2.5 Flash (Model Beta)</option>
                                 </select>
-                                <p class="text-[10px] text-slate-500 mt-1.5">Jika tombol "Buat Modul" gagal, coba ubah ke <b class="text-slate-700">Gemini 1.5 Pro</b>.</p>
+                                <p class="text-[10px] text-slate-500 mt-1.5">Jika tombol "Buat Modul" gagal atau eror 404, silakan pilih <b class="text-slate-700">Gemini 1.5 Flash</b> karena yang paling stabil.</p>
                             </div>
                         </div>
                         <div class="flex justify-end mt-5">
@@ -1431,11 +1428,9 @@
             let usingMock = false;
             
             try {
-                // Fetch Mapel/Target DARI DATABASE
                 try {
                     const resMapel = await fetch(`${API_URL}?action=getMapel`).then(r => r.json());
                     if(resMapel.status === 'success' && Object.keys(resMapel.data).length > 0) {
-                        // Menggunakan data DB jika valid
                         let keys = Object.keys(resMapel.data);
                         if(keys.includes("Pendidikan Pancasila") && keys.includes("Muatan Lokal")) {
                             mapelData = resMapel.data;
@@ -1444,7 +1439,6 @@
                 } catch(e) {}
                 currentSettingMapel = Object.keys(mapelData)[0]; 
 
-                // Fetch Master Siswa
                 const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
                 if(resSiswa.status === 'success' && resSiswa.data.length > 0) { 
                     globalSiswa = resSiswa.data;
@@ -1453,7 +1447,6 @@
                     usingMock = true; 
                 }
 
-                // Fetch Identitas
                 try {
                     const resId = await fetch(`${API_URL}?action=getIdentitas`).then(r => r.json());
                     if(resId.status === 'success') {
@@ -1469,7 +1462,6 @@
                     }
                 } catch(e) {}
 
-                // Fetch Media
                 try {
                     const resMedia = await fetch(`${API_URL}?action=getMedia`).then(r => r.json());
                     if(resMedia.status === 'success') {
@@ -1488,7 +1480,6 @@
                     }
                 } catch(e) {}
 
-                // Fetch Jurnal
                 const resJurnal = await fetch(`${API_URL}?action=getJurnal`).then(r => r.json());
                 if(resJurnal.status === 'success') listJurnal = resJurnal.data.reverse(); 
                 else listJurnal = [];
@@ -1656,7 +1647,6 @@
             if(idHalaman.includes('nilai')) judul = "Pengolahan Nilai (Rapor)";
             if(idHalaman.includes('jurnal')) { judul = "Jurnal Mengajar"; renderTabelJurnal(); updateJurnalMapel(); }
             
-            // Apma Handling
             if(idHalaman === 'apma') { 
                 judul = "APMA - Asisten AI"; 
                 initApmaData(); 
@@ -1783,7 +1773,7 @@
             let payload = { action: 'simpanMapel', data: mapelData };
             postToDB(payload, "Tersimpan! Target Mapel berhasil disinkronkan ke Database.");
             renderFormatif(); renderSumatif(); updateJurnalMapel();
-            renderLegger(); // Update mapel list in Legger
+            renderLegger(); 
         }
 
         // --- SINKRONISASI KOP CETAK ---
@@ -2374,7 +2364,6 @@
         let apmaUploadedFile = null;
 
         function initApmaData() {
-            // Auto-fill dari identitas kelas
             document.getElementById('apma-nama-guru').value = document.getElementById('inp-guru').value || '';
             document.getElementById('apma-institusi').value = document.getElementById('inp-sekolah').value || '';
             document.getElementById('apma-kelas').value = document.getElementById('inp-kelas').value || '';
@@ -2393,7 +2382,6 @@
                 document.getElementById('apma-settings-panel').classList.add('hidden');
             }
             
-            // Set view ke step 1
             apmaNextStep(1);
             setupDragAndDrop();
             lucide.createIcons();
@@ -2416,7 +2404,6 @@
         }
 
         function apmaNextStep(step) {
-            // Validasi sebelum pindah ke step 2
             if(step === 2) {
                 if(document.getElementById('apma-kurikulum').value === "" || document.getElementById('apma-jenjang').value === "" || document.getElementById('apma-fase').value === "") {
                     alert("Harap lengkapi pilihan Kurikulum, Jenjang Pendidikan, dan Fase terlebih dahulu!");
@@ -2424,14 +2411,12 @@
                 }
             }
 
-            // Sembunyikan semua konten
             document.getElementById('apma-step-1').classList.add('hidden');
             document.getElementById('apma-step-2').classList.add('hidden');
             document.getElementById('apma-step-3').classList.add('hidden');
             document.getElementById('apma-loading').classList.add('hidden');
             document.getElementById('apma-result-wrapper').classList.add('hidden');
             
-            // Tampilkan step aktif
             if(step === 3) {
                 document.getElementById(`apma-step-3`).classList.remove('hidden');
                 document.getElementById(`apma-step-3`).classList.add('flex');
@@ -2439,7 +2424,6 @@
                 document.getElementById(`apma-step-${step}`).classList.remove('hidden');
             }
 
-            // Update Tab Style
             let tabs = [document.getElementById('apma-tab-1'), document.getElementById('apma-tab-2'), document.getElementById('apma-tab-3')];
             tabs.forEach((t, i) => {
                 if(i + 1 === step) {
@@ -2451,14 +2435,12 @@
                 }
             });
 
-            // Update Indicator Bar
             let indicator = document.getElementById('apma-step-indicator');
             if(step === 1) { indicator.style.left = '0%'; indicator.style.width = '33.33%'; }
             if(step === 2) { indicator.style.left = '33.33%'; indicator.style.width = '33.33%'; }
             if(step === 3) { indicator.style.left = '66.66%'; indicator.style.width = '33.33%'; }
         }
 
-        // --- Logika File Upload APMA ---
         function setupDragAndDrop() {
             const dropzone = document.getElementById('apma-dropzone');
             if(!dropzone) return;
@@ -2491,7 +2473,7 @@
                 return;
             }
 
-            if(file.size > 5 * 1024 * 1024) { // 5MB limit untuk inline data
+            if(file.size > 5 * 1024 * 1024) { 
                 alert('Ukuran file terlalu besar! Maksimal ukuran file adalah 5MB.');
                 return;
             }
@@ -2521,7 +2503,6 @@
             });
         }
 
-        // --- Simulasi Progress Loading APMA ---
         let loadingInterval;
         function simulateApmaLoading() {
             let pctElement = document.getElementById('apma-loading-pct');
@@ -2533,7 +2514,7 @@
             clearInterval(loadingInterval);
             loadingInterval = setInterval(() => {
                 if (pct < 95) {
-                    let increment = Math.floor(Math.random() * 5) + 1; // 1-5%
+                    let increment = Math.floor(Math.random() * 5) + 1; 
                     pct += increment;
                     if(pct > 95) pct = 95;
                     pctElement.innerText = pct + "%";
@@ -2551,7 +2532,6 @@
                 return;
             }
 
-            // Validasi Step 2
             let materi = document.getElementById('apma-materi').value.trim();
             let metode = document.getElementById('apma-metode').value;
             let useMateri = document.getElementById('apma-use-materi').checked;
@@ -2564,7 +2544,6 @@
                 return;
             }
 
-            // Ambil Dimensi Profil yang dicentang
             let dimensiChecked = [];
             document.querySelectorAll('.apma-dimensi:checked').forEach(el => dimensiChecked.push(el.value));
             if(dimensiChecked.length === 0) { alert("Wajib memilih minimal 1 Dimensi Profil Lulusan!"); return; }
@@ -2593,7 +2572,7 @@
             const modeText = data.isOnline ? "Daring / Online (menggunakan platform virtual seperti Zoom/GMeet)" : "Luring / Tatap Muka";
             const attachmentInstruction = (useMateri && apmaUploadedFile) ? `\nSUMBER MATERI UTAMA: Anda DIBERIKAN SEBUAH FILE (PDF/Gambar). Jadikan file tersebut sebagai REFERENSI UTAMA DAN SUMBER KONTEN dalam menyusun modul ini.` : "";
 
-            const promptSistem = `Anda adalah APMA (Aplikasi Modul Ajar) versi 2.3. Tugas Anda adalah membuat Modul Ajar (RPP) yang sangat rapi, profesional, dan siap digunakan.
+            const promptSistem = `Anda adalah APMA (Aplikasi Modul Ajar) versi 2.4. Tugas Anda adalah membuat Modul Ajar (RPP) yang sangat rapi, profesional, dan siap digunakan.
 
 INFORMASI PEMBELAJARAN:
 - Nama Pendidik: ${data.guru}
@@ -2639,7 +2618,6 @@ STRUKTUR MODUL:
 
             let partsArray = [{ text: promptSistem }];
 
-            // Inject File jika ada
             if(useMateri && apmaUploadedFile) {
                 try {
                     let base64String = await fileToBase64(apmaUploadedFile);
@@ -2666,12 +2644,10 @@ STRUKTUR MODUL:
                 let isCustomOpenRouter = apiKey.startsWith("sk-or");
 
                 if(isCustomOpenRouter) {
-                    // Integrasi ke API OpenRouter menggunakan format Chat Completions
                     apiUrl = "https://openrouter.ai/api/v1/chat/completions";
                     headers['Authorization'] = `Bearer ${apiKey}`;
                     
                     let orModel = modelName;
-                    // Memastikan model name valid untuk OpenRouter (wajib diawali 'google/')
                     if(!orModel.startsWith('google/')) orModel = 'google/' + orModel;
                     
                     let contentArray = [{ type: 'text', text: promptSistem }];
@@ -2686,9 +2662,15 @@ STRUKTUR MODUL:
                         messages: [{ role: 'user', content: contentArray }]
                     };
                 } else {
-                    // Integrasi Native Google API (AIza... atau AQ...)
                     apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-                    payload = { contents: [{ parts: partsArray }] };
+                    
+                    // Format baru yang lebih aman & sesuai standar Google AI Studio
+                    payload = { 
+                        contents: [{ 
+                            role: "user",
+                            parts: partsArray 
+                        }] 
+                    };
                 }
 
                 const response = await fetch(apiUrl, {
@@ -2698,17 +2680,36 @@ STRUKTUR MODUL:
                 });
 
                 const resData = await response.json();
+
+                // Validasi HTTP Status Code Error
+                if (!response.ok) {
+                    let errMsg = resData.error ? resData.error.message : `HTTP Error ${response.status}: ${response.statusText}`;
+                    throw new Error(errMsg);
+                }
                 
                 let aiResponse = "";
                 if(isCustomOpenRouter) {
-                    if(resData.error) throw new Error(resData.error.message || "Error dari OpenRouter. Pastikan Limit/Kredit API Anda mencukupi.");
+                    if(resData.error) throw new Error(resData.error.message || "Error dari OpenRouter.");
                     aiResponse = resData.choices[0].message.content;
                 } else {
                     if(resData.error) throw new Error(resData.error.message);
-                    aiResponse = resData.candidates[0].content.parts[0].text;
+                    
+                    if (!resData.candidates || resData.candidates.length === 0) {
+                        let errMsg = "Respon kosong dari AI.";
+                        if (resData.promptFeedback && resData.promptFeedback.blockReason) {
+                            errMsg = "Diblokir oleh sistem filter keamanan Google: " + resData.promptFeedback.blockReason;
+                        }
+                        throw new Error(errMsg);
+                    }
+                    
+                    const candidate = resData.candidates[0];
+                    if (!candidate.content || !candidate.content.parts || candidate.content.parts.length === 0) {
+                        throw new Error("Proses generasi terhenti secara otomatis dengan alasan: " + (candidate.finishReason || "Tidak diketahui. Coba sesuaikan prompt/file lampiran Anda."));
+                    }
+                    
+                    aiResponse = candidate.content.parts[0].text;
                 }
                 
-                // Bersihkan tag ```html jika API masih bandel menyisipkannya
                 aiResponse = aiResponse.replace(/```html/gi, '').replace(/```/gi, '');
 
                 clearInterval(loadingInterval);
@@ -2728,48 +2729,33 @@ STRUKTUR MODUL:
                 document.getElementById('apma-loading').classList.add('hidden');
                 document.getElementById('apma-result-wrapper').classList.remove('hidden');
                 document.getElementById('apma-result-wrapper').classList.add('flex');
-                document.getElementById('apma-result-text').innerHTML = `<div class="bg-red-50 text-red-600 p-5 rounded-lg font-medium border border-red-200"><i data-lucide="alert-triangle" class="w-6 h-6 inline mr-2 mb-1 align-middle"></i> Gagal menghasilkan modul:<br><span class="font-bold text-sm mt-2 block">Koneksi ke API terputus atau API Key bermasalah.</span><span class="text-xs text-red-500 block mt-1">Pastikan API Key yang Anda masukkan valid. Jika menggunakan OpenRouter (sk-or-...), pastikan saldo/kredit Anda tersedia. Klik <b>Coba Lagi</b>.</span><br><span class="text-xs italic opacity-70 block">Log Sistem: ${err.message}</span></div>`;
+                document.getElementById('apma-result-text').innerHTML = `<div class="bg-red-50 text-red-600 p-5 rounded-lg font-medium border border-red-200"><i data-lucide="alert-triangle" class="w-6 h-6 inline mr-2 mb-1 align-middle"></i> Gagal menghasilkan modul:<br><span class="font-bold">` + err.message + `</span></div>`;
                 lucide.createIcons();
             }
         }
 
         function downloadApmaWord() {
             const htmlContent = document.getElementById('apma-result-text').innerHTML;
-            if(!htmlContent || htmlContent.includes("Gagal menghasilkan modul") || htmlContent.trim() === "") {
-                alert("Belum ada modul ajar yang valid untuk didownload!");
-                return;
-            }
-
-            // Membungkus HTML untuk docx agar rapi saat dibuka di Microsoft Word
-            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='[http://www.w3.org/TR/REC-html40](http://www.w3.org/TR/REC-html40)'><head><meta charset='utf-8'><title>Modul Ajar APMA</title><style>body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5; } table { width: 100%; border-collapse: collapse; margin-bottom: 20px; } th, td { border: 1px solid black; padding: 8px; text-align: left; vertical-align: top; } th { background-color: #f2f2f2; font-weight: bold; } h2, h3 { color: #000; } </style></head><body>";
+            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Modul Ajar</title></head><body>";
             const footer = "</body></html>";
-            const fullHtml = header + htmlContent + footer;
+            const sourceHTML = header + htmlContent + footer;
             
-            // Konversi ke Blob untuk Download
-            const blob = new Blob(['\ufeff', fullHtml], { type: 'application/msword' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            
-            // Nama file dinamis
-            const mapel = document.getElementById('apma-mapel').value.trim() || 'Modul';
-            const materi = document.getElementById('apma-materi').value.trim() || 'Pembelajaran';
-            
-            link.href = url;
-            link.download = `Modul_Ajar_${mapel}_${materi.substring(0, 15)}.doc`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+            const fileDownload = document.createElement("a");
+            document.body.appendChild(fileDownload);
+            fileDownload.href = source;
+            fileDownload.download = 'Modul_Ajar.doc';
+            fileDownload.click();
+            document.body.removeChild(fileDownload);
         }
 
         function cetakLaporan(tipe) {
-            syncGlobalData(); 
+            syncGlobalData();
             
-            let kota = document.getElementById('inp-kota').value;
-            let overrideDate = (inputId, targetId) => {
-                let inputEl = document.getElementById(inputId);
-                if(inputEl && inputEl.value) {
-                    let d = new Date(inputEl.value);
+            const overrideDate = (inputId, targetId) => {
+                let d = document.getElementById(inputId).valueAsDate;
+                if(d) {
+                    let kota = document.getElementById('inp-kota').value;
                     let f = new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
                     document.querySelectorAll(targetId).forEach(el => el.innerText = `${kota}, ${f}`);
                 }
@@ -2790,14 +2776,15 @@ STRUKTUR MODUL:
             if(tipe === 'legger') overrideDate('tgl-cetak-legger', '#print-tgl-legger');
             if(tipe === 'jurnal') overrideDate('tgl-cetak-jurnal', '#print-tgl-jurnal');
 
-            if(!document.getElementById('hal-nilai-legger').classList.contains('hidden')) renderLegger();
-            
-            setTimeout(() => { window.print(); }, 300);
+            if(!document.getElementById('hal-nilai-legger').classList.contains('hidden')) {
+                renderLegger();
+            }
+
+            window.print();
         }
 
-        window.onload = () => {
-            pindahHalaman('dashboard', document.querySelector('[data-target="dashboard"]'));
-            checkAuth(); 
+        window.onload = function() {
+            checkAuth();
         };
     </script>
 </body>
