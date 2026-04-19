@@ -34,8 +34,9 @@
         input.cell-input:focus { background-color: #eff6ff; color: #1d4ed8; border-bottom: 1px solid #3b82f6; }
         input.cell-input::-webkit-outer-spin-button, input.cell-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-        .loader-spinner { border: 4px solid rgba(255,255,255,0.1); border-radius: 50%; border-top: 4px solid #60a5fa; width: 50px; height: 50px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Animasi Spinner Klasik Baru */
+        @keyframes spin-reverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
+        .animate-spin-reverse { animation: spin-reverse 1.5s linear infinite; }
 
         /* =========================================================
            PRINT LAYOUTING F4 LANDSCAPE (STABIL & RAPI)
@@ -125,18 +126,33 @@
         </div>
     </div>
 
-    <!-- Loading Overlay ELEGAN & KLASIK -->
-    <div id="loading-overlay" class="fixed inset-0 bg-slate-900 bg-opacity-95 z-[100] flex flex-col items-center justify-center text-white transition-opacity duration-500 hidden">
-        <div class="loader-spinner mb-6"></div>
-        <h2 id="loading-title" class="text-xl font-bold mb-1 tracking-wide text-slate-100">Menyinkronkan Database...</h2>
-        <p id="loading-subtitle" class="text-[10px] text-blue-400 font-bold uppercase tracking-[0.2em] mb-8">Mohon Tunggu</p>
+    <!-- Loading Overlay ELEGAN & KLASIK DENGAN FOTO TERINTEGRASI -->
+    <div id="loading-overlay" class="fixed inset-0 bg-slate-900 bg-opacity-[0.98] z-[100] flex flex-col items-center justify-center text-white transition-opacity duration-500 hidden">
         
-        <div class="max-w-lg px-8 text-center relative mt-2 border-t border-slate-800 pt-8">
-            <i data-lucide="quote" class="w-8 h-8 text-slate-700 absolute top-4 left-2 opacity-40"></i>
-            <p class="text-sm md:text-base text-slate-300 font-serif italic leading-relaxed tracking-wide relative z-10 px-4">
-                "Teknologi hanyalah alat. Namun, guru adalah sosok yang menghidupkan alat tersebut menjadi inspirasi yang tak terbatas."
+        <!-- DUAL-RING SPINNER DENGAN FOTO DI TENGAH -->
+        <div class="relative flex items-center justify-center w-32 h-32 mb-6">
+            <!-- Cincin Luar (Biru - Berputar Searah Jarum Jam) -->
+            <div class="absolute inset-0 rounded-full border-[3px] border-slate-700 border-t-blue-400 border-r-blue-400 animate-spin shadow-[0_0_20px_rgba(96,165,250,0.3)]"></div>
+            <!-- Cincin Dalam (Indigo - Berputar Berlawanan Arah) -->
+            <div class="absolute inset-1.5 rounded-full border-[3px] border-slate-700 border-b-indigo-400 border-l-indigo-400 animate-spin-reverse"></div>
+            
+            <!-- Foto Profil Guru Terintegrasi -->
+            <div class="w-[84px] h-[84px] rounded-full overflow-hidden bg-slate-800 z-10 p-1">
+                <img id="loading-foto-img" src="https://cdn.phototourl.com/free/2026-04-17-64555a53-f2ac-4934-8647-bb4004ba8db7.jpg" class="w-full h-full rounded-full object-cover object-top filter contrast-[1.05]">
+            </div>
+        </div>
+
+        <h2 id="loading-title" class="text-2xl font-bold mb-1 tracking-widest text-slate-100 font-serif">Menyinkronkan Database...</h2>
+        <p id="loading-subtitle" class="text-[10px] text-blue-400 font-bold uppercase tracking-[0.3em] mb-8">Mohon Tunggu Sebentar</p>
+        
+        <!-- Kalimat Inspiratif Klasik -->
+        <div class="max-w-xl px-8 text-center relative mt-2 pt-8">
+            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-[1px] bg-gradient-to-r from-transparent via-slate-500 to-transparent"></div>
+            <i data-lucide="quote" class="w-8 h-8 text-slate-700 absolute top-4 left-2 opacity-50"></i>
+            <p class="text-sm md:text-lg text-slate-300 font-serif italic leading-relaxed tracking-wide relative z-10 px-8">
+                "Teknologi hanyalah sebuah alat. Namun, ketulusan seorang guru adalah sosok sejati yang menghidupkan alat tersebut menjadi sebuah inspirasi yang tak terbatas."
             </p>
-            <i data-lucide="quote" class="w-8 h-8 text-slate-700 absolute bottom-[-10px] right-2 opacity-40 rotate-180"></i>
+            <i data-lucide="quote" class="w-8 h-8 text-slate-700 absolute bottom-[-10px] right-2 opacity-50 rotate-180"></i>
         </div>
     </div>
 
@@ -1072,7 +1088,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: JURNAL MENGAJAR -->
+            <!-- HAL문을 MAN: JURNAL MENGAJAR -->
             <div id="hal-jurnal-input" class="halaman page-transition hidden w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Jurnal Mengajar Harian</h2></div>
@@ -1376,7 +1392,7 @@
         async function sinkronisasiDB(isManual = false) {
             if(isManual) {
                 document.getElementById('loading-title').innerText = "Menyinkronkan Database...";
-                document.getElementById('loading-subtitle').innerText = "MOHON TUNGGU";
+                document.getElementById('loading-subtitle').innerText = "MOHON TUNGGU SEBENTAR";
                 loader.classList.remove('hidden', 'opacity-0');
             }
             let usingMock = false;
@@ -1435,15 +1451,31 @@
                         document.getElementById('inp-media-stempel').value = mediaData.stempel || "";
                         document.getElementById('inp-media-fotoguru').value = mediaData.fotoGuru || "";
                         
-                        // Simpan Foto Guru ke LocalStorage untuk digunakan di halaman Login
+                        if(mediaData.logoKanan && mediaData.logoKanan.trim() !== "") {
+                            localStorage.setItem('siguru_logo_sd', mediaData.logoKanan);
+                            let loginLogo = document.getElementById('login-logo-img');
+                            let loginFallback = document.getElementById('login-logo-fallback');
+                            if(loginLogo && loginFallback) {
+                                loginLogo.src = mediaData.logoKanan;
+                                loginLogo.classList.remove('hidden');
+                                loginFallback.classList.add('hidden');
+                            }
+                        }
+
+                        // Simpan Foto Guru ke LocalStorage untuk digunakan di Halaman Loading dan Login
                         if(mediaData.fotoGuru && mediaData.fotoGuru.trim() !== "") {
                             localStorage.setItem('siguru_foto_guru', mediaData.fotoGuru);
                             let loginFoto = document.getElementById('login-foto-img');
                             let loginFallback = document.getElementById('login-foto-fallback');
+                            let loadingFoto = document.getElementById('loading-foto-img');
+                            
                             if(loginFoto && loginFallback) {
                                 loginFoto.src = mediaData.fotoGuru;
                                 loginFoto.classList.remove('hidden');
                                 loginFallback.classList.add('hidden');
+                            }
+                            if(loadingFoto) {
+                                loadingFoto.src = mediaData.fotoGuru;
                             }
                         }
                         
@@ -1763,23 +1795,53 @@
             mediaData.ttdGuru = document.getElementById('inp-media-ttdguru').value;
             mediaData.stempel = document.getElementById('inp-media-stempel').value;
 
-            // Simpan FOTO GURU ke LocalStorage untuk digunakan di halaman Login secara Dinamis
+            // Simpan Logo Kanan ke LocalStorage
+            if(mediaData.logoKanan && mediaData.logoKanan.trim() !== "") {
+                localStorage.setItem('siguru_logo_sd', mediaData.logoKanan);
+                let loginLogo = document.getElementById('login-logo-img');
+                let loginFallback = document.getElementById('login-logo-fallback');
+                if(loginLogo && loginFallback) {
+                    loginLogo.src = mediaData.logoKanan;
+                    loginLogo.classList.remove('hidden');
+                    loginFallback.classList.add('hidden');
+                }
+            } else {
+                localStorage.removeItem('siguru_logo_sd');
+                let loginLogo = document.getElementById('login-logo-img');
+                let loginFallback = document.getElementById('login-logo-fallback');
+                if(loginLogo && loginFallback) {
+                    loginLogo.classList.add('hidden');
+                    loginFallback.classList.remove('hidden');
+                }
+            }
+
+            // Simpan FOTO GURU ke LocalStorage untuk digunakan di halaman Login & Loading Dinamis
             if(mediaData.fotoGuru && mediaData.fotoGuru.trim() !== "") {
                 localStorage.setItem('siguru_foto_guru', mediaData.fotoGuru);
                 let loginFoto = document.getElementById('login-foto-img');
                 let loginFallback = document.getElementById('login-foto-fallback');
+                let loadingFoto = document.getElementById('loading-foto-img');
+                
                 if(loginFoto && loginFallback) {
                     loginFoto.src = mediaData.fotoGuru;
                     loginFoto.classList.remove('hidden');
                     loginFallback.classList.add('hidden');
                 }
+                if(loadingFoto) {
+                    loadingFoto.src = mediaData.fotoGuru;
+                }
             } else {
                 localStorage.removeItem('siguru_foto_guru');
                 let loginFoto = document.getElementById('login-foto-img');
                 let loginFallback = document.getElementById('login-foto-fallback');
+                let loadingFoto = document.getElementById('loading-foto-img');
+                
                 if(loginFoto && loginFallback) {
                     loginFoto.classList.add('hidden');
                     loginFallback.classList.remove('hidden');
+                }
+                if(loadingFoto) {
+                    loadingFoto.src = "https://cdn.phototourl.com/free/2026-04-17-64555a53-f2ac-4934-8647-bb4004ba8db7.jpg"; // Placeholder
                 }
             }
 
@@ -2557,15 +2619,23 @@
         }
 
         window.onload = () => {
-            // Cek foto guru tersimpan di localStorage (Cache) untuk Halaman Login Dinamis
+            // Cek foto guru dan logo sekolah di localStorage untuk Halaman Login / Loading Dinamis
             let savedFotoGuru = localStorage.getItem('siguru_foto_guru');
-            let loginFoto = document.getElementById('login-foto-img');
-            let loginFallback = document.getElementById('login-foto-fallback');
+            let savedLogoSD = localStorage.getItem('siguru_logo_sd');
             
-            if (savedFotoGuru && loginFoto && loginFallback) {
-                loginFoto.src = savedFotoGuru;
-                loginFoto.classList.remove('hidden');
+            let loginLogo = document.getElementById('login-logo-img');
+            let loginFallback = document.getElementById('login-logo-fallback');
+            let loadingFoto = document.getElementById('loading-foto-img');
+            
+            if (savedLogoSD && loginLogo && loginFallback) {
+                loginLogo.src = savedLogoSD;
+                loginLogo.classList.remove('hidden');
                 loginFallback.classList.add('hidden');
+            }
+            
+            // Pada awal dimuat, pasang di spinner loading jika fotonya ada
+            if (savedFotoGuru && loadingFoto) {
+                loadingFoto.src = savedFotoGuru;
             }
 
             pindahHalaman('dashboard', document.querySelector('[data-target="dashboard"]'));
