@@ -513,6 +513,10 @@
                         <p class="text-sm text-slate-500">Ketik kata "Istirahat", "Upacara", atau "Pulang" untuk pewarnaan otomatis.</p>
                     </div>
                     <div class="flex flex-wrap gap-2 items-end mt-2 md:mt-0">
+                        <div class="flex flex-col text-left">
+                            <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
+                            <input type="date" id="tgl-cetak-jadwal" class="border border-slate-300 rounded px-2 py-1 text-xs outline-none focus:border-blue-500 bg-white font-bold h-9 w-[120px]">
+                        </div>
                         <button onclick="tambahBarisJadwal()" class="bg-indigo-600 text-white px-3 rounded-lg text-xs font-bold hover:bg-indigo-700 shadow-sm flex items-center h-9 transition hover:-translate-y-0.5"><i data-lucide="plus-circle" class="w-4 h-4 mr-1.5"></i> Tambah Jam</button>
                         <button onclick="simpanJadwalAksi()" class="bg-blue-600 text-white px-3 rounded-lg text-xs font-bold hover:bg-blue-700 shadow-sm flex items-center h-9 transition hover:-translate-y-0.5"><i data-lucide="save" class="w-4 h-4 mr-1.5"></i> Simpan DB</button>
                         <button onclick="exportToExcel('area-jadwal-pelajaran', 'Jadwal_Pelajaran')" class="bg-emerald-600 text-white px-3 rounded-lg text-xs font-bold hover:bg-emerald-700 shadow-sm flex items-center h-9 transition hover:-translate-y-0.5"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1.5"></i> Excel</button>
@@ -2508,12 +2512,7 @@
             if(tipe === 'sikap') overrideDate('tgl-cetak-sikap', '#print-tgl-sikap');
             if(tipe === 'legger') overrideDate('tgl-cetak-legger', '#print-tgl-legger');
             if(tipe === 'jurnal') overrideDate('tgl-cetak-jurnal', '#print-tgl-jurnal');
-            
-            // Tambahan handler cetak untuk Jadwal Pelajaran
-            if(tipe === 'jadwal') { 
-                // Kita ganti label tanggal cetak menjadi Tahun Ajaran saja (atau tanggal cetak dinamis)
-                document.getElementById('print-tgl-jadwal').innerText = `${kota}, ${new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}`;
-            }
+            if(tipe === 'jadwal') overrideDate('tgl-cetak-jadwal', '#print-tgl-jadwal');
 
             if(!document.getElementById('hal-nilai-legger').classList.contains('hidden')) renderLegger();
             if(!document.getElementById('hal-jadwal-pelajaran').classList.contains('hidden')) renderJadwal();
