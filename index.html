@@ -39,7 +39,7 @@
            PRINT LAYOUTING F4 LANDSCAPE (STABIL & RAPI)
            ========================================================= */
         @media print {
-            html, body { height: auto !important; min-height: auto !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; background-color: white !important; }
+            html, body { height: auto !important; min-height: auto !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; background-color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             body { color: #000; font-size: 8pt !important; }
             
             body > .flex, .flex-1, main, .print-area { display: block !important; height: auto !important; overflow: visible !important; position: static !important; }
@@ -57,8 +57,10 @@
 
             table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; page-break-inside: auto; table-layout: auto !important; }
             
-            /* Khusus Tabel Data Siswa yang kolomnya sangat banyak */
             #tb-data-siswa, #tb-data-siswa input { font-size: 7.5pt !important; }
+            
+            /* Kunci agar warna background (seperti jadwal pelajaran) tetap tercetak */
+            .print-color-exact { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             
             tr { page-break-inside: avoid !important; page-break-after: auto; }
             thead { display: table-header-group !important; } 
@@ -76,8 +78,13 @@
         .print-only { display: none; }
         @media print { .print-only { display: block; } }
         
-        /* Loading Animation specific to APMA */
         .apma-spinner { width: 48px; height: 48px; border: 5px solid #e2e8f0; border-bottom-color: #2563eb; border-radius: 50%; display: inline-block; box-sizing: border-box; animation: spin 1s linear infinite; }
+        
+        /* Pewarnaan Dinamis Tabel Jadwal */
+        .jdw-istirahat { background-color: #fef08a !important; color: #854d0e !important; font-weight: bold; text-align: center; }
+        .jdw-upacara { background-color: #fecdd3 !important; color: #9f1239 !important; font-weight: bold; text-align: center; }
+        .jdw-pulang { background-color: #bbf7d0 !important; color: #166534 !important; font-weight: bold; text-align: center; }
+        .jdw-senam { background-color: #ddd6fe !important; color: #3730a3 !important; font-weight: bold; text-align: center; }
     </style>
 </head>
 <body class="text-slate-800 h-screen overflow-hidden flex">
@@ -152,7 +159,7 @@
                 </div>
             </div>
 
-            <!-- MENU BARU: PERANGKAT AJAR -->
+            <!-- PERANGKAT AJAR -->
             <div>
                 <button onclick="toggleAccordion('menu-perangkat')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
                     <div class="flex items-center space-x-3"><i data-lucide="folder-open" class="w-5 h-5"></i><span>Perangkat Ajar</span></div>
@@ -160,6 +167,7 @@
                 </button>
                 <div id="menu-perangkat" class="submenu flex flex-col pl-9 pr-2 space-y-1 mt-1">
                     <button onclick="pindahHalaman('identitas-target', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="identitas-target">Lingkup Materi & TP</button>
+                    <button onclick="pindahHalaman('jadwal-pelajaran', this); renderJadwal();" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="jadwal-pelajaran">Jadwal Pelajaran</button>
                 </div>
             </div>
             
@@ -170,7 +178,6 @@
                     <div class="flex items-center space-x-3"><i data-lucide="calendar-check" class="w-5 h-5"></i><span>Daftar Hadir</span></div>
                     <i data-lucide="chevron-down" id="icon-menu-siswa" class="w-4 h-4 chevron"></i>
                 </button>
-                <!-- Menghilangkan class 'open' agar tertutup secara default -->
                 <div id="menu-siswa" class="submenu flex flex-col pl-9 pr-2 space-y-1 mt-1">
                     <button onclick="pindahHalaman('siswa-absen', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-absen">Input Kehadiran</button>
                     <button onclick="pindahHalaman('siswa-rekapbulan', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-rekapbulan">Rekap Bulanan</button>
@@ -289,89 +296,62 @@
                     </div>
                 </div>
 
-                <!-- PROFIL GURU ELEGAN (DATA STATIS DARI CSV) -->
+                <!-- PROFIL GURU ELEGAN -->
                 <div class="mb-6 no-print">
                     <h2 class="text-xl font-bold text-slate-800">Profil Pengembang & Guru</h2>
                 </div>
                 
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden relative mb-8 no-print group hover:shadow-md transition-all duration-300">
-                    <!-- Banner Latar Belakang Gradasi -->
                     <div class="h-28 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 relative">
-                        <!-- Pola Dekoratif Transparan -->
                         <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 20px 20px;"></div>
                     </div>
                     
                     <div class="px-6 sm:px-10 pb-8 pt-6 relative flex flex-col-reverse md:flex-row md:items-start md:justify-between gap-8">
                         
-                        <!-- Konten Data Guru (Kiri) -->
                         <div class="flex-1 text-center md:text-left mt-4 md:mt-0">
                             <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">Bayu Prahastian, S.Pd.</h3>
                             <p class="text-sm font-bold text-blue-600 mb-5 tracking-wide uppercase mt-1">Guru SD &bull; SD Negeri 04 Taman</p>
                             
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm text-slate-600 mb-6">
                                 <div class="flex items-center justify-center md:justify-start space-x-3">
-                                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                                        <i data-lucide="credit-card" class="w-4 h-4 text-slate-500"></i>
-                                    </div>
+                                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0"><i data-lucide="credit-card" class="w-4 h-4 text-slate-500"></i></div>
                                     <span><b class="text-slate-800">NIP:</b> 199601212025211014</span>
                                 </div>
                                 <div class="flex items-center justify-center md:justify-start space-x-3">
-                                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                                        <i data-lucide="map-pin" class="w-4 h-4 text-slate-500"></i>
-                                    </div>
+                                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0"><i data-lucide="map-pin" class="w-4 h-4 text-slate-500"></i></div>
                                     <span><b class="text-slate-800">TTL:</b> Pemalang, 21 Januari 1996</span>
                                 </div>
                                 <div class="flex items-center justify-center md:justify-start space-x-3">
-                                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                                        <i data-lucide="app-window" class="w-4 h-4 text-slate-500"></i>
-                                    </div>
+                                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0"><i data-lucide="app-window" class="w-4 h-4 text-slate-500"></i></div>
                                     <span><b class="text-slate-800">Aplikasi:</b> Aplikasi-SAGu</span>
                                 </div>
                                 <div class="flex items-center justify-center md:justify-start space-x-3">
-                                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                                        <i data-lucide="monitor-smartphone" class="w-4 h-4 text-slate-500"></i>
-                                    </div>
+                                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0"><i data-lucide="monitor-smartphone" class="w-4 h-4 text-slate-500"></i></div>
                                     <span><b class="text-slate-800">LMS:</b> <a href="http://e-learning-sd.vercel.app/" target="_blank" class="text-blue-600 hover:underline">E-Learning SD</a></span>
                                 </div>
                             </div>
 
-                            <!-- Kutipan (Quote) -->
                             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-4 sm:p-5 rounded-r-xl mb-6 relative">
                                 <i data-lucide="quote" class="w-8 h-8 text-blue-200/50 absolute top-2 right-3"></i>
                                 <p class="text-sm font-medium italic text-slate-700 relative z-10 pr-6 leading-relaxed">"Teknologi hanyalah alat. Namun, guru adalah sosok yang menghidupkan alat tersebut menjadi inspirasi yang tak terbatas."</p>
                             </div>
 
-                            <!-- Sosial Media & Kontak Links -->
                             <div class="flex flex-wrap justify-center md:justify-start gap-3">
-                                <a href="mailto:bayuprahastian21@gmail.com" target="_blank" class="flex items-center space-x-2 bg-white border border-slate-200 hover:border-red-200 hover:bg-red-50 text-slate-600 px-4 py-2 rounded-full text-xs font-bold transition shadow-sm hover:shadow">
-                                    <i data-lucide="mail" class="w-4 h-4 text-red-500"></i> <span>Email</span>
-                                </a>
-                                <a href="https://instagram.com/prahastian_21" target="_blank" class="flex items-center space-x-2 bg-white border border-slate-200 hover:border-pink-200 hover:bg-pink-50 text-slate-600 px-4 py-2 rounded-full text-xs font-bold transition shadow-sm hover:shadow">
-                                    <i data-lucide="instagram" class="w-4 h-4 text-pink-600"></i> <span>Instagram</span>
-                                </a>
-                                <a href="https://tiktok.com/@mr.gayus18" target="_blank" class="flex items-center space-x-2 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-100 text-slate-600 px-4 py-2 rounded-full text-xs font-bold transition shadow-sm hover:shadow">
-                                    <i data-lucide="music-2" class="w-4 h-4 text-slate-900"></i> <span>TikTok</span>
-                                </a>
-                                <a href="https://facebook.com/prahasissyy.shejaty" target="_blank" class="flex items-center space-x-2 bg-white border border-slate-200 hover:border-blue-200 hover:bg-blue-50 text-slate-600 px-4 py-2 rounded-full text-xs font-bold transition shadow-sm hover:shadow">
-                                    <i data-lucide="facebook" class="w-4 h-4 text-blue-600"></i> <span>Facebook</span>
-                                </a>
-                                <a href="https://sidsdn04taman.vercel.app/" target="_blank" class="flex items-center space-x-2 bg-white border border-slate-200 hover:border-emerald-200 hover:bg-emerald-50 text-slate-600 px-4 py-2 rounded-full text-xs font-bold transition shadow-sm hover:shadow">
-                                    <i data-lucide="globe" class="w-4 h-4 text-emerald-600"></i> <span>Website Sekolah</span>
-                                </a>
+                                <a href="mailto:bayuprahastian21@gmail.com" target="_blank" class="flex items-center space-x-2 bg-white border border-slate-200 hover:border-red-200 hover:bg-red-50 text-slate-600 px-4 py-2 rounded-full text-xs font-bold transition shadow-sm hover:shadow"><i data-lucide="mail" class="w-4 h-4 text-red-500"></i> <span>Email</span></a>
+                                <a href="https://instagram.com/prahastian_21" target="_blank" class="flex items-center space-x-2 bg-white border border-slate-200 hover:border-pink-200 hover:bg-pink-50 text-slate-600 px-4 py-2 rounded-full text-xs font-bold transition shadow-sm hover:shadow"><i data-lucide="instagram" class="w-4 h-4 text-pink-600"></i> <span>Instagram</span></a>
+                                <a href="https://tiktok.com/@mr.gayus18" target="_blank" class="flex items-center space-x-2 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-100 text-slate-600 px-4 py-2 rounded-full text-xs font-bold transition shadow-sm hover:shadow"><i data-lucide="music-2" class="w-4 h-4 text-slate-900"></i> <span>TikTok</span></a>
+                                <a href="https://facebook.com/prahasissyy.shejaty" target="_blank" class="flex items-center space-x-2 bg-white border border-slate-200 hover:border-blue-200 hover:bg-blue-50 text-slate-600 px-4 py-2 rounded-full text-xs font-bold transition shadow-sm hover:shadow"><i data-lucide="facebook" class="w-4 h-4 text-blue-600"></i> <span>Facebook</span></a>
+                                <a href="https://sidsdn04taman.vercel.app/" target="_blank" class="flex items-center space-x-2 bg-white border border-slate-200 hover:border-emerald-200 hover:bg-emerald-50 text-slate-600 px-4 py-2 rounded-full text-xs font-bold transition shadow-sm hover:shadow"><i data-lucide="globe" class="w-4 h-4 text-emerald-600"></i> <span>Website Sekolah</span></a>
                             </div>
                         </div>
 
-                        <!-- Foto Profil Avatar (Kanan, Persegi Panjang, Frame Elegan) -->
+                        <!-- Foto Profil Avatar -->
                         <div class="relative z-10 flex flex-col items-center shrink-0 md:-mt-20">
-                            <!-- Bingkai Foto ala Polaroid/Pigura Klasik -->
                             <div class="bg-white p-3 rounded-lg shadow-xl border border-slate-200 transform rotate-2 hover:rotate-0 transition-all duration-300 relative group-hover:shadow-2xl">
-                                <!-- Efek Selotip Kertas -->
                                 <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-12 h-4 bg-white/70 shadow-sm border border-slate-200 rotate-[-3deg] z-20"></div>
-                                <!-- Kontainer Gambar -->
                                 <div class="border-[3px] border-slate-800 rounded shadow-inner overflow-hidden relative bg-slate-100" style="width: 150px; height: 210px;">
                                     <img src="https://cdn.phototourl.com/free/2026-04-17-64555a53-f2ac-4934-8647-bb4004ba8db7.jpg" alt="Bayu Prahastian" class="w-full h-full object-cover object-top filter contrast-[1.05]">
                                 </div>
-                                <!-- Label Bawah Frame -->
                                 <div class="text-center mt-3 font-bold text-[10px] text-slate-500 tracking-widest uppercase">Wali Kelas</div>
                             </div>
                             <div class="mt-4 flex items-center justify-center bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-full shadow-sm text-xs font-bold">
@@ -413,7 +393,7 @@
                     </div>
                     
                     <table class="w-full text-center border-collapse text-[9px] sm:text-[10px] min-w-[1400px] print:min-w-full">
-                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
+                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold print-color-exact">
                             <tr>
                                 <th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-6">No</th>
                                 <th rowspan="2" class="px-2 py-1 border-r border-slate-300 w-16">NIS</th>
@@ -521,6 +501,80 @@
                                 <div id="container-setting-tp" class="space-y-3"></div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- HALAMAN BARU: JADWAL PELAJARAN -->
+            <div id="hal-jadwal-pelajaran" class="halaman page-transition hidden w-full">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">Jadwal Pelajaran</h2>
+                        <p class="text-sm text-slate-500">Ketik kata "Istirahat", "Upacara", atau "Pulang" untuk pewarnaan otomatis.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 items-end mt-2 md:mt-0">
+                        <button onclick="tambahBarisJadwal()" class="bg-indigo-600 text-white px-3 rounded-lg text-xs font-bold hover:bg-indigo-700 shadow-sm flex items-center h-9 transition hover:-translate-y-0.5"><i data-lucide="plus-circle" class="w-4 h-4 mr-1.5"></i> Tambah Jam</button>
+                        <button onclick="simpanJadwalAksi()" class="bg-blue-600 text-white px-3 rounded-lg text-xs font-bold hover:bg-blue-700 shadow-sm flex items-center h-9 transition hover:-translate-y-0.5"><i data-lucide="save" class="w-4 h-4 mr-1.5"></i> Simpan DB</button>
+                        <button onclick="exportToExcel('area-jadwal-pelajaran', 'Jadwal_Pelajaran')" class="bg-emerald-600 text-white px-3 rounded-lg text-xs font-bold hover:bg-emerald-700 shadow-sm flex items-center h-9 transition hover:-translate-y-0.5"><i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1.5"></i> Excel</button>
+                        <button onclick="cetakLaporan('jadwal')" class="bg-slate-800 text-white px-3 rounded-lg text-xs font-bold hover:bg-slate-900 shadow-sm flex items-center h-9 transition hover:-translate-y-0.5"><i data-lucide="printer" class="w-4 h-4 mr-1.5"></i> Cetak A4</button>
+                    </div>
+                </div>
+                
+                <div id="area-jadwal-pelajaran" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto print-area relative pb-4">
+                    <div class="hidden print:flex justify-between items-center kop-surat px-4 mb-4 pb-2 border-b-2 border-slate-800">
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokiri">
+                        <div class="text-center flex-1 px-4">
+                            <h2 class="font-bold text-[12pt] uppercase">JADWAL MATA PELAJARAN KELAS <span class="print-kelas">IV B</span></h2>
+                            <p class="text-[9pt] print-sub-header">TAHUN AJARAN <span class="print-ta">2025/2026</span><br><span class="print-sekolah font-bold">SD NEGERI 04 TAMAN</span></p>
+                        </div>
+                        <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
+                    </div>
+                    
+                    <table class="w-full text-center border-collapse text-[11px] sm:text-xs">
+                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold print-color-exact">
+                            <tr>
+                                <th rowspan="2" class="px-2 py-2 border-r border-slate-300 w-12 print-color-exact">Jam Ke</th>
+                                <th colspan="6" class="px-2 py-2 border-b border-slate-300 bg-blue-50 text-blue-800 print-color-exact">HARI PELAKSANAAN</th>
+                                <th rowspan="2" class="px-2 py-2 border-l border-slate-300 w-10 no-print">Aksi</th>
+                            </tr>
+                            <tr>
+                                <th class="px-2 py-1.5 border-r border-slate-300 w-1/6 print-color-exact">Senin</th>
+                                <th class="px-2 py-1.5 border-r border-slate-300 w-1/6 print-color-exact">Selasa</th>
+                                <th class="px-2 py-1.5 border-r border-slate-300 w-1/6 print-color-exact">Rabu</th>
+                                <th class="px-2 py-1.5 border-r border-slate-300 w-1/6 print-color-exact">Kamis</th>
+                                <th class="px-2 py-1.5 border-r border-slate-300 w-1/6 print-color-exact">Jumat</th>
+                                <th class="px-2 py-1.5 border-slate-300 w-1/6 print-color-exact">Sabtu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tb-jadwal-pelajaran" class="divide-y divide-slate-200 text-slate-800 font-medium">
+                            <!-- JS Generated -->
+                        </tbody>
+                    </table>
+                    
+                    <div class="hidden print:block mt-6 px-4 w-full">
+                        <table class="w-full border-none !border-transparent text-[9pt]">
+                            <tr>
+                                <td class="text-center align-top border-none !border-transparent w-1/2">
+                                    <p>Mengetahui,</p>
+                                    <p>Kepala Sekolah</p>
+                                    <div class="h-20 flex items-center justify-center relative my-2">
+                                        <img src="" class="max-h-full max-w-full object-contain hidden img-ttdkepsek relative z-10">
+                                        <img src="" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-24 w-24 object-contain mix-blend-multiply opacity-60 hidden img-stempel z-0">
+                                    </div>
+                                    <p class="font-bold underline print-kepsek">Tentrem Lestari, S.Pd.</p>
+                                    <p>NIP. <span class="print-nipkepsek">-</span></p>
+                                </td>
+                                <td class="text-center align-top border-none !border-transparent w-1/2">
+                                    <p id="print-tgl-jadwal">Pemalang, ...</p>
+                                    <p>Guru Kelas <span class="print-kelas">IV B</span></p>
+                                    <div class="h-20 flex items-center justify-center my-2">
+                                        <img src="" class="max-h-full max-w-full object-contain hidden img-ttdguru">
+                                    </div>
+                                    <p class="font-bold underline print-guru">Bayu Prahastian, S.Pd.</p>
+                                    <p>NIP. <span class="print-nipguru">199601212025211014</span></p>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -652,7 +706,7 @@
                     </div>
                     <div class="px-3 pt-2 print-only text-right font-bold italic text-[8pt]" id="info-hari-efektif-cetak">Hari Efektif: 26 Hari</div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-[11px]">
-                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
+                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold print-color-exact">
                             <tr>
                                 <th rowspan="3" class="px-2 py-1 border-r border-slate-300 w-6">No</th>
                                 <th rowspan="3" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 whitespace-nowrap">Nama Murid</th>
@@ -722,7 +776,7 @@
                         <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
-                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
+                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold print-color-exact">
                             <tr>
                                 <th rowspan="2" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap w-48">Nama Murid</th>
                                 <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Bulan 1</th>
@@ -798,7 +852,7 @@
                         <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs">
-                        <thead id="head-formatif" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold"></thead>
+                        <thead id="head-formatif" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold print-color-exact"></thead>
                         <tbody id="tb-formatif" class="divide-y divide-slate-200 text-slate-800"></tbody>
                     </table>
                     
@@ -851,7 +905,7 @@
                         <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs">
-                        <thead id="head-sumatif" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold"></thead>
+                        <thead id="head-sumatif" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold print-color-exact"></thead>
                         <tbody id="tb-sumatif" class="divide-y divide-slate-200 text-slate-800"></tbody>
                     </table>
                     
@@ -903,7 +957,7 @@
                         <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
-                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold">
+                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold print-color-exact">
                             <tr>
                                 <th rowspan="2" class="px-3 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap w-48">Nama Siswa</th>
                                 <th colspan="3" class="px-2 py-1 border-r border-slate-300 border-b">Nilai Keaktifan & Partisipasi</th>
@@ -964,7 +1018,7 @@
                         <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-[11px]">
-                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold" id="head-legger">
+                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold print-color-exact" id="head-legger">
                             <!-- JS Generated Dynamics -->
                         </thead>
                         <tbody id="tb-legger" class="divide-y divide-slate-200 text-slate-800 font-medium"></tbody>
@@ -994,7 +1048,7 @@
                 </div>
             </div>
 
-            <!-- HAL문을 MAN: JURNAL MENGAJAR -->
+            <!-- HALAMAN: JURNAL MENGAJAR -->
             <div id="hal-jurnal-input" class="halaman page-transition hidden w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Jurnal Mengajar Harian</h2></div>
@@ -1050,7 +1104,7 @@
                         <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <table class="w-full text-left border-collapse text-[10px] sm:text-[11px]" id="tabel-jurnal-print">
-                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold uppercase">
+                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold uppercase print-color-exact">
                             <tr><th class="px-3 py-2 w-20 border-r border-slate-300 text-center">Hari/Tgl</th><th class="px-2 py-2 w-10 border-r border-slate-300 text-center">Jam</th><th class="px-3 py-2 w-40 border-r border-slate-300">Mapel / Materi / TP</th><th class="px-3 py-2 border-r border-slate-300">Kegiatan Pembelajaran</th><th class="px-3 py-2 w-28">Refleksi</th></tr>
                         </thead>
                         <tbody id="tb-jurnal" class="divide-y divide-slate-200 text-slate-700 font-medium"></tbody>
@@ -1200,6 +1254,22 @@
                 ]
             }
         };
+        
+        // DEFAULT DATA JADWAL PELAJARAN (Bisa ditimpa oleh DB nanti)
+        let jadwalData = [
+            { jam: "1", senin: "Upacara", selasa: "B. Inggris", rabu: "P. Pancasila", kamis: "PJOK", jumat: "Senam", sabtu: "B. Indonesia" },
+            { jam: "2", senin: "Matematika", selasa: "B. Inggris", rabu: "P. Pancasila", kamis: "PJOK", jumat: "Kebersihan", sabtu: "B. Indonesia" },
+            { jam: "3", senin: "Matematika", selasa: "Matematika", rabu: "P. Pancasila", kamis: "PJOK", jumat: "Asmaul Husna", sabtu: "Kokulikuler" },
+            { jam: "4", senin: "Matematika", selasa: "Matematika", rabu: "P. Pancasila", kamis: "PJOK", jumat: "Matematika", sabtu: "Kokurikuler" },
+            { jam: "5", senin: "Istirahat", selasa: "Istirahat", rabu: "Istirahat", kamis: "Istirahat", jumat: "Istirahat", sabtu: "Istirahat" },
+            { jam: "6", senin: "IPAS", selasa: "Matematika", rabu: "B. Indonesia", kamis: "P. Pancasila", jumat: "Matematika", sabtu: "Peng. Diri" },
+            { jam: "7", senin: "IPAS", selasa: "PAI", rabu: "B. Indonesia", kamis: "P. Pancasila", jumat: "B. Jawa", sabtu: "Peng. Diri" },
+            { jam: "8", senin: "IPAS", selasa: "PAI", rabu: "B. Indonesia", kamis: "Seni", jumat: "B. Jawa", sabtu: "Peng. Diri" },
+            { jam: "9", senin: "Istirahat", selasa: "Istirahat", rabu: "Istirahat", kamis: "Istirahat", jumat: "", sabtu: "" },
+            { jam: "10", senin: "IPAS", selasa: "Sholat Dzuhur", rabu: "B. Indonesia", kamis: "Seni", jumat: "", sabtu: "Jam Tambah" },
+            { jam: "11", senin: "Pulang", selasa: "Pulang", rabu: "Pulang", kamis: "Pulang", jumat: "", sabtu: "" },
+            { jam: "12", senin: "Jam Tambah", selasa: "", rabu: "", kamis: "Jam Tambah", jumat: "", sabtu: "Jam Tambah" }
+        ];
 
         // ------------------------------------------
         // 2. KONEKSI & LOGIKA LOGIN API
@@ -1252,7 +1322,7 @@
         const loader = document.getElementById('loading-overlay');
 
         async function postToDB(payload, successMsg) {
-            if(payload.action === 'simpanJurnal' || payload.action === 'simpanMedia' || payload.action === 'simpanDataInduk') {
+            if(payload.action === 'simpanJurnal' || payload.action === 'simpanMedia' || payload.action === 'simpanDataInduk' || payload.action === 'simpanJadwal') {
                 loader.querySelector('h2').innerText = "Menyimpan Data...";
                 loader.querySelector('p').innerText = "Menyinkronkan ke Database Google Sheets";
                 loader.classList.remove('hidden', 'opacity-0');
@@ -1333,7 +1403,6 @@
                         document.getElementById('inp-media-ttdguru').value = mediaData.ttdGuru || "";
                         document.getElementById('inp-media-stempel').value = mediaData.stempel || "";
                         
-                        // Simpan Logo Kanan (Logo SD) ke LocalStorage untuk digunakan di halaman Login nantinya
                         if(mediaData.logoKanan && mediaData.logoKanan.trim() !== "") {
                             localStorage.setItem('siguru_logo_sd', mediaData.logoKanan);
                             let loginLogo = document.getElementById('login-logo-img');
@@ -1358,6 +1427,14 @@
                     if(resJurnal.status === 'success') listJurnal = resJurnal.data.reverse(); 
                     else listJurnal = [];
                 } catch(e) {}
+
+                // Try Get Jadwal Pelajaran (Optional if DB exists)
+                try {
+                    const resJadwal = await fetch(`${API_URL}?action=getJadwal`).then(r => r.json());
+                    if(resJadwal.status === 'success' && resJadwal.data.length > 0) {
+                        jadwalData = resJadwal.data;
+                    }
+                } catch(e) { console.warn("Load Jadwal (Bisa diabaikan jika belum disetup di backend):", e); }
 
                 initialSetupSemua(usingMock);
             } catch (error) {
@@ -1389,6 +1466,7 @@
             renderLegger();      
             updateJurnalMapel();
             renderTabelJurnal();
+            renderJadwal(); // Init Jadwal
             updateDashboardCharts();
         }
 
@@ -1423,7 +1501,6 @@
             const ctxNilai = document.getElementById('chartNilai');
             if(!ctxGender || !ctxNilai) return;
 
-            // 1. Hitung Gender
             let l = 0, p = 0;
             globalSiswa.forEach(s => {
                 if (s.jk.toUpperCase() === 'L') l++;
@@ -1453,7 +1530,6 @@
                 }
             });
 
-            // 2. Hitung Rata-rata Nilai Formatif per Mapel
             let labelsMapel = Object.keys(mapelData);
             let dataNilai = [];
             
@@ -1604,25 +1680,16 @@
             
             let judul = "Papan Utama";
             
-            // Penyesuaian nama judul berdasarkan idHalaman menu yang baru
-            if(idHalaman === 'dashboard') {
-                updateDashboardCharts();
-            } else if(idHalaman === 'identitas-target') {
-                judul = "Perangkat Ajar";
-                loadMenuSettingMapel();
-            } else if(idHalaman.includes('identitas')) { 
-                judul = "Identitas Kelas"; 
-            }
+            if(idHalaman === 'dashboard') { updateDashboardCharts(); } 
+            else if(idHalaman === 'identitas-target') { judul = "Perangkat Ajar - Target"; loadMenuSettingMapel(); }
+            else if(idHalaman === 'jadwal-pelajaran') { judul = "Jadwal Pelajaran Kelas"; renderJadwal(); }
+            else if(idHalaman.includes('identitas')) { judul = "Identitas Kelas"; }
+            
             if(idHalaman.includes('siswa')) judul = "Administrasi Kehadiran";
             if(idHalaman==='data-siswa') judul = "Data Master Siswa";
             if(idHalaman.includes('nilai')) judul = "Pengolahan Nilai (Rapor)";
             if(idHalaman.includes('jurnal')) { judul = "Jurnal Mengajar"; renderTabelJurnal(); updateJurnalMapel(); }
-            
-            // Apma Handling
-            if(idHalaman === 'apma') { 
-                judul = "APMA - Asisten AI"; 
-                targetHalaman.classList.replace('block', 'flex'); 
-            }
+            if(idHalaman === 'apma') { judul = "APMA - Asisten AI"; targetHalaman.classList.replace('block', 'flex'); }
             
             document.getElementById('judul-halaman').innerText = judul;
 
@@ -1661,7 +1728,6 @@
             mediaData.ttdGuru = document.getElementById('inp-media-ttdguru').value;
             mediaData.stempel = document.getElementById('inp-media-stempel').value;
 
-            // Simpan Logo Kanan (Logo SD) ke LocalStorage untuk digunakan di halaman Login
             if(mediaData.logoKanan && mediaData.logoKanan.trim() !== "") {
                 localStorage.setItem('siguru_logo_sd', mediaData.logoKanan);
                 let loginLogo = document.getElementById('login-logo-img');
@@ -1766,6 +1832,73 @@
             renderFormatif(); renderSumatif(); updateJurnalMapel();
             renderLegger();
             updateDashboardCharts();
+        }
+
+        // --- JADWAL PELAJARAN ---
+        function getWarnaJadwal(val) {
+            if(!val) return "";
+            let text = val.toLowerCase();
+            if(text.includes('istirahat')) return "jdw-istirahat print-color-exact";
+            if(text.includes('upacara')) return "jdw-upacara print-color-exact";
+            if(text.includes('pulang')) return "jdw-pulang print-color-exact";
+            if(text.includes('senam') || text.includes('olahraga') || text.includes('pjok')) return "jdw-senam print-color-exact";
+            return "";
+        }
+
+        function renderJadwal() {
+            let tbody = "";
+            jadwalData.forEach((row, i) => {
+                tbody += `
+                <tr class="align-top hover:bg-slate-50 transition-colors">
+                    <td class="border-r border-slate-300 border-b print-color-exact p-0">
+                        <input type="text" class="w-full h-full min-h-[36px] bg-slate-50 font-bold outline-none text-center px-1" value="${row.jam}" oninput="updJadwal(${i}, 'jam', this.value)">
+                    </td>
+                    <td class="border-r border-slate-300 border-b p-0 print-color-exact">
+                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(row.senin)}" value="${row.senin}" oninput="updJadwal(${i}, 'senin', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
+                    </td>
+                    <td class="border-r border-slate-300 border-b p-0 print-color-exact">
+                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(row.selasa)}" value="${row.selasa}" oninput="updJadwal(${i}, 'selasa', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
+                    </td>
+                    <td class="border-r border-slate-300 border-b p-0 print-color-exact">
+                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(row.rabu)}" value="${row.rabu}" oninput="updJadwal(${i}, 'rabu', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
+                    </td>
+                    <td class="border-r border-slate-300 border-b p-0 print-color-exact">
+                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(row.kamis)}" value="${row.kamis}" oninput="updJadwal(${i}, 'kamis', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
+                    </td>
+                    <td class="border-r border-slate-300 border-b p-0 print-color-exact">
+                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(row.jumat)}" value="${row.jumat}" oninput="updJadwal(${i}, 'jumat', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
+                    </td>
+                    <td class="border-r border-slate-300 border-b p-0 print-color-exact">
+                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(row.sabtu)}" value="${row.sabtu}" oninput="updJadwal(${i}, 'sabtu', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
+                    </td>
+                    <td class="border-l border-slate-300 border-b text-center no-print">
+                        <button onclick="hapusBarisJadwal(${i})" class="text-red-500 hover:bg-red-50 p-1.5 rounded transition" title="Hapus Baris"><i data-lucide="trash-2" class="w-4 h-4 mx-auto"></i></button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('tb-jadwal-pelajaran').innerHTML = tbody;
+            lucide.createIcons();
+        }
+
+        function updJadwal(idx, field, val) {
+            jadwalData[idx][field] = val;
+        }
+
+        function tambahBarisJadwal() {
+            let nextJam = jadwalData.length > 0 ? (parseInt(jadwalData[jadwalData.length-1].jam) || 0) + 1 : 1;
+            jadwalData.push({ jam: nextJam.toString(), senin: "", selasa: "", rabu: "", kamis: "", jumat: "", sabtu: "" });
+            renderJadwal();
+        }
+
+        function hapusBarisJadwal(index) {
+            if(!confirm('Hapus baris jadwal ini?')) return;
+            jadwalData.splice(index, 1);
+            renderJadwal();
+        }
+
+        function simpanJadwalAksi() {
+            let payload = { action: 'simpanJadwal', data: jadwalData };
+            postToDB(payload, "Jadwal Pelajaran berhasil disimpan ke Database Excel!");
         }
 
         // --- SINKRONISASI KOP CETAK ---
@@ -2367,22 +2500,23 @@
                 }
             };
 
-            if(tipe === 'siswa') {
-                overrideDate('tgl-cetak-siswa', '#print-tgl-siswa');
-                renderDataSiswa(); 
-            }
-            if(tipe === 'abs') {
-                overrideDate('tgl-cetak-rekap-bulan', '#print-tgl-rekap');
-                renderRekapBulanan();
-            }
+            if(tipe === 'siswa') { overrideDate('tgl-cetak-siswa', '#print-tgl-siswa'); renderDataSiswa(); }
+            if(tipe === 'abs') { overrideDate('tgl-cetak-rekap-bulan', '#print-tgl-rekap'); renderRekapBulanan(); }
             if(tipe === 'smt') overrideDate('tgl-cetak-rekap-smt', '#print-tgl-smt');
             if(tipe === 'for') overrideDate('tgl-cetak-for', '#print-tgl-for');
             if(tipe === 'sum') overrideDate('tgl-cetak-sum', '#print-tgl-sum');
             if(tipe === 'sikap') overrideDate('tgl-cetak-sikap', '#print-tgl-sikap');
             if(tipe === 'legger') overrideDate('tgl-cetak-legger', '#print-tgl-legger');
             if(tipe === 'jurnal') overrideDate('tgl-cetak-jurnal', '#print-tgl-jurnal');
+            
+            // Tambahan handler cetak untuk Jadwal Pelajaran
+            if(tipe === 'jadwal') { 
+                // Kita ganti label tanggal cetak menjadi Tahun Ajaran saja (atau tanggal cetak dinamis)
+                document.getElementById('print-tgl-jadwal').innerText = `${kota}, ${new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}`;
+            }
 
             if(!document.getElementById('hal-nilai-legger').classList.contains('hidden')) renderLegger();
+            if(!document.getElementById('hal-jadwal-pelajaran').classList.contains('hidden')) renderJadwal();
             
             setTimeout(() => { window.print(); }, 300);
         }
