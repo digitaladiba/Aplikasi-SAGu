@@ -1357,9 +1357,12 @@
             if(isManual) loader.classList.remove('hidden', 'opacity-0');
             let usingMock = false;
             
+            // Penambahan Cache-Buster (Waktu Unik) agar Browser dipaksa ambil data paling baru dari DB
+            let tstamp = new Date().getTime();
+            
             try {
                 try {
-                    const resMapel = await fetch(`${API_URL}?action=getMapel`).then(r => r.json());
+                    const resMapel = await fetch(`${API_URL}?action=getMapel&_t=${tstamp}`).then(r => r.json());
                     if(resMapel.status === 'success' && Object.keys(resMapel.data).length > 0) {
                         let keys = Object.keys(resMapel.data);
                         if(keys.includes("Pendidikan Pancasila") && keys.includes("Muatan Lokal")) {
@@ -1370,7 +1373,7 @@
                 currentSettingMapel = Object.keys(mapelData)[0]; 
 
                 try {
-                    const resSiswa = await fetch(`${API_URL}?action=getSiswa`).then(r => r.json());
+                    const resSiswa = await fetch(`${API_URL}?action=getSiswa&_t=${tstamp}`).then(r => r.json());
                     if(resSiswa.status === 'success' && resSiswa.data.length > 0) { 
                         globalSiswa = resSiswa.data;
                     } else { 
@@ -1383,7 +1386,7 @@
                 }
 
                 try {
-                    const resId = await fetch(`${API_URL}?action=getIdentitas`).then(r => r.json());
+                    const resId = await fetch(`${API_URL}?action=getIdentitas&_t=${tstamp}`).then(r => r.json());
                     if(resId.status === 'success') {
                         const d = resId.data;
                         document.getElementById('inp-sekolah').value = d.sekolah || 'SD Negeri 04 Taman';
@@ -1398,7 +1401,7 @@
                 } catch(e) {}
 
                 try {
-                    const resMedia = await fetch(`${API_URL}?action=getMedia`).then(r => r.json());
+                    const resMedia = await fetch(`${API_URL}?action=getMedia&_t=${tstamp}`).then(r => r.json());
                     if(resMedia.status === 'success') {
                         mediaData = resMedia.data;
                         document.getElementById('inp-media-logokiri').value = mediaData.logoKiri || "";
@@ -1427,14 +1430,14 @@
                 } catch(e) {}
 
                 try {
-                    const resJurnal = await fetch(`${API_URL}?action=getJurnal`).then(r => r.json());
+                    const resJurnal = await fetch(`${API_URL}?action=getJurnal&_t=${tstamp}`).then(r => r.json());
                     if(resJurnal.status === 'success') listJurnal = resJurnal.data.reverse(); 
                     else listJurnal = [];
                 } catch(e) {}
 
                 // Try Get Jadwal Pelajaran (Optional if DB exists)
                 try {
-                    const resJadwal = await fetch(`${API_URL}?action=getJadwal`).then(r => r.json());
+                    const resJadwal = await fetch(`${API_URL}?action=getJadwal&_t=${tstamp}`).then(r => r.json());
                     if(resJadwal.status === 'success' && resJadwal.data.length > 0) {
                         jadwalData = resJadwal.data;
                     }
