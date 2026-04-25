@@ -1463,51 +1463,10 @@
 
                 try {
                     const resJadwal = await fetch(`${API_URL}?action=getJadwal&_t=${tstamp}`).then(r => r.json());
-                    if(resJadwal.status === 'success' && resJadwal.data && resJadwal.data.length > 0) {
-                        let parsedJadwal = [];
-                        resJadwal.data.forEach(row => {
-                            let jam = "", sn = "", sl = "", rb = "", km = "", jm = "", sb = "";
-                            
-                            // Jika format array dari Google Apps Script
-                            if(Array.isArray(row)) {
-                                jam = row[0]; sn = row[1]; sl = row[2]; rb = row[3]; km = row[4]; jm = row[5]; sb = row[6];
-                            } 
-                            // Jika format JSON Object (dengan keys yang berantakan dari Excel)
-                            else if(typeof row === 'object') {
-                                let values = Object.values(row);
-                                jam = row.jam !== undefined ? row.jam : values[0];
-                                sn = row.senin !== undefined ? row.senin : values[1];
-                                sl = row.selasa !== undefined ? row.selasa : values[2];
-                                rb = row.rabu !== undefined ? row.rabu : values[3];
-                                km = row.kamis !== undefined ? row.kamis : values[4];
-                                jm = row.jumat !== undefined ? row.jumat : values[5];
-                                sb = row.sabtu !== undefined ? row.sabtu : values[6];
-                            }
-
-                            // Hindari merender baris judul/header yang kotor dari file CSV
-                            if(String(sn).toLowerCase().trim() === 'senin' || String(jam).toLowerCase().includes('jadwal') || String(jam).toLowerCase() === 'jam ke') {
-                                return; 
-                            }
-                            
-                            // Pastikan baris benar-benar memiliki isi sebelum ditampilkan
-                            if(jam || sn || sl || rb || km || jm || sb) {
-                                parsedJadwal.push({
-                                    jam: String(jam || ""),
-                                    senin: String(sn || ""),
-                                    selasa: String(sl || ""),
-                                    rabu: String(rb || ""),
-                                    kamis: String(km || ""),
-                                    jumat: String(jm || ""),
-                                    sabtu: String(sb || "")
-                                });
-                            }
-                        });
-
-                        if(parsedJadwal.length > 0) {
-                            jadwalData = parsedJadwal;
-                        }
+                    if(resJadwal.status === 'success' && resJadwal.data.length > 0) {
+                        jadwalData = resJadwal.data;
                     }
-                } catch(e) { console.warn("Load Jadwal Error:", e); }
+                } catch(e) {}
 
                 try {
                     const resProsem = await fetch(`${API_URL}?action=getProsem&_t=${tstamp}`).then(r => r.json());
@@ -2056,36 +2015,28 @@
         function renderJadwal() {
             let tbody = "";
             jadwalData.forEach((row, i) => {
-                let jam = row.jam || "";
-                let sn = row.senin || "";
-                let sl = row.selasa || "";
-                let rb = row.rabu || "";
-                let km = row.kamis || "";
-                let jm = row.jumat || "";
-                let sb = row.sabtu || "";
-                
                 tbody += `
                 <tr class="align-top hover:bg-slate-50 transition-colors">
                     <td class="border-r border-slate-300 border-b print-color-exact p-0">
-                        <input type="text" class="w-full h-full min-h-[36px] bg-slate-50 font-bold outline-none text-center px-1" value="${jam}" oninput="updJadwal(${i}, 'jam', this.value)">
+                        <input type="text" class="w-full h-full min-h-[36px] bg-slate-50 font-bold outline-none text-center px-1" value="${row.jam}" oninput="updJadwal(${i}, 'jam', this.value)">
                     </td>
                     <td class="border-r border-slate-300 border-b p-0 print-color-exact">
-                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(sn)}" value="${sn}" oninput="updJadwal(${i}, 'senin', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
+                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(row.senin)}" value="${row.senin}" oninput="updJadwal(${i}, 'senin', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
                     </td>
                     <td class="border-r border-slate-300 border-b p-0 print-color-exact">
-                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(sl)}" value="${sl}" oninput="updJadwal(${i}, 'selasa', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
+                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(row.selasa)}" value="${row.selasa}" oninput="updJadwal(${i}, 'selasa', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
                     </td>
                     <td class="border-r border-slate-300 border-b p-0 print-color-exact">
-                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(rb)}" value="${rb}" oninput="updJadwal(${i}, 'rabu', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
+                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(row.rabu)}" value="${row.rabu}" oninput="updJadwal(${i}, 'rabu', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
                     </td>
                     <td class="border-r border-slate-300 border-b p-0 print-color-exact">
-                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(km)}" value="${km}" oninput="updJadwal(${i}, 'kamis', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
+                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(row.kamis)}" value="${row.kamis}" oninput="updJadwal(${i}, 'kamis', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
                     </td>
                     <td class="border-r border-slate-300 border-b p-0 print-color-exact">
-                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(jm)}" value="${jm}" oninput="updJadwal(${i}, 'jumat', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
+                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(row.jumat)}" value="${row.jumat}" oninput="updJadwal(${i}, 'jumat', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
                     </td>
                     <td class="border-r border-slate-300 border-b p-0 print-color-exact">
-                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(sb)}" value="${sb}" oninput="updJadwal(${i}, 'sabtu', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
+                        <input type="text" class="w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ${getWarnaJadwal(row.sabtu)}" value="${row.sabtu}" oninput="updJadwal(${i}, 'sabtu', this.value); this.className='w-full h-full min-h-[36px] outline-none text-center px-1 transition-colors ' + getWarnaJadwal(this.value)">
                     </td>
                     <td class="border-l border-slate-300 border-b text-center no-print">
                         <button onclick="hapusBarisJadwal(${i})" class="text-red-500 hover:bg-red-50 p-1.5 rounded transition" title="Hapus Baris"><i data-lucide="trash-2" class="w-4 h-4 mx-auto"></i></button>
