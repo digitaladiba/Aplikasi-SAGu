@@ -132,12 +132,9 @@
 
     <!-- Loading Overlay ELEGAN & KLASIK DENGAN FOTO TERINTEGRASI -->
     <div id="loading-overlay" class="fixed inset-0 bg-slate-900 bg-opacity-[0.98] z-[100] flex flex-col items-center justify-center text-white transition-opacity duration-500 hidden">
-        
-        <!-- DUAL-RING SPINNER DENGAN FOTO DI TENGAH -->
         <div class="relative flex items-center justify-center w-32 h-32 mb-6">
             <div class="absolute inset-0 rounded-full border-[3px] border-slate-700 border-t-blue-400 border-r-blue-400 animate-spin shadow-[0_0_20px_rgba(96,165,250,0.3)]"></div>
             <div class="absolute inset-1.5 rounded-full border-[3px] border-slate-700 border-b-indigo-400 border-l-indigo-400 animate-spin-reverse"></div>
-            
             <div class="w-[84px] h-[84px] rounded-full overflow-hidden bg-slate-800 z-10 p-1">
                 <img id="loading-foto-img" src="https://cdn.phototourl.com/free/2026-04-17-64555a53-f2ac-4934-8647-bb4004ba8db7.jpg" class="w-full h-full rounded-full object-cover object-top filter contrast-[1.05]">
             </div>
@@ -267,7 +264,7 @@
         </header>
 
         <div id="mock-warning" class="hidden bg-amber-50 text-amber-700 border-b border-amber-200 px-4 py-2 text-[11px] font-bold text-center w-full no-print flex justify-center items-center">
-            <i data-lucide="cloud-off" class="w-4 h-4 mr-2"></i> Mode Offline Web. Silakan periksa pengaturan Deployment Google Apps Script Anda.
+            <i data-lucide="cloud-off" class="w-4 h-4 mr-2"></i> Mode Offline Web. Silakan periksa pengaturan Google Apps Script Anda.
         </div>
 
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 print-area w-full custom-scrollbar">
@@ -311,12 +308,10 @@
 
                 <!-- DIAGRAM / CHARTS AREA -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10 no-print">
-                    <!-- Diagram Lingkaran (Pie Chart) -->
                     <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition duration-300">
                         <h3 class="text-sm font-bold text-slate-700 mb-4 flex items-center"><i data-lucide="pie-chart" class="w-4 h-4 mr-2 text-blue-500"></i> Statistik Gender Siswa</h3>
                         <div class="relative h-56"><canvas id="chartGender"></canvas></div>
                     </div>
-                    <!-- Diagram Batang (Bar Chart) -->
                     <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition duration-300 lg:col-span-2">
                         <h3 class="text-sm font-bold text-slate-700 mb-4 flex items-center"><i data-lucide="bar-chart-3" class="w-4 h-4 mr-2 text-indigo-500"></i> Rata-Rata Nilai Formatif per Mapel</h3>
                         <div class="relative h-56"><canvas id="chartNilai"></canvas></div>
@@ -334,7 +329,6 @@
                     </div>
                     
                     <div class="px-6 sm:px-10 pb-8 pt-6 relative flex flex-col-reverse md:flex-row md:items-start md:justify-between gap-8">
-                        
                         <div class="flex-1 text-center md:text-left mt-4 md:mt-0">
                             <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">Bayu Prahastian, S.Pd.</h3>
                             <p class="text-sm font-bold text-blue-600 mb-5 tracking-wide uppercase mt-1">Guru SD &bull; SD Negeri 04 Taman</p>
@@ -372,7 +366,6 @@
                             </div>
                         </div>
 
-                        <!-- Foto Profil Avatar -->
                         <div class="relative z-10 flex flex-col items-center shrink-0 md:-mt-20">
                             <div class="bg-white p-3 rounded-lg shadow-xl border border-slate-200 transform rotate-2 hover:rotate-0 transition-all duration-300 relative group-hover:shadow-2xl">
                                 <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-12 h-4 bg-white/70 shadow-sm border border-slate-200 rotate-[-3deg] z-20"></div>
@@ -397,7 +390,6 @@
                         <h2 class="text-xl font-bold text-slate-800">Data Induk Siswa</h2>
                         <p class="text-sm text-slate-500">Kelola dan edit data siswa yang terhubung ke seluruh sistem.</p>
                     </div>
-                    <!-- TOMBOL UI RAPI DAN SIMETRIS -->
                     <div class="flex flex-wrap gap-2 items-end mt-2 md:mt-0">
                         <div class="flex flex-col text-left">
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
@@ -691,7 +683,6 @@
                         <p class="text-xs text-slate-500 mb-6 bg-blue-50 border border-blue-100 p-3 rounded flex items-start"><i data-lucide="info" class="w-4 h-4 text-blue-500 mr-2 shrink-0 mt-0.5"></i> Masukkan URL (link) gambar dengan akhiran .png atau .jpg yang dapat diakses publik (seperti dari Google Drive atau Imgur). Gambar ini nantinya akan terintegrasi otomatis ke menu cetak Laporan dan Cover.</p>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <!-- INPUT FOTO PROFIL GURU BARU -->
                             <div class="space-y-2 md:col-span-2 md:w-1/2 md:mx-auto mb-4">
                                 <label class="block text-[11px] font-bold text-blue-600 uppercase text-center border-b border-blue-100 pb-1 mb-2">URL Foto Profil Guru</label>
                                 <input type="text" id="inp-media-fotoguru" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500 shadow-sm" placeholder="https://..." oninput="previewMedia(this.value, 'prev-fotoguru', 'ph-fotoguru')">
@@ -989,7 +980,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN: PENILAIAN - SUMATIF -->
+            <!-- HAL문을 MAN: PENILAIAN - SUMATIF -->
             <div id="hal-nilai-sumatif" class="halaman page-transition hidden w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Asesmen Sumatif</h2><p class="text-sm text-slate-500">Ketik angka di kolom LM, STS, dan SAS.</p></div>
@@ -1157,7 +1148,7 @@
                 </div>
             </div>
 
-            <!-- HAL문을 MAN: JURNAL MENGAJAR -->
+            <!-- HALAMAN: JURNAL MENGAJAR -->
             <div id="hal-jurnal-input" class="halaman page-transition hidden w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Jurnal Mengajar Harian</h2></div>
@@ -1266,121 +1257,35 @@
         lucide.createIcons();
 
         // ------------------------------------------
-        // 1. DATA MAPEL & TARGET (Default jika DB kosong)
+        // 1. DATA MAPEL & TARGET (Dummy Data Padat)
         // ------------------------------------------
         let mapelData = {
             "Pendidikan Pancasila": {
-                lm: ["Kerja Sama di Lingkunganku", "Pancasila dalam Diriku"],
+                lm: ["Kerja Sama di Lingkunganku"],
                 tp: [
-                    { nama: "menjelaskan dan memberikan contoh kerja sama dalam keberagaman sosial dan budaya", k1: "K1", k2: "K2" },
-                    { nama: "menunjukan sikap kompak dan bersatu melalui gotong royong di sekolah dan masyarakat", k1: "K1", k2: "K2" },
-                    { nama: "menunjukan sikap bangga menjadi anak Indonesia dengan bahasa persatuan", k1: "K1", k2: "K2" },
-                    { nama: "mengidentifikasi dan menjelaskan makna sila-sila pancasila di lingkungan masyarakat", k1: "K1", k2: "K2" },
-                    { nama: "menunjukan sikap dan perilaku sesuai nilai sila-sila pancasila di masyarakat", k1: "K1", k2: "K2" },
-                    { nama: "menjelaskan secara singkat sejarah perumusan pancasila dan mengenal tokoh perumusnya", k1: "K1", k2: "K2" },
-                    { nama: "menceritakan dan meneladai karakter para perumus pancasila", k1: "K1", k2: "K2" }
+                    { nama: "menjelaskan dan memberikan contoh kerja sama", k1: "K1", k2: "K2" },
+                    { nama: "menunjukan sikap kompak dan bersatu", k1: "K1", k2: "K2" }
                 ]
             },
             "Bahasa Indonesia": {
-                lm: ["Bertukar dan Membayar", "Satu Titik", "Asal Usul", "Sahatlah Ragaku"],
+                lm: ["Bertukar dan Membayar"],
                 tp: [
-                    { nama: "memahami informasi dari teks fabel dan infografik", k1: "K1", k2: "K2" },
-                    { nama: "menerapkan kaidah penulisan nilai uang", k1: "K1", k2: "K2" },
-                    { nama: "menulis teks prosedur", k1: "K1", k2: "K2" },
-                    { nama: "berdiskusi tentang kebutuhan dan keinginan", k1: "K1", k2: "K2" },
-                    { nama: "menggunakan kaidah kalimat efektif", k1: "K1", k2: "K2" },
-                    { nama: "memahami makna dan menulis puisi", k1: "K1", k2: "K2" },
-                    { nama: "mengidentifikasi majas metafora", k1: "K1", k2: "K2" },
-                    { nama: "menulis laporan perjalanan berstruktur", k1: "K1", k2: "K2" },
-                    { nama: "memahami teks dan media audio", k1: "K1", k2: "K2" },
-                    { nama: "mengidentifikasi rima dan syair", k1: "K1", k2: "K2" },
-                    { nama: "memahami teks narasi sejarah", k1: "K1", k2: "K2" },
-                    { nama: "menggunakan konjungsi antar kalimat", k1: "K1", k2: "K2" },
-                    { nama: "membedakan informasi fakta dan opini", k1: "K1", k2: "K2" },
-                    { nama: "mengidentifikasi jenis paragraf deduktif dan induktif", k1: "K1", k2: "K2" },
-                    { nama: "melakukan swasuting pada tulisan", k1: "K1", k2: "K2" }
-                ]
-            },
-            "Matematika": {
-                lm: ["Pengukuran", "Geometri", "Analisis Data dan Peluang"],
-                tp: [
-                    { nama: "mengukur luas dengan satuan tidak baku dan baku", k1: "K1", k2: "K2" },
-                    { nama: "mengukur volume dengan satuan tidak baku dan baku", k1: "K1", k2: "K2" },
-                    { nama: "mendeskripsikan ciri-ciri bentuk bangun datar", k1: "K1", k2: "K2" },
-                    { nama: "menyusun komosisi dan dekomposisi bangun datar", k1: "K1", k2: "K2" },
-                    { nama: "menyajikan data dalam bentuk pictogram", k1: "K1", k2: "K2" },
-                    { nama: "menyajikan data dalam bentuk diagram batang", k1: "K1", k2: "K2" }
-                ]
-            },
-            "IPAS": {
-                lm: ["Ini Khas Daerahku", "Peranku di Lingkungan Sekolah dan Masyarakat", "Keragaman Budaya dan Kearifan Lokal", "Menjadi Pahlawan Lingkungan"],
-                tp: [
-                    { nama: "menganalisi bentang alam dengan keaneragaman hayati dan profesi masyarakat", k1: "K1", k2: "K2" },
-                    { nama: "menerapkan peran, tugas serta tanggung jawab di sekolah dan masyarakat", k1: "K1", k2: "K2" },
-                    { nama: "menceritakan keragaman budaya dan kearifan lokal", k1: "K1", k2: "K2" },
-                    { nama: "menunjukan sikap peduli terhadap permasalahan lingkungan", k1: "K1", k2: "K2" },
-                    { nama: "berkontribusi dalam mitigasi perubahan", k1: "K1", k2: "K2" }
-                ]
-            },
-            "Seni Rupa": {
-                lm: ["Menciptakan, Berpikir dan Bekerja Artistik", "Berdampak, Merefleksikan", "Berdampak, Menciptakan"],
-                tp: [
-                    { nama: "Membuat Konstruksi Sederhana", k1: "K1", k2: "K2" },
-                    { nama: "menyusun ulang bentuk dan bangun ruang", k1: "K1", k2: "K2" },
-                    { nama: "Menanggapi Karya Seni Rupa", k1: "K1", k2: "K2" },
-                    { nama: "memberikan umpan balik dampak karya seni", k1: "K1", k2: "K2" },
-                    { nama: "Membuat Karya Seni yang Berdampak", k1: "K1", k2: "K2" },
-                    { nama: "mempresentasikan muatan positif", k1: "K1", k2: "K2" }
-                ]
-            },
-            "Bahasa Inggris": {
-                lm: ["My School Activities", "My PE Class", "My School Day"],
-                tp: [
-                    { nama: "Menyebutkan aktivitas di sekolah", k1: "K1", k2: "K2" },
-                    { nama: "Mendeskripsikan kegiatan", k1: "K1", k2: "K2" },
-                    { nama: "Mengenal tempat di sekolah", k1: "K1", k2: "K2" },
-                    { nama: "Memahami teks sederhana", k1: "K1", k2: "K2" },
-                    { nama: "Memahami instruksi sederhana", k1: "K1", k2: "K2" },
-                    { nama: "Menyebutkan aktivitas olahraga", k1: "K1", k2: "K2" },
-                    { nama: "Mengungkapkan perasaan", k1: "K1", k2: "K2" },
-                    { nama: "Memahami cerita sederhana", k1: "K1", k2: "K2" },
-                    { nama: "Menyebutkan hari dalam seminggu", k1: "K1", k2: "K2" },
-                    { nama: "Membuat jadwal sederhana", k1: "K1", k2: "K2" },
-                    { nama: "Menyebutkan kegiatan harian", k1: "K1", k2: "K2" },
-                    { nama: "Memahami teks sederhana", k1: "K1", k2: "K2" }
-                ]
-            },
-            "Muatan Lokal": {
-                lm: ["Narasi Tradhisi", "Tembang Gambuh", "Crita Pengalaman", "Maca Lan Nulis Aksara Jawa"],
-                tp: [
-                    { nama: "memahami pengertian tradhisi dengan baik dan benar", k1: "K1", k2: "K2" },
-                    { nama: "memahami jenis-jenis tradhisi masyarakat dengan baik", k1: "K1", k2: "K2" },
-                    { nama: "memahami jenis-jenis teks narasi", k1: "K1", k2: "K2" },
-                    { nama: "memahami unsur intrinsik dalam teks narasi", k1: "K1", k2: "K2" },
-                    { nama: "memahami sejarah aksara jawa dengan baik", k1: "K1", k2: "K2" },
-                    { nama: "menulis aksara jawa nglegena pasangan aksara jawa", k1: "K1", k2: "K2" },
-                    { nama: "memahami jenis-jenis shandangan dengan baik", k1: "K1", k2: "K2" }
+                    { nama: "memahami informasi dari teks fabel", k1: "K1", k2: "K2" },
+                    { nama: "menerapkan kaidah penulisan nilai uang", k1: "K1", k2: "K2" }
                 ]
             }
         };
         
-        // DEFAULT DATA JADWAL PELAJARAN (Bisa ditimpa oleh DB nanti)
         let jadwalData = [
             { jam: "1", senin: "Upacara", selasa: "B. Inggris", rabu: "P. Pancasila", kamis: "PJOK", jumat: "Senam", sabtu: "B. Indonesia" },
             { jam: "2", senin: "Matematika", selasa: "B. Inggris", rabu: "P. Pancasila", kamis: "PJOK", jumat: "Kebersihan", sabtu: "B. Indonesia" },
             { jam: "3", senin: "Matematika", selasa: "Matematika", rabu: "P. Pancasila", kamis: "PJOK", jumat: "Asmaul Husna", sabtu: "Kokulikuler" },
-            { jam: "4", senin: "Matematika", selasa: "Matematika", rabu: "P. Pancasila", kamis: "PJOK", jumat: "Matematika", sabtu: "Kokurikuler" },
-            { jam: "5", senin: "Istirahat", selasa: "Istirahat", rabu: "Istirahat", kamis: "Istirahat", jumat: "Istirahat", sabtu: "Istirahat" },
-            { jam: "6", senin: "IPAS", selasa: "Matematika", rabu: "B. Indonesia", kamis: "P. Pancasila", jumat: "Matematika", sabtu: "Peng. Diri" },
-            { jam: "7", senin: "IPAS", selasa: "PAI", rabu: "B. Indonesia", kamis: "P. Pancasila", jumat: "B. Jawa", sabtu: "Peng. Diri" },
-            { jam: "8", senin: "IPAS", selasa: "PAI", rabu: "B. Indonesia", kamis: "Seni", jumat: "B. Jawa", sabtu: "Peng. Diri" },
-            { jam: "9", senin: "Istirahat", selasa: "Istirahat", rabu: "Istirahat", kamis: "Istirahat", jumat: "", sabtu: "" },
-            { jam: "10", senin: "IPAS", selasa: "Sholat Dzuhur", rabu: "B. Indonesia", kamis: "Seni", jumat: "", sabtu: "Jam Tambah" },
-            { jam: "11", senin: "Pulang", selasa: "Pulang", rabu: "Pulang", kamis: "Pulang", jumat: "", sabtu: "" },
-            { jam: "12", senin: "Jam Tambah", selasa: "", rabu: "", kamis: "Jam Tambah", jumat: "", sabtu: "Jam Tambah" }
+            { jam: "4", senin: "Istirahat", selasa: "Istirahat", rabu: "Istirahat", kamis: "Istirahat", jumat: "Istirahat", sabtu: "Istirahat" },
+            { jam: "5", senin: "IPAS", selasa: "Matematika", rabu: "B. Indonesia", kamis: "P. Pancasila", jumat: "Matematika", sabtu: "Peng. Diri" },
+            { jam: "6", senin: "IPAS", selasa: "PAI", rabu: "B. Indonesia", kamis: "P. Pancasila", jumat: "B. Jawa", sabtu: "Peng. Diri" },
+            { jam: "7", senin: "Pulang", selasa: "Pulang", rabu: "Pulang", kamis: "Pulang", jumat: "Pulang", sabtu: "Pulang" }
         ];
 
-        // DEFAULT DATA PROSEM
         let prosemData = {};
 
         // ------------------------------------------
@@ -1468,7 +1373,6 @@
                 loader.classList.remove('hidden', 'opacity-0');
             }
             let usingMock = false;
-            
             let tstamp = new Date().getTime();
             
             try {
@@ -1508,7 +1412,6 @@
                         document.getElementById('inp-guru').value = d.namaGuru || 'Bayu Prahastian, S.Pd.';
                         document.getElementById('inp-nipguru').value = d.nipGuru || '199601212025211014';
                         document.getElementById('inp-kelas').value = d.kelas || 'IV B';
-                        // Get SMT for Prosem rendering
                         document.getElementById('inp-smt').value = d.semester || 'Genap';
                     }
                 } catch(e) {}
@@ -1563,14 +1466,14 @@
                     if(resJadwal.status === 'success' && resJadwal.data.length > 0) {
                         jadwalData = resJadwal.data;
                     }
-                } catch(e) { console.warn("Load Jadwal (Bisa diabaikan jika belum disetup di backend):", e); }
+                } catch(e) {}
 
                 try {
                     const resProsem = await fetch(`${API_URL}?action=getProsem&_t=${tstamp}`).then(r => r.json());
                     if(resProsem.status === 'success' && Object.keys(resProsem.data).length > 0) {
                         prosemData = resProsem.data;
                     }
-                } catch(e) { console.warn("Load Prosem (Bisa diabaikan jika belum disetup di backend):", e); }
+                } catch(e) {}
 
                 initialSetupSemua(usingMock);
             } catch (error) {
@@ -1603,7 +1506,7 @@
             updateJurnalMapel();
             renderTabelJurnal();
             renderJadwal(); 
-            renderProsem(); // Init Prosem
+            renderProsem();
             updateDashboardCharts();
         }
 
@@ -1632,7 +1535,6 @@
             });
         }
 
-        // --- DASHBOARD CHARTS (CHART.JS) ---
         function updateDashboardCharts() {
             const ctxGender = document.getElementById('chartGender');
             const ctxNilai = document.getElementById('chartNilai');
@@ -1714,7 +1616,6 @@
             });
         }
 
-        // --- DATA INDUK SISWA ---
         function renderDataSiswa() {
             let tbody = "";
             let l = 0, p = 0;
@@ -1797,7 +1698,6 @@
             postToDB(payload, "Data Induk Siswa berhasil disimpan ke Database Excel!");
         }
 
-        // --- NAVIGASI UI ---
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
         function toggleAccordion(menuId) {
             const menu = document.getElementById(menuId);
@@ -1844,7 +1744,6 @@
             if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('-translate-x-full');
         }
 
-        // --- KELENGKAPAN KELAS ---
         function previewMedia(url, imgId, phId) {
             const img = document.getElementById(imgId);
             const ph = document.getElementById(phId);
@@ -2002,7 +1901,6 @@
             if(!m) return;
             document.getElementById('print-mapel-prosem').innerText = m;
 
-            // Auto-init Prosem jika kosong, ambil dari data TP Mapel bersangkutan
             if (!prosemData[m] || prosemData[m].length === 0) {
                 prosemData[m] = [];
                 if (mapelData[m] && mapelData[m].tp) {
@@ -2014,7 +1912,6 @@
 
             let months = getBulanProsem();
             
-            // Build Header Dinamis berdasarkan Semester
             let th1 = `<tr>
                 <th rowspan="2" class="px-2 py-2 border-r border-slate-300 w-8 print-color-exact">No</th>
                 <th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 shadow-[1px_0_0_0_#cbd5e1] min-w-[200px] w-64 print-color-exact">Nomor ATP / Topik</th>
@@ -2034,7 +1931,6 @@
             
             document.getElementById('head-prosem').innerHTML = th1 + th2;
 
-            // Build Body Data
             let tbody = "";
             prosemData[m].forEach((row, i) => {
                 let cellWeeks = "";
@@ -2104,7 +2000,6 @@
             let payload = { action: 'simpanProsem', data: prosemData };
             postToDB(payload, "Program Semester berhasil disimpan ke Database Excel!");
         }
-
 
         // --- JADWAL PELAJARAN ---
         function getWarnaJadwal(val) {
@@ -2203,7 +2098,6 @@
             let today = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
             let kota = document.getElementById('inp-kota').value;
             document.querySelectorAll('[id^="print-tgl-"]').forEach(e => {
-                // Jangan override jika dia jadwal atau prosem (karena user bisa ketik custom tgl)
                 if(e.id !== 'print-tgl-jadwal' && e.id !== 'print-tgl-prosem') {
                     e.innerText = `${kota}, ${today}`;
                 }
@@ -2221,7 +2115,6 @@
             
             let clone = container.cloneNode(true);
             
-            // Konversi Input ke Span
             let inputs = clone.querySelectorAll('input:not([type="checkbox"]), textarea');
             inputs.forEach(inp => {
                 let span = document.createElement('span');
@@ -2229,10 +2122,9 @@
                 inp.parentNode.replaceChild(span, inp);
             });
 
-            // Konversi Sel Prosem Berwarna menjadi teks 'v' atau dibiarkan dengan warna di excel
             let prosemCells = clone.querySelectorAll('.cell-prosem.bg-blue-500');
             prosemCells.forEach(cell => {
-                cell.innerText = "v"; // Penanda di excel
+                cell.innerText = "v"; 
                 cell.style.backgroundColor = "#3b82f6";
                 cell.style.color = "#ffffff";
             });
@@ -2433,12 +2325,10 @@
             postToDB(payload, "Data Absensi Bulan " + bulan + " berhasil dikirim!");
         }
 
-        // --- PENILAIAN INPUT DINAMIS ---
         function initDropdownMapel() {
             let opts = "";
             for(let m in mapelData) opts += `<option value="${m}">${m}</option>`;
             
-            // Populating mapels to formatif, sumatif, and now prosem
             document.getElementById('filter-mapel-formatif').innerHTML = opts;
             document.getElementById('filter-mapel-sumatif').innerHTML = opts;
             let pOpt = document.getElementById('filter-mapel-prosem');
@@ -2800,4 +2690,37 @@
             if(tipe === 'sikap') overrideDate('tgl-cetak-sikap', '#print-tgl-sikap');
             if(tipe === 'legger') overrideDate('tgl-cetak-legger', '#print-tgl-legger');
             if(tipe === 'jurnal') overrideDate('tgl-cetak-jurnal', '#print-tgl-jurnal');
-            if(tipe === '
+            if(tipe === 'jadwal') overrideDate('tgl-cetak-jadwal', '#print-tgl-jadwal');
+            if(tipe === 'prosem') overrideDate('tgl-cetak-prosem', '#print-tgl-prosem');
+
+            if(!document.getElementById('hal-nilai-legger').classList.contains('hidden')) renderLegger();
+            if(!document.getElementById('hal-jadwal-pelajaran').classList.contains('hidden')) renderJadwal();
+            if(!document.getElementById('hal-prosem').classList.contains('hidden')) renderProsem();
+            
+            setTimeout(() => { window.print(); }, 300);
+        }
+
+        window.onload = () => {
+            let savedLogoSD = localStorage.getItem('siguru_logo_sd');
+            let savedFotoGuru = localStorage.getItem('siguru_foto_guru');
+            
+            let loginLogo = document.getElementById('login-logo-img');
+            let loginFallback = document.getElementById('login-logo-fallback');
+            let loadingFoto = document.getElementById('loading-foto-img');
+            
+            if (savedLogoSD && loginLogo && loginFallback) {
+                loginLogo.src = savedLogoSD;
+                loginLogo.classList.remove('hidden');
+                loginFallback.classList.add('hidden');
+            }
+            
+            if (savedFotoGuru && loadingFoto) {
+                loadingFoto.src = savedFotoGuru;
+            }
+
+            pindahHalaman('dashboard', document.querySelector('[data-target="dashboard"]'));
+            checkAuth(); 
+        };
+    </script>
+</body>
+</html>
