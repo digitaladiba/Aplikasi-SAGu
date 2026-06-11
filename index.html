@@ -241,12 +241,7 @@
                 <h2 id="judul-halaman" class="text-lg font-bold text-slate-800 hidden sm:block">Dashboard</h2>
             </div>
             <div class="flex items-center space-x-3">
-                <!-- TOMBOL PULIHKAN DATA LOKAL -->
-                <button onclick="pulihkanDataLokal()" class="flex items-center px-3 py-1.5 bg-amber-100 text-amber-700 hover:bg-amber-200 rounded-lg text-xs font-bold transition shadow-sm border border-amber-200" title="Tarik data dari memori perangkat ini">
-                    <i data-lucide="database-backup" class="w-4 h-4 mr-1.5"></i> <span class="hidden md:block">Pulihkan Data Lokal</span>
-                </button>
-                
-                <div class="text-right hidden md:block border-l border-slate-200 pl-3">
+                <div class="text-right hidden md:block pl-3">
                     <p class="text-sm font-bold text-slate-800" id="header-nama">Guru Kelas</p>
                     <p class="text-xs text-slate-500" id="header-kelas">Terkoneksi LocalStorage</p>
                 </div>
@@ -365,7 +360,7 @@
                             <div class="bg-white p-3 rounded-lg shadow-xl border border-slate-200 transform rotate-2 hover:rotate-0 transition-all duration-300 relative group-hover:shadow-2xl">
                                 <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-12 h-4 bg-white/70 shadow-sm border border-slate-200 rotate-[-3deg] z-20"></div>
                                 <div class="border-[3px] border-slate-800 rounded shadow-inner overflow-hidden relative bg-slate-100" style="width: 150px; height: 210px;">
-                                    <img id="dash-foto-guru" src="https://cdn.phototourl.com/free/2026-04-17-64555a53-f2ac-4934-8647-bb4004ba8db7.jpg" alt="Foto Guru" class="img-fotoguru w-full h-full object-cover object-top filter contrast-[1.05]" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS11c2VyIj48cGF0aCBkPSJNMTkgMjF2LTJhNCA0IDAgMCAwLTQtNEg5YTQgNCAwIDAgMC00 0djIiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjciIHI9IjQiLz48L3N2Zz4='">
+                                    <img id="dash-foto-guru" src="https://cdn.phototourl.com/free/2026-04-17-64555a53-f2ac-4934-8647-bb4004ba8db7.jpg" alt="Foto Guru" class="img-fotoguru w-full h-full object-cover object-top filter contrast-[1.05]">
                                 </div>
                                 <div class="text-center mt-3 font-bold text-[10px] text-slate-500 tracking-widest uppercase">Wali Kelas</div>
                             </div>
@@ -867,7 +862,7 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
                     <div>
                         <h2 class="text-xl font-bold text-slate-800">Asesmen Formatif</h2>
-                        <p class="text-sm text-slate-500">Ketik angka pada kolom K1 dan K2 untuk mengubah nilai.</p>
+                        <p class="text-sm text-slate-500">Ketik angka (atau <b>Paste</b> dari Excel) pada kolom K1 dan K2 untuk mengubah nilai.</p>
                     </div>
                     <div class="flex flex-wrap gap-2 items-end mt-2 md:mt-0">
                         <select id="filter-mapel-formatif" onchange="renderFormatif()" class="border border-slate-300 rounded px-2 py-1 text-xs outline-none focus:border-blue-500 bg-white font-bold h-9 w-[160px]"></select>
@@ -921,7 +916,7 @@
             <!-- HALAMAN: PENILAIAN - SUMATIF -->
             <div id="hal-nilai-sumatif" class="halaman page-transition hidden w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
-                    <div><h2 class="text-xl font-bold text-slate-800">Asesmen Sumatif</h2><p class="text-sm text-slate-500">Ketik angka di kolom LM, STS, dan SAS.</p></div>
+                    <div><h2 class="text-xl font-bold text-slate-800">Asesmen Sumatif</h2><p class="text-sm text-slate-500">Ketik angka (atau <b>Paste</b> dari Excel) di kolom LM, STS, dan SAS.</p></div>
                     <div class="flex flex-wrap gap-2 items-end mt-2 md:mt-0">
                         <select id="filter-mapel-sumatif" onchange="renderSumatif()" class="border border-slate-300 rounded px-2 py-1 text-xs outline-none focus:border-blue-500 bg-white font-bold h-9 w-[160px]"></select>
                         <div class="flex flex-col text-left">
@@ -974,7 +969,7 @@
             <!-- HALAMAN: PENILAIAN - SIKAP -->
             <div id="hal-nilai-sikap" class="halaman page-transition hidden w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
-                    <div><h2 class="text-xl font-bold text-slate-800">Keaktifan & Sikap</h2><p class="text-sm text-slate-500">Nilai (0-100). Predikat terisi otomatis.</p></div>
+                    <div><h2 class="text-xl font-bold text-slate-800">Keaktifan & Sikap</h2><p class="text-sm text-slate-500">Nilai (0-100). Predikat otomatis. Bisa <b>Paste</b> dari Excel.</p></div>
                     <div class="flex flex-wrap gap-2 items-end mt-2 md:mt-0">
                         <div class="flex flex-col text-left">
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
@@ -1195,6 +1190,49 @@
         lucide.createIcons();
 
         // ------------------------------------------
+        // EVENT LISTENER UNTUK BULK PASTE EXCEL
+        // ------------------------------------------
+        document.addEventListener('paste', function(e) {
+            if (e.target.classList.contains('cell-input')) {
+                e.preventDefault();
+                let pasteData = (e.clipboardData || window.clipboardData).getData('text');
+                
+                // Pisahkan berdasarkan baris (Enter)
+                let rows = pasteData.split(/\r\n|\n|\r/);
+
+                let targetTd = e.target.closest('td');
+                let targetTr = targetTd.closest('tr');
+                let tbody = targetTr.closest('tbody');
+                
+                let startRowIdx = Array.from(tbody.children).indexOf(targetTr);
+                let allTds = Array.from(targetTr.children);
+                let startColIdx = allTds.indexOf(targetTd);
+
+                for (let i = 0; i < rows.length; i++) {
+                    if (rows[i].trim() === '' && i === rows.length - 1) continue; 
+                    
+                    let cols = rows[i].split('\t'); // Pisahkan berdasarkan kolom (Tab dari Excel)
+                    let currentRow = tbody.children[startRowIdx + i];
+                    
+                    if (currentRow) {
+                        for (let j = 0; j < cols.length; j++) {
+                            let currentCol = currentRow.children[startColIdx + j];
+                            if (currentCol) {
+                                let input = currentCol.querySelector('input.cell-input');
+                                if (input) {
+                                    // Bersihkan dan masukkan nilai
+                                    input.value = cols[j].trim();
+                                    // Eksekusi fungsi kalkulasi agar NA/Rata-rata terhitung & tersimpan
+                                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // ------------------------------------------
         // 1. DATA MAPEL & TARGET (Default jika DB kosong)
         // ------------------------------------------
         let mapelData = {
@@ -1369,47 +1407,8 @@
             localStorage.setItem('siguru_jadwal_cache', JSON.stringify(jadwalData));
         }
 
-        // FUNGSI BARU UNTUK MEMAKSA MENARIK DATA YANG TERTINGGAL DI BROWSER TADI PAGI
-        function pulihkanDataLokal() {
-            let cAbs = localStorage.getItem('siguru_absen_cache');
-            let cNil = localStorage.getItem('siguru_nilai_cache');
-            let recovered = false;
-            
-            if(cAbs && cAbs !== "{}" && cAbs !== "null") { 
-                let parsedAbs = JSON.parse(cAbs);
-                // CEK FORMAT LAMA TADI PAGI (jika tidak ada label bulan)
-                if(parsedAbs["0"] && parsedAbs["0"].hari) {
-                    let blnSekarang = document.getElementById('filter-bulan-absen-input').value;
-                    currentAbsenData = {};
-                    currentAbsenData[blnSekarang] = parsedAbs;
-                } else {
-                    currentAbsenData = parsedAbs;
-                }
-                recovered = true; 
-            }
-            if(cNil && cNil !== "{}" && cNil !== "null") { 
-                nilaiSiswa = JSON.parse(cNil); 
-                recovered = true; 
-            }
-            
-            if(recovered) {
-                renderInputAbsenBulan();
-                renderRekapBulanan();
-                renderFormatif();
-                renderSumatif();
-                renderSikap();
-                renderLegger();
-                if(document.getElementById('hal-siswa-rekapsemester') && !document.getElementById('hal-siswa-rekapsemester').classList.contains('hidden')) {
-                    renderRekapSemester();
-                }
-                alert("BERHASIL: Data lokal ditarik!\n\nJika data absen tadi pagi muncul, pastikan Anda berada di pilihan BULAN yang tepat pada menu dropdown, lalu klik SIMPAN DB.");
-            } else {
-                alert("MOHON MAAF: Memori browser Anda benar-benar kosong.\n\nData tadi pagi kemungkinan sudah tertimpa, terhapus oleh browser (clear cache), atau Anda membuka web menggunakan Incognito/Browser yang berbeda.");
-            }
-        }
-
         async function postToDB(payload, successMsg) {
-            saveAllToLocal(); // Simpan ke local storage agar aman dari refresh
+            saveAllToLocal(); 
             
             const actionsDB = ['simpanJurnal', 'simpanMedia', 'simpanDataInduk', 'simpanJadwal', 'simpanMapel', 'simpanAbsen', 'simpanFormatif', 'simpanSumatif', 'simpanSikap'];
             if(actionsDB.includes(payload.action)) {
@@ -1541,6 +1540,15 @@
                         jadwalData = resJadwal.data;
                     }
                 } catch(e) {}
+                
+                // Fetch Absen & Nilai
+                try {
+                    const resAN = await fetch(`${API_URL}?action=getAbsenNilai&_t=${tstamp}`).then(r => r.json());
+                    if(resAN.status === 'success') {
+                        if(resAN.data.absen && Object.keys(resAN.data.absen).length > 0) currentAbsenData = resAN.data.absen;
+                        if(resAN.data.nilai && Object.keys(resAN.data.nilai).length > 0) nilaiSiswa = resAN.data.nilai;
+                    }
+                } catch(e) {}
 
                 initialSetupSemua(usingMock);
             } catch (error) {
@@ -1553,24 +1561,11 @@
         }
 
         function loadFromLocalCache(usingMock) {
-            // FALLBACK KEAMANAN: Jika online tapi data dari Cloud ternyata KOSONG, 
-            // kita tarik kembali data dari Local Storage perangkat agar tidak hilang.
-            
             let cSis = localStorage.getItem('siguru_siswa_cache');
-            if(cSis && (usingMock || globalSiswa.length === 0)) globalSiswa = JSON.parse(cSis);
+            if(cSis && usingMock) globalSiswa = JSON.parse(cSis);
 
             let cAbs = localStorage.getItem('siguru_absen_cache');
-            if (cAbs && (usingMock || Object.keys(currentAbsenData).length === 0)) {
-                let parsedAbs = JSON.parse(cAbs);
-                // TRANSLATOR DATA LAMA KE FORMAT BULAN BARU
-                if(parsedAbs["0"] && parsedAbs["0"].hari) {
-                    let blnSekarang = document.getElementById('filter-bulan-absen-input').value;
-                    currentAbsenData = {};
-                    currentAbsenData[blnSekarang] = parsedAbs;
-                } else {
-                    currentAbsenData = parsedAbs;
-                }
-            }
+            if (cAbs && (usingMock || Object.keys(currentAbsenData).length === 0)) currentAbsenData = JSON.parse(cAbs);
 
             let cNil = localStorage.getItem('siguru_nilai_cache');
             if (cNil && (usingMock || Object.keys(nilaiSiswa).length === 0)) nilaiSiswa = JSON.parse(cNil);
@@ -1578,7 +1573,6 @@
             let cMapel = localStorage.getItem('siguru_mapel_cache');
             if (cMapel) {
                 let parsedMapel = JSON.parse(cMapel);
-                // Perbaikan otomatis: Timpa cache Muatan Lokal jika TP-nya kurang (kasus data lama)
                 if (parsedMapel["Muatan Lokal"] && parsedMapel["Muatan Lokal"].tp.length < 10) {
                     parsedMapel["Muatan Lokal"] = mapelData["Muatan Lokal"];
                 }
@@ -1594,18 +1588,13 @@
             
             if(usingMock) {
                 document.getElementById('mock-warning').classList.remove('hidden');
-                document.getElementById('header-kelas').innerText = "Terkoneksi LocalStorage (Offline)";
-                document.getElementById('db-status-indicator').innerHTML = `<div class="w-2 h-2 rounded-full bg-amber-500 mr-1 animate-pulse"></div> Local Mode`;
             } else {
                 document.getElementById('mock-warning').classList.add('hidden');
-                document.getElementById('header-kelas').innerText = "Terkoneksi Database Cloud";
-                document.getElementById('db-status-indicator').innerHTML = `<div class="w-2 h-2 rounded-full bg-emerald-500 mr-1 animate-pulse"></div> Live API`;
-                saveAllToLocal(); // Backup data cloud terbaru ke Local Storage perangkat
             }
 
             document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
             initDataNilai();
-            initMockAbsen(); // Menginisialisasi yang masih kosong
+            initMockAbsen();
             renderDataSiswa();
             renderInputAbsenBulan();
             renderRekapBulanan();
@@ -1615,7 +1604,6 @@
             updateJurnalMapel();
             renderTabelJurnal();
             renderJadwal();
-            renderRekapSemester();
             updateDashboardCharts();
         }
 
@@ -1775,7 +1763,6 @@
                 document.getElementById('print-sum-j').innerText = l + p;
                 updateDashboardCharts();
             }
-            saveAllToLocal();
         }
 
         function tambahSiswa() {
@@ -1783,7 +1770,6 @@
             globalSiswa.push(newSiswa);
             initDataNilai(); 
             renderDataSiswa();
-            saveAllToLocal();
         }
 
         function hapusSiswaData(index) {
@@ -1841,10 +1827,7 @@
             else if(idHalaman === 'jadwal-pelajaran') { judul = "Jadwal Pelajaran Kelas"; renderJadwal(); }
             else if(idHalaman.includes('identitas')) { judul = "Identitas Kelas"; }
             
-            if(idHalaman.includes('siswa')) { 
-                judul = "Administrasi Kehadiran"; 
-                if(idHalaman === 'siswa-rekapsemester') renderRekapSemester();
-            }
+            if(idHalaman.includes('siswa')) judul = "Administrasi Kehadiran";
             if(idHalaman==='data-siswa') judul = "Data Master Siswa";
             if(idHalaman.includes('nilai')) judul = "Pengolahan Nilai (Rapor)";
             if(idHalaman.includes('jurnal')) { judul = "Jurnal Mengajar"; renderTabelJurnal(); updateJurnalMapel(); }
@@ -2052,25 +2035,17 @@
             lucide.createIcons();
         }
 
-        function updJadwal(idx, field, val) { 
-            jadwalData[idx][field] = val; 
-            saveAllToLocal();
-        }
-        
+        function updJadwal(idx, field, val) { jadwalData[idx][field] = val; }
         function tambahBarisJadwal() {
             let nextJam = jadwalData.length > 0 ? (parseInt(jadwalData[jadwalData.length-1].jam) || 0) + 1 : 1;
             jadwalData.push({ jam: nextJam.toString(), senin: "", selasa: "", rabu: "", kamis: "", jumat: "", sabtu: "" });
             renderJadwal();
-            saveAllToLocal();
         }
-        
         function hapusBarisJadwal(index) {
             if(!confirm('Hapus baris jadwal ini?')) return;
             jadwalData.splice(index, 1);
             renderJadwal();
-            saveAllToLocal();
         }
-        
         function simpanJadwalAksi() {
             let payload = { action: 'simpanJadwal', data: jadwalData };
             postToDB(payload, "Jadwal Pelajaran berhasil disimpan ke Database Excel!");
@@ -2354,45 +2329,6 @@
             postToDB(payload, "Data Absensi berhasil diamankan!");
         }
 
-        function renderRekapSemester() {
-            let tbody = "";
-            let months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
-            
-            globalSiswa.forEach((s, i) => {
-                let tdBulan = "";
-                let totH = 0, totS = 0, totI = 0, totA = 0;
-                
-                months.forEach(bln => {
-                    let h=0, s_abs=0, iz=0, a=0;
-                    if(currentAbsenData[bln] && currentAbsenData[bln][i]) {
-                        let hari = currentAbsenData[bln][i].hari;
-                        for(let d in hari) {
-                            if(hari[d] === 'H') h++;
-                            else if(hari[d] === 'S') s_abs++;
-                            else if(hari[d] === 'I') iz++;
-                            else if(hari[d] === 'A') a++;
-                        }
-                    }
-                    tdBulan += `<td class="border-r border-slate-300 font-medium">${h}</td><td class="border-r border-slate-300 font-medium">${s_abs}</td><td class="border-r border-slate-300 font-medium">${iz}</td><td class="border-r border-slate-300 font-medium text-red-500">${a}</td>`;
-                    totH += h; totS += s_abs; totI += iz; totA += a;
-                });
-                
-                let totalHari = totH + totS + totI + totA;
-                let pct = totalHari > 0 ? Math.round((totH/totalHari)*100) : 0;
-                
-                tbody += `<tr class="hover:bg-slate-50">
-                    <td class="px-2 py-1 border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap w-48">${s.nama}</td>
-                    ${tdBulan}
-                    <td class="border-r border-slate-300 border-b bg-blue-50 font-bold">${totH}</td>
-                    <td class="border-r border-slate-300 border-b bg-blue-50 font-bold">${totS}</td>
-                    <td class="border-r border-slate-300 border-b bg-blue-50 font-bold">${totI}</td>
-                    <td class="border-r border-slate-300 border-b bg-blue-50 font-bold text-red-600">${totA}</td>
-                    <td class="border-b border-slate-300 bg-blue-50 font-bold text-blue-700">${pct}%</td>
-                </tr>`;
-            });
-            document.getElementById('tb-rekap-smt').innerHTML = tbody;
-        }
-
         // --- PENILAIAN INPUT DINAMIS ---
         function initDropdownMapel() {
             let opts = "";
@@ -2423,16 +2359,11 @@
                 let rt = 0; let cells = ""; let validTpCount = 0;
                 for(let x=0; x<jml; x++) {
                     let f = nilaiSiswa[i].formatif[m][x] || {k1:'', k2:''}; 
-                    let na = '-';
-                    
-                    let k1 = parseFloat(f.k1);
-                    let k2 = parseFloat(f.k2);
-                    if (!isNaN(k1) && !isNaN(k2)) na = Math.round((k1 + k2) / 2);
-                    else if (!isNaN(k1)) na = k1;
-                    else if (!isNaN(k2)) na = k2;
-                    
-                    if(na !== '-') { rt += na; validTpCount++; }
-
+                    let na = '';
+                    if(f.k1 !== '' && f.k2 !== '') {
+                        na = Math.round((parseInt(f.k1) + parseInt(f.k2))/2);
+                        rt += na; validTpCount++;
+                    }
                     cells += `<td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${f.k1}" oninput="updForm(${i}, '${m}', ${x}, 'k1', this.value)"></td>
                               <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${f.k2}" oninput="updForm(${i}, '${m}', ${x}, 'k2', this.value)"></td>
                               <td class="border-r border-slate-300 border-b font-bold bg-slate-50" id="na-f-${i}-${x}">${na}</td>`;
@@ -2448,29 +2379,16 @@
             nilaiSiswa[sIdx].formatif[mapel][tpIdx][field] = v;
             let f = nilaiSiswa[sIdx].formatif[mapel][tpIdx];
             
-            let na = '-';
-            let k1 = parseFloat(f.k1);
-            let k2 = parseFloat(f.k2);
-            if (!isNaN(k1) && !isNaN(k2)) na = Math.round((k1 + k2) / 2);
-            else if (!isNaN(k1)) na = k1;
-            else if (!isNaN(k2)) na = k2;
-            
+            let na = '';
+            if(f.k1 !== '' && f.k2 !== '') { na = Math.round((parseInt(f.k1) + parseInt(f.k2))/2); }
             document.getElementById(`na-f-${sIdx}-${tpIdx}`).innerText = na;
             
             let rt = 0; let count = 0;
             nilaiSiswa[sIdx].formatif[mapel].forEach(x => { 
-                let nTp = '-';
-                let xk1 = parseFloat(x.k1);
-                let xk2 = parseFloat(x.k2);
-                if (!isNaN(xk1) && !isNaN(xk2)) nTp = Math.round((xk1 + xk2) / 2);
-                else if (!isNaN(xk1)) nTp = xk1;
-                else if (!isNaN(xk2)) nTp = xk2;
-                
-                if(nTp !== '-') { rt += nTp; count++; }
+                if(x.k1 !== '' && x.k2 !== '') { rt += Math.round((parseInt(x.k1) + parseInt(x.k2))/2); count++; }
             });
             document.getElementById(`rt-f-${sIdx}`).innerText = count > 0 ? Math.round(rt/count) : '-';
             updateDashboardCharts();
-            saveAllToLocal();
         }
 
         function simpanFormatifAksi() {
@@ -2505,13 +2423,9 @@
                 rtLM = countLM > 0 ? Math.round(rtLM/countLM) : '-';
                 
                 let rapor = '-';
-                let sum = 0; let weight = 0;
-                if(rtLM !== '-') { sum += rtLM; weight += 1; }
-                let sts = parseFloat(smt.sts);
-                if(!isNaN(sts)) { sum += sts; weight += 1; }
-                let sas = parseFloat(smt.sas);
-                if(!isNaN(sas)) { sum += (sas * 2); weight += 2; }
-                if(weight > 0) rapor = Math.round(sum / weight);
+                if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
+                    rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); 
+                }
                 
                 tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white w-48 whitespace-nowrap overflow-hidden text-ellipsis">${s.nama}</td>
                 ${cells}
@@ -2535,16 +2449,10 @@
             document.getElementById(`rtl-${sIdx}`).innerText = rtLM;
             
             let rapor = '-';
-            let sum = 0; let weight = 0;
-            if(rtLM !== '-') { sum += rtLM; weight += 1; }
-            let sts = parseFloat(smt.sts);
-            if(!isNaN(sts)) { sum += sts; weight += 1; }
-            let sas = parseFloat(smt.sas);
-            if(!isNaN(sas)) { sum += (sas * 2); weight += 2; }
-            if(weight > 0) rapor = Math.round(sum / weight);
-
+            if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
+                rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4);
+            }
             document.getElementById(`na-s-${sIdx}`).innerText = rapor;
-            saveAllToLocal();
         }
 
         function simpanSumatifAksi() {
@@ -2588,7 +2496,6 @@
             
             document.getElementById(`pr-a-${sIdx}`).innerText = prA;
             document.getElementById(`pr-b-${sIdx}`).innerText = prB;
-            saveAllToLocal();
         }
 
         function simpanSikapAksi() {
@@ -2638,15 +2545,8 @@
                         }
                         let rtLM = countLM > 0 ? (sumLM/countLM) : '-';
                         
-                        let sum = 0; let weight = 0;
-                        if(rtLM !== '-') { sum += rtLM; weight += 1; }
-                        let sts = parseFloat(smt.sts);
-                        if(!isNaN(sts)) { sum += sts; weight += 1; }
-                        let sas = parseFloat(smt.sas);
-                        if(!isNaN(sas)) { sum += (sas * 2); weight += 2; }
-                        
-                        if(weight > 0) {
-                            na = Math.round(sum / weight);
+                        if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
+                            na = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4);
                             totalRapor += na; nMapel++;
                         }
                     }
