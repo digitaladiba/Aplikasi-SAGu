@@ -1190,16 +1190,13 @@
         lucide.createIcons();
 
         // ------------------------------------------
-        // EVENT LISTENER UNTUK BULK PASTE EXCEL
+        // EVENT LISTENER BULK PASTE EXCEL (PENILAIAN)
         // ------------------------------------------
         document.addEventListener('paste', function(e) {
             if (e.target.classList.contains('cell-input')) {
                 e.preventDefault();
                 let pasteData = (e.clipboardData || window.clipboardData).getData('text');
-                
-                // Pisahkan berdasarkan baris (Enter)
                 let rows = pasteData.split(/\r\n|\n|\r/);
-
                 let targetTd = e.target.closest('td');
                 let targetTr = targetTd.closest('tr');
                 let tbody = targetTr.closest('tbody');
@@ -1210,8 +1207,7 @@
 
                 for (let i = 0; i < rows.length; i++) {
                     if (rows[i].trim() === '' && i === rows.length - 1) continue; 
-                    
-                    let cols = rows[i].split('\t'); // Pisahkan berdasarkan kolom (Tab dari Excel)
+                    let cols = rows[i].split('\t'); 
                     let currentRow = tbody.children[startRowIdx + i];
                     
                     if (currentRow) {
@@ -1220,14 +1216,73 @@
                             if (currentCol) {
                                 let input = currentCol.querySelector('input.cell-input');
                                 if (input) {
-                                    // Bersihkan dan masukkan nilai
                                     input.value = cols[j].trim();
-                                    // Eksekusi fungsi kalkulasi agar NA/Rata-rata terhitung & tersimpan
                                     input.dispatchEvent(new Event('input', { bubbles: true }));
                                 }
                             }
                         }
                     }
+                }
+            }
+        });
+
+        // ------------------------------------------
+        // EVENT LISTENER UNTUK KEYBOARD (ABSENSI CEPAT)
+        // ------------------------------------------
+        let hoveredAbsenCell = null;
+        
+        // Deteksi cell mana yang sedang ditunjuk mouse
+        document.addEventListener('mouseover', function(e) {
+            if (e.target.classList && e.target.classList.contains('cell-abs')) hoveredAbsenCell = e.target;
+        });
+        document.addEventListener('mouseout', function(e) {
+            if (e.target === hoveredAbsenCell) hoveredAbsenCell = null;
+        });
+        
+        // Eksekusi perubahan berdasarkan tombol Keyboard
+        document.addEventListener('keydown', function(e) {
+            let targetCell = null;
+            if (document.activeElement && document.activeElement.classList.contains('cell-abs')) {
+                targetCell = document.activeElement;
+            } else if (hoveredAbsenCell) {
+                targetCell = hoveredAbsenCell;
+            }
+
+            if (targetCell) {
+                let isSunday = targetCell.getAttribute('data-sunday') === 'true';
+                if (isSunday) return; // Hari libur tidak bisa diedit
+
+                let sIdx = targetCell.getAttribute('data-siswa');
+                let day = targetCell.getAttribute('data-hari');
+                let bln = document.getElementById('filter-bulan-absen-input').value;
+                let key = e.key.toUpperCase();
+
+                if (e.key === 'Delete' || e.key === 'Backspace') {
+                    if (e.key === 'Backspace') e.preventDefault(); // Mencegah browser kembali ke halaman sebelumnya
+                    targetCell.innerText = "";
+                    targetCell.classList.remove('val-h', 'val-s', 'val-i', 'val-a');
+                } else if (['H', 'S', 'I', 'A'].includes(key)) {
+                    targetCell.innerText = key;
+                    targetCell.classList.remove('val-h', 'val-s', 'val-i', 'val-a');
+                    if(key === 'H') targetCell.classList.add('val-h');
+                    if(key === 'S') targetCell.classList.add('val-s');
+                    if(key === 'I') targetCell.classList.add('val-i');
+                    if(key === 'A') targetCell.classList.add('val-a');
+                } else {
+                    return; // Abaikan jika tombol lain yang ditekan
+                }
+                
+                // Simpan & Kalkulasi ulang
+                if(!currentAbsenData[bln]) currentAbsenData[bln] = {};
+                if(!currentAbsenData[bln][sIdx]) currentAbsenData[bln][sIdx] = {hari:{}};
+                
+                currentAbsenData[bln][sIdx].hari[day] = targetCell.innerText;
+                
+                if(typeof recalcTotalRow === 'function') {
+                    recalcTotalRow(targetCell.parentElement, sIdx, true);
+                }
+                if(typeof saveAllToLocal === 'function') {
+                    saveAllToLocal();
                 }
             }
         });
@@ -2203,7 +2258,7 @@
                     else if(val === "H") cls = "val-h"; else if(val === "S") cls = "val-s"; else if(val === "I") cls = "val-i"; else if(val === "A") cls = "val-a";
 
                     if(isInput) {
-                        cells += `<td class="border-r border-slate-200 text-center cell-abs ${cls}" onclick="toggleAbsenCel(this, ${sunday}, ${i}, ${d})">${val}</td>`;
+                        cells += `<td tabindex="0" class="border-r border-slate-200 text-center cell-abs focus:bg-blue-100 focus:outline-none ${cls}" data-siswa="${i}" data-hari="${d}" data-sunday="${sunday}" onclick="toggleAbsenCel(this, ${sunday}, ${i}, ${d})">${val}</td>`;
                     } else {
                         cells += `<td class="border-r border-slate-300 text-center font-bold text-[8pt] sm:text-[9pt] ${cls}">${val}</td>`;
                     }
