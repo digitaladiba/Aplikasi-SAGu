@@ -1376,7 +1376,15 @@
             let recovered = false;
             
             if(cAbs && cAbs !== "{}" && cAbs !== "null") { 
-                currentAbsenData = JSON.parse(cAbs); 
+                let parsedAbs = JSON.parse(cAbs);
+                // CEK FORMAT LAMA TADI PAGI (jika tidak ada label bulan)
+                if(parsedAbs["0"] && parsedAbs["0"].hari) {
+                    let blnSekarang = document.getElementById('filter-bulan-absen-input').value;
+                    currentAbsenData = {};
+                    currentAbsenData[blnSekarang] = parsedAbs;
+                } else {
+                    currentAbsenData = parsedAbs;
+                }
                 recovered = true; 
             }
             if(cNil && cNil !== "{}" && cNil !== "null") { 
@@ -1394,9 +1402,9 @@
                 if(document.getElementById('hal-siswa-rekapsemester') && !document.getElementById('hal-siswa-rekapsemester').classList.contains('hidden')) {
                     renderRekapSemester();
                 }
-                alert("BERHASIL: Data lama dari memori perangkat (Local Storage) berhasil ditarik ke layar!\n\nSILAKAN KLIK TOMBOL 'SIMPAN DB' di menu Absensi/Nilai agar data ini masuk permanen ke Google Sheets.");
+                alert("BERHASIL: Data lokal ditarik!\n\nJika data absen tadi pagi muncul, pastikan Anda berada di pilihan BULAN yang tepat pada menu dropdown, lalu klik SIMPAN DB.");
             } else {
-                alert("GAGAL: Tidak ada jejak data tertinggal di memori perangkat ini.\n\nPastikan Anda menekan tombol ini di BROWSER & PERANGKAT (Laptop/HP) YANG SAMA PERSIS dengan yang Anda gunakan untuk menginput tadi pagi.");
+                alert("MOHON MAAF: Memori browser Anda benar-benar kosong.\n\nData tadi pagi kemungkinan sudah tertimpa, terhapus oleh browser (clear cache), atau Anda membuka web menggunakan Incognito/Browser yang berbeda.");
             }
         }
 
@@ -1534,15 +1542,6 @@
                     }
                 } catch(e) {}
 
-                // Fetch Absen & Nilai
-                try {
-                    const resAN = await fetch(`${API_URL}?action=getAbsenNilai&_t=${tstamp}`).then(r => r.json());
-                    if(resAN.status === 'success') {
-                        if(resAN.data.absen && Object.keys(resAN.data.absen).length > 0) currentAbsenData = resAN.data.absen;
-                        if(resAN.data.nilai && Object.keys(resAN.data.nilai).length > 0) nilaiSiswa = resAN.data.nilai;
-                    }
-                } catch(e) { console.warn("Load Absen/Nilai dari DB Gagal:", e); }
-
                 initialSetupSemua(usingMock);
             } catch (error) {
                 console.warn("Gagal sinkronisasi API. Mode Offline Aktif.", error);
@@ -1561,7 +1560,17 @@
             if(cSis && (usingMock || globalSiswa.length === 0)) globalSiswa = JSON.parse(cSis);
 
             let cAbs = localStorage.getItem('siguru_absen_cache');
-            if (cAbs && (usingMock || Object.keys(currentAbsenData).length === 0)) currentAbsenData = JSON.parse(cAbs);
+            if (cAbs && (usingMock || Object.keys(currentAbsenData).length === 0)) {
+                let parsedAbs = JSON.parse(cAbs);
+                // TRANSLATOR DATA LAMA KE FORMAT BULAN BARU
+                if(parsedAbs["0"] && parsedAbs["0"].hari) {
+                    let blnSekarang = document.getElementById('filter-bulan-absen-input').value;
+                    currentAbsenData = {};
+                    currentAbsenData[blnSekarang] = parsedAbs;
+                } else {
+                    currentAbsenData = parsedAbs;
+                }
+            }
 
             let cNil = localStorage.getItem('siguru_nilai_cache');
             if (cNil && (usingMock || Object.keys(nilaiSiswa).length === 0)) nilaiSiswa = JSON.parse(cNil);
