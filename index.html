@@ -2361,11 +2361,16 @@
                 let rt = 0; let cells = ""; let validTpCount = 0;
                 for(let x=0; x<jml; x++) {
                     let f = nilaiSiswa[i].formatif[m][x] || {k1:'', k2:''}; 
-                    let na = '';
-                    if(f.k1 !== '' && f.k2 !== '') {
-                        na = Math.round((parseInt(f.k1) + parseInt(f.k2))/2);
-                        rt += na; validTpCount++;
-                    }
+                    let na = '-';
+                    
+                    let k1 = parseFloat(f.k1);
+                    let k2 = parseFloat(f.k2);
+                    if (!isNaN(k1) && !isNaN(k2)) na = Math.round((k1 + k2) / 2);
+                    else if (!isNaN(k1)) na = k1;
+                    else if (!isNaN(k2)) na = k2;
+                    
+                    if(na !== '-') { rt += na; validTpCount++; }
+
                     cells += `<td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${f.k1}" oninput="updForm(${i}, '${m}', ${x}, 'k1', this.value)"></td>
                               <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${f.k2}" oninput="updForm(${i}, '${m}', ${x}, 'k2', this.value)"></td>
                               <td class="border-r border-slate-300 border-b font-bold bg-slate-50" id="na-f-${i}-${x}">${na}</td>`;
@@ -2381,13 +2386,25 @@
             nilaiSiswa[sIdx].formatif[mapel][tpIdx][field] = v;
             let f = nilaiSiswa[sIdx].formatif[mapel][tpIdx];
             
-            let na = '';
-            if(f.k1 !== '' && f.k2 !== '') { na = Math.round((parseInt(f.k1) + parseInt(f.k2))/2); }
+            let na = '-';
+            let k1 = parseFloat(f.k1);
+            let k2 = parseFloat(f.k2);
+            if (!isNaN(k1) && !isNaN(k2)) na = Math.round((k1 + k2) / 2);
+            else if (!isNaN(k1)) na = k1;
+            else if (!isNaN(k2)) na = k2;
+            
             document.getElementById(`na-f-${sIdx}-${tpIdx}`).innerText = na;
             
             let rt = 0; let count = 0;
             nilaiSiswa[sIdx].formatif[mapel].forEach(x => { 
-                if(x.k1 !== '' && x.k2 !== '') { rt += Math.round((parseInt(x.k1) + parseInt(x.k2))/2); count++; }
+                let nTp = '-';
+                let xk1 = parseFloat(x.k1);
+                let xk2 = parseFloat(x.k2);
+                if (!isNaN(xk1) && !isNaN(xk2)) nTp = Math.round((xk1 + xk2) / 2);
+                else if (!isNaN(xk1)) nTp = xk1;
+                else if (!isNaN(xk2)) nTp = xk2;
+                
+                if(nTp !== '-') { rt += nTp; count++; }
             });
             document.getElementById(`rt-f-${sIdx}`).innerText = count > 0 ? Math.round(rt/count) : '-';
             updateDashboardCharts();
@@ -2426,14 +2443,18 @@
                 rtLM = countLM > 0 ? Math.round(rtLM/countLM) : '-';
                 
                 let rapor = '-';
-                if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
-                    rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); 
-                }
+                let sum = 0; let weight = 0;
+                if(rtLM !== '-') { sum += rtLM; weight += 1; }
+                let sts = parseFloat(smt.sts);
+                if(!isNaN(sts)) { sum += sts; weight += 1; }
+                let sas = parseFloat(smt.sas);
+                if(!isNaN(sas)) { sum += (sas * 2); weight += 2; }
+                if(weight > 0) rapor = Math.round(sum / weight);
                 
                 tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white w-48 whitespace-nowrap overflow-hidden text-ellipsis">${s.nama}</td>
                 ${cells}
                 <td class="border-r border-slate-300 border-b bg-slate-50 font-bold" id="rtl-${i}">${rtLM}</td>
-                <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${smt.sts}" oninput="upSum(${i}, '${m}', 'sts', 0, this.value)"></td>
+                <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${smt.sts}" oninput="updSum(${i}, '${m}', 'sts', 0, this.value)"></td>
                 <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${smt.sas}" oninput="updSum(${i}, '${m}', 'sas', 0, this.value)"></td>
                 <td class="border-b border-slate-300 font-bold text-slate-800 bg-slate-100 text-sm py-1" id="na-s-${i}">${rapor}</td></tr>`;
             });
@@ -2452,9 +2473,14 @@
             document.getElementById(`rtl-${sIdx}`).innerText = rtLM;
             
             let rapor = '-';
-            if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
-                rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4);
-            }
+            let sum = 0; let weight = 0;
+            if(rtLM !== '-') { sum += rtLM; weight += 1; }
+            let sts = parseFloat(smt.sts);
+            if(!isNaN(sts)) { sum += sts; weight += 1; }
+            let sas = parseFloat(smt.sas);
+            if(!isNaN(sas)) { sum += (sas * 2); weight += 2; }
+            if(weight > 0) rapor = Math.round(sum / weight);
+
             document.getElementById(`na-s-${sIdx}`).innerText = rapor;
             saveAllToLocal();
         }
@@ -2550,8 +2576,15 @@
                         }
                         let rtLM = countLM > 0 ? (sumLM/countLM) : '-';
                         
-                        if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
-                            na = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4);
+                        let sum = 0; let weight = 0;
+                        if(rtLM !== '-') { sum += rtLM; weight += 1; }
+                        let sts = parseFloat(smt.sts);
+                        if(!isNaN(sts)) { sum += sts; weight += 1; }
+                        let sas = parseFloat(smt.sas);
+                        if(!isNaN(sas)) { sum += (sas * 2); weight += 2; }
+                        
+                        if(weight > 0) {
+                            na = Math.round(sum / weight);
                             totalRapor += na; nMapel++;
                         }
                     }
