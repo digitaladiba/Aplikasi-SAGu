@@ -241,7 +241,12 @@
                 <h2 id="judul-halaman" class="text-lg font-bold text-slate-800 hidden sm:block">Dashboard</h2>
             </div>
             <div class="flex items-center space-x-3">
-                <div class="text-right hidden md:block">
+                <!-- TOMBOL PULIHKAN DATA LOKAL -->
+                <button onclick="pulihkanDataLokal()" class="flex items-center px-3 py-1.5 bg-amber-100 text-amber-700 hover:bg-amber-200 rounded-lg text-xs font-bold transition shadow-sm border border-amber-200" title="Tarik data dari memori perangkat ini">
+                    <i data-lucide="database-backup" class="w-4 h-4 mr-1.5"></i> <span class="hidden md:block">Pulihkan Data Lokal</span>
+                </button>
+                
+                <div class="text-right hidden md:block border-l border-slate-200 pl-3">
                     <p class="text-sm font-bold text-slate-800" id="header-nama">Guru Kelas</p>
                     <p class="text-xs text-slate-500" id="header-kelas">Terkoneksi LocalStorage</p>
                 </div>
@@ -1362,6 +1367,37 @@
             localStorage.setItem('siguru_siswa_cache', JSON.stringify(globalSiswa));
             localStorage.setItem('siguru_mapel_cache', JSON.stringify(mapelData));
             localStorage.setItem('siguru_jadwal_cache', JSON.stringify(jadwalData));
+        }
+
+        // FUNGSI BARU UNTUK MEMAKSA MENARIK DATA YANG TERTINGGAL DI BROWSER TADI PAGI
+        function pulihkanDataLokal() {
+            let cAbs = localStorage.getItem('siguru_absen_cache');
+            let cNil = localStorage.getItem('siguru_nilai_cache');
+            let recovered = false;
+            
+            if(cAbs && cAbs !== "{}" && cAbs !== "null") { 
+                currentAbsenData = JSON.parse(cAbs); 
+                recovered = true; 
+            }
+            if(cNil && cNil !== "{}" && cNil !== "null") { 
+                nilaiSiswa = JSON.parse(cNil); 
+                recovered = true; 
+            }
+            
+            if(recovered) {
+                renderInputAbsenBulan();
+                renderRekapBulanan();
+                renderFormatif();
+                renderSumatif();
+                renderSikap();
+                renderLegger();
+                if(document.getElementById('hal-siswa-rekapsemester') && !document.getElementById('hal-siswa-rekapsemester').classList.contains('hidden')) {
+                    renderRekapSemester();
+                }
+                alert("BERHASIL: Data lama dari memori perangkat (Local Storage) berhasil ditarik ke layar!\n\nSILAKAN KLIK TOMBOL 'SIMPAN DB' di menu Absensi/Nilai agar data ini masuk permanen ke Google Sheets.");
+            } else {
+                alert("GAGAL: Tidak ada jejak data tertinggal di memori perangkat ini.\n\nPastikan Anda menekan tombol ini di BROWSER & PERANGKAT (Laptop/HP) YANG SAMA PERSIS dengan yang Anda gunakan untuk menginput tadi pagi.");
+            }
         }
 
         async function postToDB(payload, successMsg) {
