@@ -1518,17 +1518,17 @@
         }
 
         function loadFromLocalCache(usingMock) {
-            // JIKA STATUS ONLINE (usingMock = false), JANGAN TIMPA DATA CLOUD DENGAN LOCAL CACHE LAMA
-            if (!usingMock) return;
-
+            // FALLBACK KEAMANAN: Jika online tapi data dari Cloud ternyata KOSONG, 
+            // kita tarik kembali data dari Local Storage perangkat agar tidak hilang.
+            
             let cSis = localStorage.getItem('siguru_siswa_cache');
-            if(cSis) globalSiswa = JSON.parse(cSis);
+            if(cSis && (usingMock || globalSiswa.length === 0)) globalSiswa = JSON.parse(cSis);
 
             let cAbs = localStorage.getItem('siguru_absen_cache');
-            if (cAbs) currentAbsenData = JSON.parse(cAbs);
+            if (cAbs && (usingMock || Object.keys(currentAbsenData).length === 0)) currentAbsenData = JSON.parse(cAbs);
 
             let cNil = localStorage.getItem('siguru_nilai_cache');
-            if (cNil) nilaiSiswa = JSON.parse(cNil);
+            if (cNil && (usingMock || Object.keys(nilaiSiswa).length === 0)) nilaiSiswa = JSON.parse(cNil);
             
             let cMapel = localStorage.getItem('siguru_mapel_cache');
             if (cMapel) {
@@ -1541,7 +1541,7 @@
             }
             
             let cJdw = localStorage.getItem('siguru_jadwal_cache');
-            if (cJdw) jadwalData = JSON.parse(cJdw);
+            if (cJdw && (usingMock || jadwalData.length === 0)) jadwalData = JSON.parse(cJdw);
         }
 
         function initialSetupSemua(usingMock) {
