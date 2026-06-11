@@ -1498,6 +1498,15 @@
                     }
                 } catch(e) {}
 
+                // Fetch Absen & Nilai
+                try {
+                    const resAN = await fetch(`${API_URL}?action=getAbsenNilai&_t=${tstamp}`).then(r => r.json());
+                    if(resAN.status === 'success') {
+                        if(resAN.data.absen && Object.keys(resAN.data.absen).length > 0) currentAbsenData = resAN.data.absen;
+                        if(resAN.data.nilai && Object.keys(resAN.data.nilai).length > 0) nilaiSiswa = resAN.data.nilai;
+                    }
+                } catch(e) { console.warn("Load Absen/Nilai dari DB Gagal:", e); }
+
                 initialSetupSemua(usingMock);
             } catch (error) {
                 console.warn("Gagal sinkronisasi API. Mode Offline Aktif.", error);
@@ -1509,8 +1518,11 @@
         }
 
         function loadFromLocalCache(usingMock) {
+            // JIKA STATUS ONLINE (usingMock = false), JANGAN TIMPA DATA CLOUD DENGAN LOCAL CACHE LAMA
+            if (!usingMock) return;
+
             let cSis = localStorage.getItem('siguru_siswa_cache');
-            if(cSis && usingMock) globalSiswa = JSON.parse(cSis);
+            if(cSis) globalSiswa = JSON.parse(cSis);
 
             let cAbs = localStorage.getItem('siguru_absen_cache');
             if (cAbs) currentAbsenData = JSON.parse(cAbs);
@@ -1537,8 +1549,13 @@
             
             if(usingMock) {
                 document.getElementById('mock-warning').classList.remove('hidden');
+                document.getElementById('header-kelas').innerText = "Terkoneksi LocalStorage (Offline)";
+                document.getElementById('db-status-indicator').innerHTML = `<div class="w-2 h-2 rounded-full bg-amber-500 mr-1 animate-pulse"></div> Local Mode`;
             } else {
                 document.getElementById('mock-warning').classList.add('hidden');
+                document.getElementById('header-kelas').innerText = "Terkoneksi Database Cloud";
+                document.getElementById('db-status-indicator').innerHTML = `<div class="w-2 h-2 rounded-full bg-emerald-500 mr-1 animate-pulse"></div> Live API`;
+                saveAllToLocal(); // Backup data cloud terbaru ke Local Storage perangkat
             }
 
             document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
