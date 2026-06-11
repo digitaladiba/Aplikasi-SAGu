@@ -1519,7 +1519,14 @@
             if (cNil) nilaiSiswa = JSON.parse(cNil);
             
             let cMapel = localStorage.getItem('siguru_mapel_cache');
-            if (cMapel) mapelData = JSON.parse(cMapel);
+            if (cMapel) {
+                let parsedMapel = JSON.parse(cMapel);
+                // Perbaikan otomatis: Timpa cache Muatan Lokal jika TP-nya kurang (kasus data lama)
+                if (parsedMapel["Muatan Lokal"] && parsedMapel["Muatan Lokal"].tp.length < 10) {
+                    parsedMapel["Muatan Lokal"] = mapelData["Muatan Lokal"];
+                }
+                mapelData = parsedMapel;
+            }
             
             let cJdw = localStorage.getItem('siguru_jadwal_cache');
             if (cJdw) jadwalData = JSON.parse(cJdw);
@@ -1546,6 +1553,7 @@
             updateJurnalMapel();
             renderTabelJurnal();
             renderJadwal();
+            renderRekapSemester();
             updateDashboardCharts();
         }
 
@@ -1705,6 +1713,7 @@
                 document.getElementById('print-sum-j').innerText = l + p;
                 updateDashboardCharts();
             }
+            saveAllToLocal();
         }
 
         function tambahSiswa() {
@@ -1712,6 +1721,7 @@
             globalSiswa.push(newSiswa);
             initDataNilai(); 
             renderDataSiswa();
+            saveAllToLocal();
         }
 
         function hapusSiswaData(index) {
@@ -1769,7 +1779,10 @@
             else if(idHalaman === 'jadwal-pelajaran') { judul = "Jadwal Pelajaran Kelas"; renderJadwal(); }
             else if(idHalaman.includes('identitas')) { judul = "Identitas Kelas"; }
             
-            if(idHalaman.includes('siswa')) judul = "Administrasi Kehadiran";
+            if(idHalaman.includes('siswa')) { 
+                judul = "Administrasi Kehadiran"; 
+                if(idHalaman === 'siswa-rekapsemester') renderRekapSemester();
+            }
             if(idHalaman==='data-siswa') judul = "Data Master Siswa";
             if(idHalaman.includes('nilai')) judul = "Pengolahan Nilai (Rapor)";
             if(idHalaman.includes('jurnal')) { judul = "Jurnal Mengajar"; renderTabelJurnal(); updateJurnalMapel(); }
@@ -1977,17 +1990,25 @@
             lucide.createIcons();
         }
 
-        function updJadwal(idx, field, val) { jadwalData[idx][field] = val; }
+        function updJadwal(idx, field, val) { 
+            jadwalData[idx][field] = val; 
+            saveAllToLocal();
+        }
+        
         function tambahBarisJadwal() {
             let nextJam = jadwalData.length > 0 ? (parseInt(jadwalData[jadwalData.length-1].jam) || 0) + 1 : 1;
             jadwalData.push({ jam: nextJam.toString(), senin: "", selasa: "", rabu: "", kamis: "", jumat: "", sabtu: "" });
             renderJadwal();
+            saveAllToLocal();
         }
+        
         function hapusBarisJadwal(index) {
             if(!confirm('Hapus baris jadwal ini?')) return;
             jadwalData.splice(index, 1);
             renderJadwal();
+            saveAllToLocal();
         }
+        
         function simpanJadwalAksi() {
             let payload = { action: 'simpanJadwal', data: jadwalData };
             postToDB(payload, "Jadwal Pelajaran berhasil disimpan ke Database Excel!");
@@ -2213,6 +2234,7 @@
             
             currentAbsenData[bln][studentIdx].hari[day] = cell.innerText;
             recalcTotalRow(cell.parentElement, studentIdx, true);
+            saveAllToLocal(); // Auto-save ke cache
         }
 
         function isiSemuaAbsen(status) {
@@ -2238,6 +2260,8 @@
                     }
                 }
             });
+            
+            saveAllToLocal(); // Auto-save ke cache
             renderInputAbsenBulan();
         }
 
@@ -2266,6 +2290,45 @@
         function simpanAbsenAksi() {
             let payload = { action: 'simpanAbsen', data: currentAbsenData };
             postToDB(payload, "Data Absensi berhasil diamankan!");
+        }
+
+        function renderRekapSemester() {
+            let tbody = "";
+            let months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
+            
+            globalSiswa.forEach((s, i) => {
+                let tdBulan = "";
+                let totH = 0, totS = 0, totI = 0, totA = 0;
+                
+                months.forEach(bln => {
+                    let h=0, s_abs=0, iz=0, a=0;
+                    if(currentAbsenData[bln] && currentAbsenData[bln][i]) {
+                        let hari = currentAbsenData[bln][i].hari;
+                        for(let d in hari) {
+                            if(hari[d] === 'H') h++;
+                            else if(hari[d] === 'S') s_abs++;
+                            else if(hari[d] === 'I') iz++;
+                            else if(hari[d] === 'A') a++;
+                        }
+                    }
+                    tdBulan += `<td class="border-r border-slate-300 font-medium">${h}</td><td class="border-r border-slate-300 font-medium">${s_abs}</td><td class="border-r border-slate-300 font-medium">${iz}</td><td class="border-r border-slate-300 font-medium text-red-500">${a}</td>`;
+                    totH += h; totS += s_abs; totI += iz; totA += a;
+                });
+                
+                let totalHari = totH + totS + totI + totA;
+                let pct = totalHari > 0 ? Math.round((totH/totalHari)*100) : 0;
+                
+                tbody += `<tr class="hover:bg-slate-50">
+                    <td class="px-2 py-1 border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap w-48">${s.nama}</td>
+                    ${tdBulan}
+                    <td class="border-r border-slate-300 border-b bg-blue-50 font-bold">${totH}</td>
+                    <td class="border-r border-slate-300 border-b bg-blue-50 font-bold">${totS}</td>
+                    <td class="border-r border-slate-300 border-b bg-blue-50 font-bold">${totI}</td>
+                    <td class="border-r border-slate-300 border-b bg-blue-50 font-bold text-red-600">${totA}</td>
+                    <td class="border-b border-slate-300 bg-blue-50 font-bold text-blue-700">${pct}%</td>
+                </tr>`;
+            });
+            document.getElementById('tb-rekap-smt').innerHTML = tbody;
         }
 
         // --- PENILAIAN INPUT DINAMIS ---
@@ -2328,6 +2391,7 @@
             });
             document.getElementById(`rt-f-${sIdx}`).innerText = count > 0 ? Math.round(rt/count) : '-';
             updateDashboardCharts();
+            saveAllToLocal();
         }
 
         function simpanFormatifAksi() {
@@ -2392,6 +2456,7 @@
                 rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4);
             }
             document.getElementById(`na-s-${sIdx}`).innerText = rapor;
+            saveAllToLocal();
         }
 
         function simpanSumatifAksi() {
@@ -2435,6 +2500,7 @@
             
             document.getElementById(`pr-a-${sIdx}`).innerText = prA;
             document.getElementById(`pr-b-${sIdx}`).innerText = prB;
+            saveAllToLocal();
         }
 
         function simpanSikapAksi() {
