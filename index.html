@@ -1649,10 +1649,11 @@
 
             document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
             initDataNilai();
-            initMockAbsen();
+            initMockAbsen(); // Menginisialisasi yang masih kosong
             renderDataSiswa();
             renderInputAbsenBulan();
             renderRekapBulanan();
+            renderRekapSemester(); // Mengisi data Rekap Semester saat awal dimuat
             syncGlobalData();
             initDropdownMapel(); 
             renderLegger();      
@@ -1883,6 +1884,7 @@
             else if(idHalaman.includes('identitas')) { judul = "Identitas Kelas"; }
             
             if(idHalaman.includes('siswa')) judul = "Administrasi Kehadiran";
+            if(idHalaman === 'siswa-rekapsemester') { renderRekapSemester(); } // Update data saat tab Rekap Semester dibuka
             if(idHalaman==='data-siswa') judul = "Data Master Siswa";
             if(idHalaman.includes('nilai')) judul = "Pengolahan Nilai (Rapor)";
             if(idHalaman.includes('jurnal')) { judul = "Jurnal Mengajar"; renderTabelJurnal(); updateJurnalMapel(); }
@@ -2310,6 +2312,68 @@
             buildCalendarGrid('tb-rekap-bulan', 'head-tanggal-rekap', bln, false);
         }
 
+        function renderRekapSemester() {
+            // Cek semester dari input Identitas
+            let isGanjil = document.getElementById('inp-smt').value.toLowerCase().includes('ganjil');
+            let bulanSemester = isGanjil ? 
+                ["Juli", "Agustus", "September", "Oktober", "November", "Desember"] : 
+                ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
+                
+            let ta = document.getElementById('inp-ta').value;
+            let startYear = parseInt(ta.split('/')[0]) || 2025;
+            
+            // Update Header Tabel Dinamis (Ganjil / Genap)
+            let thTabel = document.querySelector('#hal-siswa-rekapsemester thead tr:first-child');
+            if(thTabel) {
+                let ths = thTabel.querySelectorAll('th[colspan="4"]');
+                bulanSemester.forEach((bln, idx) => {
+                    if(ths[idx]) ths[idx].innerText = bln;
+                });
+            }
+
+            let totalEfektifSmt = 0;
+            bulanSemester.forEach(bln => {
+                let activeYear = (monthNames.indexOf(bln) < 6) ? startYear + 1 : startYear;
+                totalEfektifSmt += getHariEfektif(bln, activeYear);
+            });
+
+            let tbody = "";
+            globalSiswa.forEach((s, i) => {
+                let tdBulan = "";
+                let totH = 0, totS = 0, totI = 0, totA = 0;
+                
+                bulanSemester.forEach(bln => {
+                    let h = 0, sakit = 0, iz = 0, al = 0;
+                    if (currentAbsenData[bln] && currentAbsenData[bln][i]) {
+                        let dVal = currentAbsenData[bln][i].hari;
+                        for (let d in dVal) {
+                            let v = dVal[d];
+                            if (v === "H") h++; else if (v === "S") sakit++; else if (v === "I") iz++; else if (v === "A") al++;
+                        }
+                    }
+                    totH += h; totS += sakit; totI += iz; totA += al;
+                    tdBulan += `<td class="border-r border-slate-300 border-b">${h||'-'}</td>
+                                <td class="border-r border-slate-300 border-b">${sakit||'-'}</td>
+                                <td class="border-r border-slate-300 border-b">${iz||'-'}</td>
+                                <td class="border-r border-slate-300 border-b text-red-500">${al||'-'}</td>`;
+                });
+                
+                let pct = totalEfektifSmt > 0 ? Math.round((totH / totalEfektifSmt) * 100) : 0;
+                
+                tbody += `<tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white min-w-[120px] whitespace-nowrap overflow-hidden text-ellipsis">${s.nama}</td>
+                    ${tdBulan}
+                    <td class="border-r border-slate-300 border-b bg-blue-50 font-bold">${totH||'-'}</td>
+                    <td class="border-r border-slate-300 border-b bg-amber-50 font-bold text-amber-600">${totS||'-'}</td>
+                    <td class="border-r border-slate-300 border-b bg-purple-50 font-bold text-purple-600">${totI||'-'}</td>
+                    <td class="border-r border-slate-300 border-b bg-red-50 font-bold text-red-600">${totA||'-'}</td>
+                    <td class="border-b border-slate-300 font-bold bg-blue-100 text-blue-800">${pct}%</td>
+                </tr>`;
+            });
+            
+            document.getElementById('tb-rekap-smt').innerHTML = tbody;
+        }
+
         function toggleAbsenCel(cell, isSunday, studentIdx, day) {
             if(isSunday) return; 
             let v = cell.innerText;
@@ -2415,10 +2479,15 @@
                 for(let x=0; x<jml; x++) {
                     let f = nilaiSiswa[i].formatif[m][x] || {k1:'', k2:''}; 
                     let na = '';
-                    if(f.k1 !== '' && f.k2 !== '') {
-                        na = Math.round((parseInt(f.k1) + parseInt(f.k2))/2);
-                        rt += na; validTpCount++;
-                    }
+                    let k1Val = f.k1 !== '' && f.k1 !== null && !isNaN(f.k1) ? parseInt(f.k1) : null;
+                    let k2Val = f.k2 !== '' && f.k2 !== null && !isNaN(f.k2) ? parseInt(f.k2) : null;
+                    
+                    if(k1Val !== null && k2Val !== null) na = Math.round((k1Val + k2Val)/2);
+                    else if(k1Val !== null) na = k1Val;
+                    else if(k2Val !== null) na = k2Val;
+                    
+                    if(na !== '') { rt += na; validTpCount++; }
+                    
                     cells += `<td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${f.k1}" oninput="updForm(${i}, '${m}', ${x}, 'k1', this.value)"></td>
                               <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${f.k2}" oninput="updForm(${i}, '${m}', ${x}, 'k2', this.value)"></td>
                               <td class="border-r border-slate-300 border-b font-bold bg-slate-50" id="na-f-${i}-${x}">${na}</td>`;
@@ -2435,15 +2504,28 @@
             let f = nilaiSiswa[sIdx].formatif[mapel][tpIdx];
             
             let na = '';
-            if(f.k1 !== '' && f.k2 !== '') { na = Math.round((parseInt(f.k1) + parseInt(f.k2))/2); }
+            let k1Val = f.k1 !== '' && f.k1 !== null && !isNaN(f.k1) ? parseInt(f.k1) : null;
+            let k2Val = f.k2 !== '' && f.k2 !== null && !isNaN(f.k2) ? parseInt(f.k2) : null;
+            if(k1Val !== null && k2Val !== null) na = Math.round((k1Val + k2Val)/2);
+            else if(k1Val !== null) na = k1Val;
+            else if(k2Val !== null) na = k2Val;
+            
             document.getElementById(`na-f-${sIdx}-${tpIdx}`).innerText = na;
             
             let rt = 0; let count = 0;
             nilaiSiswa[sIdx].formatif[mapel].forEach(x => { 
-                if(x.k1 !== '' && x.k2 !== '') { rt += Math.round((parseInt(x.k1) + parseInt(x.k2))/2); count++; }
+                let k1x = x.k1 !== '' && x.k1 !== null && !isNaN(x.k1) ? parseInt(x.k1) : null;
+                let k2x = x.k2 !== '' && x.k2 !== null && !isNaN(x.k2) ? parseInt(x.k2) : null;
+                let nax = '';
+                if(k1x !== null && k2x !== null) nax = Math.round((k1x + k2x)/2);
+                else if(k1x !== null) nax = k1x;
+                else if(k2x !== null) nax = k2x;
+                
+                if(nax !== '') { rt += nax; count++; }
             });
             document.getElementById(`rt-f-${sIdx}`).innerText = count > 0 ? Math.round(rt/count) : '-';
             updateDashboardCharts();
+            saveAllToLocal();
         }
 
         function simpanFormatifAksi() {
@@ -2472,15 +2554,19 @@
                 let smt = nilaiSiswa[i].sumatif[m];
                 let rtLM = 0; let cells = ""; let countLM = 0;
                 for(let x=0; x<jml; x++) { 
-                    if(smt.lm[x] !== '') { rtLM += parseInt(smt.lm[x]); countLM++; }
+                    if(smt.lm[x] !== '' && smt.lm[x] !== null && !isNaN(smt.lm[x])) { rtLM += parseInt(smt.lm[x]); countLM++; }
                     cells += `<td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${smt.lm[x]}" oninput="updSum(${i}, '${m}', 'lm', ${x}, this.value)"></td>`; 
                 }
                 rtLM = countLM > 0 ? Math.round(rtLM/countLM) : '-';
                 
                 let rapor = '-';
-                if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
-                    rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); 
-                }
+                let stsVal = smt.sts !== '' && smt.sts !== null && !isNaN(smt.sts) ? parseInt(smt.sts) : null;
+                let sasVal = smt.sas !== '' && smt.sas !== null && !isNaN(smt.sas) ? parseInt(smt.sas) : null;
+                
+                let sum = (rtLM !== '-' ? rtLM : 0) + (stsVal !== null ? stsVal : 0) + (sasVal !== null ? sasVal * 2 : 0);
+                let div = (rtLM !== '-' ? 1 : 0) + (stsVal !== null ? 1 : 0) + (sasVal !== null ? 2 : 0);
+                
+                if(div > 0) rapor = Math.round(sum / div); 
                 
                 tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white w-48 whitespace-nowrap overflow-hidden text-ellipsis">${s.nama}</td>
                 ${cells}
@@ -2499,15 +2585,21 @@
             
             let smt = nilaiSiswa[sIdx].sumatif[mapel];
             let rtLM = 0; let countLM = 0;
-            smt.lm.forEach(l => { if(l !== '') { rtLM += parseInt(l); countLM++; }});
+            smt.lm.forEach(l => { if(l !== '' && l !== null && !isNaN(l)) { rtLM += parseInt(l); countLM++; }});
             rtLM = countLM > 0 ? Math.round(rtLM/countLM) : '-';
             document.getElementById(`rtl-${sIdx}`).innerText = rtLM;
             
             let rapor = '-';
-            if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
-                rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4);
-            }
+            let stsVal = smt.sts !== '' && smt.sts !== null && !isNaN(smt.sts) ? parseInt(smt.sts) : null;
+            let sasVal = smt.sas !== '' && smt.sas !== null && !isNaN(smt.sas) ? parseInt(smt.sas) : null;
+            
+            let sum = (rtLM !== '-' ? rtLM : 0) + (stsVal !== null ? stsVal : 0) + (sasVal !== null ? sasVal * 2 : 0);
+            let div = (rtLM !== '-' ? 1 : 0) + (stsVal !== null ? 1 : 0) + (sasVal !== null ? 2 : 0);
+            
+            if(div > 0) rapor = Math.round(sum / div);
+            
             document.getElementById(`na-s-${sIdx}`).innerText = rapor;
+            saveAllToLocal();
         }
 
         function simpanSumatifAksi() {
@@ -2519,13 +2611,26 @@
         function renderSikap() {
             let tSikap="";
             const pr = (val) => {
-                if(val === '' || val === '-') return '-';
+                if(val === '' || val === '-' || val === null) return '-';
                 return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup');
             };
             globalSiswa.forEach((s,i) => {
                 let d = nilaiSiswa[i].sikap;
-                let prA = (d.dsk !== '' && d.ins !== '') ? pr((parseInt(d.dsk)+parseInt(d.ins))/2) : '-';
-                let prB = (d.dsp !== '' && d.tgg !== '') ? pr((parseInt(d.dsp)+parseInt(d.tgg))/2) : '-';
+                let dskVal = d.dsk !== '' && d.dsk !== null && !isNaN(d.dsk) ? parseInt(d.dsk) : null;
+                let insVal = d.ins !== '' && d.ins !== null && !isNaN(d.ins) ? parseInt(d.ins) : null;
+                let rtA = null;
+                if(dskVal !== null && insVal !== null) rtA = (dskVal + insVal)/2;
+                else if(dskVal !== null) rtA = dskVal;
+                else if(insVal !== null) rtA = insVal;
+                let prA = rtA !== null ? pr(rtA) : '-';
+
+                let dspVal = d.dsp !== '' && d.dsp !== null && !isNaN(d.dsp) ? parseInt(d.dsp) : null;
+                let tggVal = d.tgg !== '' && d.tgg !== null && !isNaN(d.tgg) ? parseInt(d.tgg) : null;
+                let rtB = null;
+                if(dspVal !== null && tggVal !== null) rtB = (dspVal + tggVal)/2;
+                else if(dspVal !== null) rtB = dspVal;
+                else if(tggVal !== null) rtB = tggVal;
+                let prB = rtB !== null ? pr(rtB) : '-';
 
                 tSikap += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white min-w-[150px] w-48 whitespace-nowrap">${s.nama}</td>
                 <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${d.dsk}" oninput="updSikap(${i}, 'dsk', this.value)"></td>
@@ -2543,14 +2648,29 @@
             nilaiSiswa[sIdx].sikap[field] = v;
             let d = nilaiSiswa[sIdx].sikap;
             const pr = (val) => {
-                if(val === '' || val === '-') return '-';
+                if(val === '' || val === '-' || val === null) return '-';
                 return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup');
             };
-            let prA = (d.dsk !== '' && d.ins !== '') ? pr((parseInt(d.dsk)+parseInt(d.ins))/2) : '-';
-            let prB = (d.dsp !== '' && d.tgg !== '') ? pr((parseInt(d.dsp)+parseInt(d.tgg))/2) : '-';
+            
+            let dskVal = d.dsk !== '' && d.dsk !== null && !isNaN(d.dsk) ? parseInt(d.dsk) : null;
+            let insVal = d.ins !== '' && d.ins !== null && !isNaN(d.ins) ? parseInt(d.ins) : null;
+            let rtA = null;
+            if(dskVal !== null && insVal !== null) rtA = (dskVal + insVal)/2;
+            else if(dskVal !== null) rtA = dskVal;
+            else if(insVal !== null) rtA = insVal;
+            let prA = rtA !== null ? pr(rtA) : '-';
+
+            let dspVal = d.dsp !== '' && d.dsp !== null && !isNaN(d.dsp) ? parseInt(d.dsp) : null;
+            let tggVal = d.tgg !== '' && d.tgg !== null && !isNaN(d.tgg) ? parseInt(d.tgg) : null;
+            let rtB = null;
+            if(dspVal !== null && tggVal !== null) rtB = (dspVal + tggVal)/2;
+            else if(dspVal !== null) rtB = dspVal;
+            else if(tggVal !== null) rtB = tggVal;
+            let prB = rtB !== null ? pr(rtB) : '-';
             
             document.getElementById(`pr-a-${sIdx}`).innerText = prA;
             document.getElementById(`pr-b-${sIdx}`).innerText = prB;
+            saveAllToLocal();
         }
 
         function simpanSikapAksi() {
@@ -2596,12 +2716,18 @@
                         let smt = nilaiSiswa[i].sumatif[mp];
                         let countLM = 0; let sumLM = 0;
                         if(smt.lm) {
-                            smt.lm.forEach(l => { if(l!=='') { sumLM+=parseInt(l); countLM++; }});
+                            smt.lm.forEach(l => { if(l !== '' && l !== null && !isNaN(l)) { sumLM+=parseInt(l); countLM++; }});
                         }
-                        let rtLM = countLM > 0 ? (sumLM/countLM) : '-';
+                        let rtLM = countLM > 0 ? Math.round(sumLM/countLM) : '-';
                         
-                        if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
-                            na = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4);
+                        let stsVal = smt.sts !== '' && smt.sts !== null && !isNaN(smt.sts) ? parseInt(smt.sts) : null;
+                        let sasVal = smt.sas !== '' && smt.sas !== null && !isNaN(smt.sas) ? parseInt(smt.sas) : null;
+                        
+                        let sum = (rtLM !== '-' ? rtLM : 0) + (stsVal !== null ? stsVal : 0) + (sasVal !== null ? sasVal * 2 : 0);
+                        let div = (rtLM !== '-' ? 1 : 0) + (stsVal !== null ? 1 : 0) + (sasVal !== null ? 2 : 0);
+                        
+                        if(div > 0) {
+                            na = Math.round(sum / div);
                             totalRapor += na; nMapel++;
                         }
                     }
@@ -2624,8 +2750,16 @@
                 let prSikap = '-';
                 if(nilaiSiswa[i] && nilaiSiswa[i].sikap) {
                     let d = nilaiSiswa[i].sikap;
-                    if(d.dsk!=='' && d.ins!=='' && d.dsp!=='' && d.tgg!=='') {
-                        let rtSikap = (parseInt(d.dsk) + parseInt(d.ins) + parseInt(d.dsp) + parseInt(d.tgg))/4;
+                    let dskVal = d.dsk !== '' && d.dsk !== null && !isNaN(d.dsk) ? parseInt(d.dsk) : null;
+                    let insVal = d.ins !== '' && d.ins !== null && !isNaN(d.ins) ? parseInt(d.ins) : null;
+                    let dspVal = d.dsp !== '' && d.dsp !== null && !isNaN(d.dsp) ? parseInt(d.dsp) : null;
+                    let tggVal = d.tgg !== '' && d.tgg !== null && !isNaN(d.tgg) ? parseInt(d.tgg) : null;
+                    
+                    let sumSikap = (dskVal || 0) + (insVal || 0) + (dspVal || 0) + (tggVal || 0);
+                    let divSikap = (dskVal !== null ? 1 : 0) + (insVal !== null ? 1 : 0) + (dspVal !== null ? 1 : 0) + (tggVal !== null ? 1 : 0);
+                    
+                    if(divSikap > 0) {
+                        let rtSikap = sumSikap / divSikap;
                         prSikap = rtSikap > 85 ? 'Sangat Baik' : (rtSikap > 70 ? 'Baik' : 'Cukup');
                     }
                 }
