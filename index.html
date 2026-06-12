@@ -22,7 +22,8 @@
         .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
         
-        .cell-abs { cursor: pointer; transition: all 0.1s; font-weight: 600; text-align: center; }
+        .cell-abs { cursor: pointer; transition: all 0.1s; font-weight: 600; text-align: center; outline: none; }
+        .cell-abs:focus { outline: 2px solid #3b82f6; outline-offset: -2px; z-index: 10; position: relative; }
         .cell-abs:hover { background-color: #e2e8f0; }
         .val-h { color: #2563eb; }
         .val-s { color: #d97706; background-color: #fef3c7; }
@@ -34,56 +35,36 @@
         input.cell-input:focus { background-color: #eff6ff; color: #1d4ed8; border-bottom: 1px solid #3b82f6; }
         input.cell-input::-webkit-outer-spin-button, input.cell-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-        /* Animasi Spinner Klasik Baru */
         @keyframes spin-reverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
         .animate-spin-reverse { animation: spin-reverse 1.5s linear infinite; }
 
-        /* =========================================================
-           PRINT LAYOUTING F4 LANDSCAPE (STABIL & RAPI)
-           ========================================================= */
         @media print {
             html, body { height: auto !important; min-height: auto !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; background-color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             body { color: #000; font-size: 8pt !important; }
-            
             body > .flex, .flex-1, main, .print-area { display: block !important; height: auto !important; overflow: visible !important; position: static !important; }
-            
-            #sidebar, header, .no-print, button, select, input[type="date"], #loading-overlay, #login-overlay, #mock-warning { display: none !important; }
-            
+            #sidebar, header, .no-print, button, select, input[type="date"], #login-overlay, #mock-warning, #loading-overlay { display: none !important; }
             .halaman.hidden { display: none !important; }
             .halaman:not(.hidden) { display: block !important; }
-            
             .sticky { position: static !important; box-shadow: none !important; z-index: auto !important; }
             td.sticky { background-color: transparent !important; }
             th.sticky { background-color: #e5e7eb !important; }
-
             .whitespace-nowrap { white-space: normal !important; } 
-
             table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; page-break-inside: auto; table-layout: auto !important; }
-            
             #tb-data-siswa, #tb-data-siswa input { font-size: 7.5pt !important; }
-            
-            /* Kunci agar warna background (seperti jadwal pelajaran) tetap tercetak */
             .print-color-exact { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            
             tr { page-break-inside: avoid !important; page-break-after: auto; }
             thead { display: table-header-group !important; } 
             tfoot { display: table-footer-group !important; }
-            
             th, td { border: 1px solid #000 !important; padding: 3px !important; color: black !important; }
             th { background-color: #e5e7eb !important; -webkit-print-color-adjust: exact; color-adjust: exact; font-weight: bold; text-align: center; }
             .val-libur { background-color: #fca5a5 !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
             input.cell-input { font-weight: bold !important; color: black !important; padding: 0 !important; border: none !important; background: transparent !important; }
-            
             .print-signature { display: table !important; margin-top: 30px; page-break-inside: avoid !important; width: 100%; font-size: 9pt !important; }
-            
             @page { size: 330mm 215mm landscape; margin: 10mm 15mm; }
         }
         .print-only { display: none; }
         @media print { .print-only { display: block; } }
         
-        .apma-spinner { width: 48px; height: 48px; border: 5px solid #e2e8f0; border-bottom-color: #2563eb; border-radius: 50%; display: inline-block; box-sizing: border-box; animation: spin 1s linear infinite; }
-        
-        /* Pewarnaan Dinamis Tabel Jadwal */
         .jdw-istirahat { background-color: #fef08a !important; color: #854d0e !important; font-weight: bold; text-align: center; }
         .jdw-upacara { background-color: #fecdd3 !important; color: #9f1239 !important; font-weight: bold; text-align: center; }
         .jdw-pulang { background-color: #bbf7d0 !important; color: #166534 !important; font-weight: bold; text-align: center; }
@@ -97,7 +78,6 @@
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm mx-4 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-2 bg-blue-600"></div>
             <div class="text-center mb-6 mt-2">
-                <!-- LOGO SEKOLAH UNTUK LOGIN (Sinkron Otomatis) -->
                 <div class="inline-flex items-center justify-center h-20 mb-2 relative">
                     <img id="login-logo-img" src="" alt="Logo Sekolah" class="max-h-full max-w-full object-contain hidden drop-shadow-sm">
                     <div id="login-logo-fallback" class="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
@@ -126,26 +106,17 @@
         </div>
     </div>
 
-    <!-- Loading Overlay ELEGAN & KLASIK DENGAN FOTO TERINTEGRASI -->
+    <!-- Loading Overlay -->
     <div id="loading-overlay" class="fixed inset-0 bg-slate-900 bg-opacity-[0.98] z-[100] flex flex-col items-center justify-center text-white transition-opacity duration-500 hidden">
-        
-        <!-- DUAL-RING SPINNER DENGAN FOTO DI TENGAH -->
         <div class="relative flex items-center justify-center w-32 h-32 mb-6">
-            <!-- Cincin Luar (Biru - Berputar Searah Jarum Jam) -->
             <div class="absolute inset-0 rounded-full border-[3px] border-slate-700 border-t-blue-400 border-r-blue-400 animate-spin shadow-[0_0_20px_rgba(96,165,250,0.3)]"></div>
-            <!-- Cincin Dalam (Indigo - Berputar Berlawanan Arah) -->
             <div class="absolute inset-1.5 rounded-full border-[3px] border-slate-700 border-b-indigo-400 border-l-indigo-400 animate-spin-reverse"></div>
-            
-            <!-- Foto Profil Guru Terintegrasi -->
             <div class="w-[84px] h-[84px] rounded-full overflow-hidden bg-slate-800 z-10 p-1">
                 <img id="loading-foto-img" src="https://cdn.phototourl.com/free/2026-04-17-64555a53-f2ac-4934-8647-bb4004ba8db7.jpg" class="w-full h-full rounded-full object-cover object-top filter contrast-[1.05]">
             </div>
         </div>
-
         <h2 id="loading-title" class="text-2xl font-bold mb-1 tracking-widest text-slate-100 font-serif">Menyinkronkan Database...</h2>
         <p id="loading-subtitle" class="text-[10px] text-blue-400 font-bold uppercase tracking-[0.3em] mb-8">Mohon Tunggu Sebentar</p>
-        
-        <!-- Kalimat Inspiratif Klasik -->
         <div class="max-w-xl px-8 text-center relative mt-2 pt-8">
             <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-[1px] bg-gradient-to-r from-transparent via-slate-500 to-transparent"></div>
             <i data-lucide="quote" class="w-8 h-8 text-slate-700 absolute top-4 left-2 opacity-50"></i>
@@ -207,7 +178,7 @@
                 <div id="menu-siswa" class="submenu flex flex-col pl-9 pr-2 space-y-1 mt-1">
                     <button onclick="pindahHalaman('siswa-absen', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-absen">Input Kehadiran</button>
                     <button onclick="pindahHalaman('siswa-rekapbulan', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-rekapbulan">Rekap Bulanan</button>
-                    <button onclick="pindahHalaman('siswa-rekapsemester', this)" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-rekapsemester">Rekap Semester</button>
+                    <button onclick="pindahHalaman('siswa-rekapsemester', this); renderRekapSemester();" class="nav-btn text-left px-3 py-2 rounded-md text-sm text-slate-400 hover:text-white hover:bg-slate-800" data-target="siswa-rekapsemester">Rekap Semester</button>
                 </div>
             </div>
 
@@ -308,21 +279,17 @@
                     </div>
                 </div>
 
-                <!-- DIAGRAM / CHARTS AREA -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10 no-print">
-                    <!-- Diagram Lingkaran (Pie Chart) -->
                     <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition duration-300">
                         <h3 class="text-sm font-bold text-slate-700 mb-4 flex items-center"><i data-lucide="pie-chart" class="w-4 h-4 mr-2 text-blue-500"></i> Statistik Gender Siswa</h3>
                         <div class="relative h-56"><canvas id="chartGender"></canvas></div>
                     </div>
-                    <!-- Diagram Batang (Bar Chart) -->
                     <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition duration-300 lg:col-span-2">
                         <h3 class="text-sm font-bold text-slate-700 mb-4 flex items-center"><i data-lucide="bar-chart-3" class="w-4 h-4 mr-2 text-indigo-500"></i> Rata-Rata Nilai Formatif per Mapel</h3>
                         <div class="relative h-56"><canvas id="chartNilai"></canvas></div>
                     </div>
                 </div>
 
-                <!-- PROFIL GURU ELEGAN -->
                 <div class="mb-6 no-print">
                     <h2 class="text-xl font-bold text-slate-800">Profil Pengembang & Guru</h2>
                 </div>
@@ -333,7 +300,6 @@
                     </div>
                     
                     <div class="px-6 sm:px-10 pb-8 pt-6 relative flex flex-col-reverse md:flex-row md:items-start md:justify-between gap-8">
-                        
                         <div class="flex-1 text-center md:text-left mt-4 md:mt-0">
                             <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">Bayu Prahastian, S.Pd.</h3>
                             <p class="text-sm font-bold text-blue-600 mb-5 tracking-wide uppercase mt-1">Guru SD &bull; SD Negeri 04 Taman</p>
@@ -371,7 +337,6 @@
                             </div>
                         </div>
 
-                        <!-- Foto Profil Avatar -->
                         <div class="relative z-10 flex flex-col items-center shrink-0 md:-mt-20">
                             <div class="bg-white p-3 rounded-lg shadow-xl border border-slate-200 transform rotate-2 hover:rotate-0 transition-all duration-300 relative group-hover:shadow-2xl">
                                 <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-12 h-4 bg-white/70 shadow-sm border border-slate-200 rotate-[-3deg] z-20"></div>
@@ -384,7 +349,6 @@
                                 <div class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></div> Online
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -396,7 +360,6 @@
                         <h2 class="text-xl font-bold text-slate-800">Data Induk Siswa</h2>
                         <p class="text-sm text-slate-500">Kelola dan edit data siswa yang terhubung ke seluruh sistem.</p>
                     </div>
-                    <!-- TOMBOL UI RAPI DAN SIMETRIS -->
                     <div class="flex flex-wrap gap-2 items-end mt-2 md:mt-0">
                         <div class="flex flex-col text-left">
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
@@ -576,9 +539,7 @@
                                 <th class="px-2 py-1.5 border-slate-300 w-1/6 print-color-exact">Sabtu</th>
                             </tr>
                         </thead>
-                        <tbody id="tb-jadwal-pelajaran" class="divide-y divide-slate-200 text-slate-800 font-medium">
-                            <!-- JS Generated -->
-                        </tbody>
+                        <tbody id="tb-jadwal-pelajaran" class="divide-y divide-slate-200 text-slate-800 font-medium"></tbody>
                     </table>
                     
                     <div class="hidden print:block mt-6 px-4 w-full">
@@ -619,10 +580,9 @@
                         </button>
                     </div>
                     <div class="p-6">
-                        <p class="text-xs text-slate-500 mb-6 bg-blue-50 border border-blue-100 p-3 rounded flex items-start"><i data-lucide="info" class="w-4 h-4 text-blue-500 mr-2 shrink-0 mt-0.5"></i> Masukkan URL (link) gambar dengan akhiran .png atau .jpg yang dapat diakses publik (seperti dari Google Drive atau Imgur). Gambar ini nantinya akan terintegrasi otomatis ke menu cetak Laporan dan Cover.</p>
+                        <p class="text-xs text-slate-500 mb-6 bg-blue-50 border border-blue-100 p-3 rounded flex items-start"><i data-lucide="info" class="w-4 h-4 text-blue-500 mr-2 shrink-0 mt-0.5"></i> Masukkan URL (link) gambar dengan akhiran .png atau .jpg yang dapat diakses publik. Gambar ini nantinya akan terintegrasi otomatis ke menu cetak Laporan.</p>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <!-- INPUT FOTO PROFIL GURU BARU -->
                             <div class="space-y-2 md:col-span-2 md:w-1/2 md:mx-auto mb-4">
                                 <label class="block text-[11px] font-bold text-blue-600 uppercase text-center border-b border-blue-100 pb-1 mb-2">URL Foto Profil Guru</label>
                                 <input type="text" id="inp-media-fotoguru" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500 shadow-sm" placeholder="https://..." oninput="previewMedia(this.value, 'prev-fotoguru', 'ph-fotoguru')">
@@ -633,7 +593,7 @@
                             </div>
                             
                             <div class="space-y-2 border-t border-slate-100 pt-6">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Logo Kiri (Cth: Tut Wuri / Pemda)</label>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Logo Kiri</label>
                                 <input type="text" id="inp-media-logokiri" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-logokiri', 'ph-logokiri')">
                                 <div class="w-full h-32 bg-slate-50 border border-slate-200 border-dashed rounded flex items-center justify-center p-2 relative">
                                     <img id="prev-logokiri" class="max-h-full max-w-full hidden object-contain drop-shadow-sm">
@@ -641,7 +601,7 @@
                                 </div>
                             </div>
                             <div class="space-y-2 border-t border-slate-100 pt-6">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Logo Kanan (Cth: Logo Sekolah)</label>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase">URL Logo Kanan</label>
                                 <input type="text" id="inp-media-logokanan" class="w-full border border-slate-300 rounded px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." oninput="previewMedia(this.value, 'prev-logokanan', 'ph-logokanan')">
                                 <div class="w-full h-32 bg-slate-50 border border-slate-200 border-dashed rounded flex items-center justify-center p-2 relative">
                                     <img id="prev-logokanan" class="max-h-full max-w-full hidden object-contain drop-shadow-sm">
@@ -682,9 +642,23 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
                     <div>
                         <h2 class="text-xl font-bold text-slate-800">Input Daftar Hadir</h2>
-                        <p class="text-sm text-slate-500">Klik huruf di dalam tabel untuk ubah. <span class="font-medium text-red-500">Merah = Libur</span>.</p>
+                        <p class="text-sm text-slate-500">Bisa diklik, atau <span class="font-bold text-blue-600">ketik huruf H,S,I,A</span> di keyboard. <span class="font-medium text-red-500">Merah = Libur</span>.</p>
                     </div>
                     <div class="flex flex-wrap gap-2 items-end mt-2 md:mt-0">
+                        <!-- KONTROL ABSENSI MASSAL -->
+                        <div class="flex items-center space-x-1 border border-slate-300 rounded px-2 h-9 bg-white shadow-sm">
+                            <span class="text-[10px] font-bold text-slate-500">Set Tgl:</span>
+                            <input type="number" id="mass-tgl" placeholder="Tgl" class="w-10 text-xs font-bold outline-none text-center bg-slate-50 rounded" min="1" max="31">
+                            <select id="mass-val" class="text-xs font-bold outline-none bg-transparent cursor-pointer">
+                                <option value="H" class="text-blue-600">Hadir</option>
+                                <option value="S" class="text-amber-600">Sakit</option>
+                                <option value="I" class="text-purple-600">Izin</option>
+                                <option value="A" class="text-red-600">Alpa</option>
+                                <option value="">Kosong</option>
+                            </select>
+                            <button onclick="setAbsenMassal()" class="text-[11px] font-bold text-white bg-slate-800 px-2 py-1 rounded hover:bg-slate-900 transition">Terapkan</button>
+                        </div>
+
                         <select id="filter-bulan-absen-input" onchange="renderInputAbsenBulan()" class="border border-slate-300 rounded px-2 py-1 text-xs outline-none focus:border-blue-500 bg-white font-bold h-9 w-[120px]">
                             <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
                         </select>
@@ -709,9 +683,7 @@
                                 <th class="border-r border-slate-300 bg-blue-50 text-purple-600 w-5">I</th>
                                 <th class="bg-blue-50 text-red-600 w-5 border-r border-slate-300">A</th>
                             </tr>
-                            <tr id="head-tanggal-absen">
-                                <!-- JS Generated -->
-                            </tr>
+                            <tr id="head-tanggal-absen"></tr>
                         </thead>
                         <tbody id="tb-input-absen-bulan" class="divide-y divide-slate-200 text-slate-700"></tbody>
                     </table>
@@ -762,9 +734,7 @@
                                 <th class="border-r border-slate-300 bg-slate-200 text-purple-600 w-5">I</th>
                                 <th class="bg-slate-200 text-red-600 w-5 border-r border-slate-300">A</th>
                             </tr>
-                            <tr id="head-tanggal-rekap">
-                                <!-- JS Generated -->
-                            </tr>
+                            <tr id="head-tanggal-rekap"></tr>
                         </thead>
                         <tbody id="tb-rekap-bulan" class="divide-y divide-slate-200 text-slate-700"></tbody>
                     </table>
@@ -796,7 +766,7 @@
             <!-- HALAMAN: SISWA - REKAP SEMESTER -->
             <div id="hal-siswa-rekapsemester" class="halaman page-transition hidden w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
-                    <div><h2 class="text-xl font-bold text-slate-800">Rekap Semester</h2></div>
+                    <div><h2 class="text-xl font-bold text-slate-800">Rekap Semester</h2><p class="text-sm text-slate-500">Tabel dinamis membaca bulan sesuai Semester (Ganjil/Genap) di Profil Kelas.</p></div>
                     <div class="flex flex-wrap gap-2 items-end mt-2 md:mt-0">
                         <div class="flex flex-col text-left">
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
@@ -810,33 +780,13 @@
                     <div class="hidden print:flex justify-between items-center px-4 mb-4 border-b-2 border-slate-800 pb-2">
                         <img src="" class="w-16 h-16 object-contain hidden img-logokiri">
                         <div class="text-center flex-1 px-4">
-                            <h2 class="font-bold text-[10pt] uppercase">REKAPITULASI DAFTAR HADIR SEMESTER</h2>
+                            <h2 class="font-bold text-[10pt] uppercase">REKAPITULASI DAFTAR HADIR SEMESTER <span class="print-smt uppercase">GENAP</span></h2>
                             <p class="text-[8pt] print-sub-header">Tahun Ajaran <span class="print-ta">2025/2026</span></p>
                         </div>
                         <img src="" class="w-16 h-16 object-contain hidden img-logokanan">
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-xs whitespace-nowrap">
-                        <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold print-color-exact">
-                            <tr>
-                                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap w-48">Nama Murid</th>
-                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Januari</th>
-                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Februari</th>
-                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Maret</th>
-                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">April</th>
-                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Mei</th>
-                                <th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">Juni</th>
-                                <th colspan="4" class="px-2 py-1 border-r border-slate-300 border-b bg-blue-50 text-blue-800">TOTAL SMT</th>
-                                <th rowspan="2" class="px-2 py-1 bg-blue-50 text-blue-800 border-l border-slate-300">% HADIR</th>
-                            </tr>
-                            <tr class="font-normal text-[9px] sm:text-[10px] text-slate-600">
-                                <th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>
-                                <th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>
-                                <th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>
-                                <th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>
-                                <th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>
-                                <th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>
-                                <th class="border-r border-slate-300 bg-blue-50 font-bold text-slate-800">H</th><th class="border-r border-slate-300 bg-blue-50 font-bold text-slate-800">S</th><th class="border-r border-slate-300 bg-blue-50 font-bold text-slate-800">I</th><th class="bg-blue-50 font-bold text-slate-800">A</th>
-                            </tr>
+                        <thead id="head-rekap-smt" class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold print-color-exact">
                         </thead>
                         <tbody id="tb-rekap-smt" class="divide-y divide-slate-200 text-slate-700"></tbody>
                     </table>
@@ -869,7 +819,7 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
                     <div>
                         <h2 class="text-xl font-bold text-slate-800">Asesmen Formatif</h2>
-                        <p class="text-sm text-slate-500">Ketik angka pada kolom K1 dan K2 untuk mengubah nilai.</p>
+                        <p class="text-sm text-slate-500">Ketik angka pada kolom K1 atau K2. Tidak wajib terisi keduanya.</p>
                     </div>
                     <div class="flex flex-wrap gap-2 items-end mt-2 md:mt-0">
                         <select id="filter-mapel-formatif" onchange="renderFormatif()" class="border border-slate-300 rounded px-2 py-1 text-xs outline-none focus:border-blue-500 bg-white font-bold h-9 w-[160px]"></select>
@@ -1038,7 +988,10 @@
             <!-- HALAMAN: PENILAIAN - LEGGER RAPOR -->
             <div id="hal-nilai-legger" class="halaman page-transition hidden w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
-                    <div><h2 class="text-xl font-bold text-slate-800">Kelola Nilai (Legger Rapor)</h2></div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">Kelola Nilai (Legger Rapor)</h2>
+                        <p class="text-sm text-slate-500">Nilai Akhir Rapor otomatis: <span class="font-bold text-blue-600">65% Formatif + 35% Sumatif</span>.</p>
+                    </div>
                     <div class="flex flex-wrap gap-2 items-end mt-2 md:mt-0">
                         <div class="flex flex-col text-left">
                             <label class="text-[10px] font-bold text-slate-500 mb-0.5">Tanggal Cetak:</label>
@@ -1059,7 +1012,6 @@
                     </div>
                     <table class="w-full text-center border-collapse text-[10px] sm:text-[11px]">
                         <thead class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold print-color-exact" id="head-legger">
-                            <!-- JS Generated Dynamics -->
                         </thead>
                         <tbody id="tb-legger" class="divide-y divide-slate-200 text-slate-800 font-medium"></tbody>
                     </table>
@@ -1088,7 +1040,7 @@
                 </div>
             </div>
 
-            <!-- HAL문을 MAN: JURNAL MENGAJAR -->
+            <!-- HALAMAN: JURNAL MENGAJAR -->
             <div id="hal-jurnal-input" class="halaman page-transition hidden w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 no-print gap-3">
                     <div><h2 class="text-xl font-bold text-slate-800">Jurnal Mengajar Harian</h2></div>
@@ -1197,7 +1149,7 @@
         lucide.createIcons();
 
         // ------------------------------------------
-        // 1. DATA MAPEL & TARGET (Default jika DB kosong)
+        // 1. DATA MAPEL & TARGET
         // ------------------------------------------
         let mapelData = {
             "Pendidikan Pancasila": {
@@ -1295,7 +1247,6 @@
             }
         };
         
-        // DEFAULT DATA JADWAL PELAJARAN (Bisa ditimpa oleh DB nanti)
         let jadwalData = [
             { jam: "1", senin: "Upacara", selasa: "B. Inggris", rabu: "P. Pancasila", kamis: "PJOK", jumat: "Senam", sabtu: "B. Indonesia" },
             { jam: "2", senin: "Matematika", selasa: "B. Inggris", rabu: "P. Pancasila", kamis: "PJOK", jumat: "Kebersihan", sabtu: "B. Indonesia" },
@@ -1321,7 +1272,7 @@
         let listJurnal = [];
         let currentSettingMapel = "";
         let nilaiSiswa = {};
-        let currentAbsenData = {};
+        let globalAbsen = { "Januari": {}, "Februari": {}, "Maret": {}, "April": {}, "Mei": {}, "Juni": {}, "Juli": {}, "Agustus": {}, "September": {}, "Oktober": {}, "November": {}, "Desember": {} };
         let mediaData = { logoKiri: "", logoKanan: "", ttdKepsek: "", ttdGuru: "", stempel: "", fotoGuru: "" };
         let chartGenderInstance = null;
         let chartNilaiInstance = null;
@@ -1362,29 +1313,25 @@
         const loader = document.getElementById('loading-overlay');
 
         async function postToDB(payload, successMsg) {
-            if(payload.action === 'simpanJurnal' || payload.action === 'simpanMedia' || payload.action === 'simpanDataInduk' || payload.action === 'simpanJadwal') {
-                document.getElementById('loading-title').innerText = "Menyimpan Data...";
-                document.getElementById('loading-subtitle').innerText = "Menyinkronkan ke Database Google Sheets";
-                loader.classList.remove('hidden', 'opacity-0');
-                try {
-                    const response = await fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify(payload)
-                    });
-                    const res = await response.json();
-                    if(res.status === 'success') {
-                        alert(successMsg);
-                    } else {
-                        alert("Gagal menyimpan ke Database: " + res.error);
-                    }
-                } catch (error) {
-                    alert("Terjadi kesalahan koneksi ke Google Sheets. Disimpan ke memori browser lokal.");
-                } finally {
-                    loader.classList.add('opacity-0');
-                    setTimeout(() => loader.classList.add('hidden'), 500);
+            document.getElementById('loading-title').innerText = "Menyimpan Data...";
+            document.getElementById('loading-subtitle').innerText = "Menyinkronkan ke Database Google Sheets";
+            loader.classList.remove('hidden', 'opacity-0');
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const res = await response.json();
+                if(res.status === 'success') {
+                    alert(successMsg);
+                } else {
+                    alert("Gagal menyimpan ke Database: " + res.error);
                 }
-            } else {
-                alert("Pesan dari sistem: Data tersimpan di memori browser.");
+            } catch (error) {
+                alert("Terjadi kesalahan koneksi ke Google Sheets. Disimpan ke memori browser lokal.");
+            } finally {
+                loader.classList.add('opacity-0');
+                setTimeout(() => loader.classList.add('hidden'), 500);
                 if(!document.getElementById('hal-nilai-legger').classList.contains('hidden')) renderLegger();
             }
         }
@@ -1396,8 +1343,6 @@
                 loader.classList.remove('hidden', 'opacity-0');
             }
             let usingMock = false;
-            
-            // Penambahan Cache-Buster (Waktu Unik) agar Browser dipaksa ambil data paling baru dari DB
             let tstamp = new Date().getTime();
             
             try {
@@ -1462,14 +1407,10 @@
                             }
                         }
 
-                        // Simpan Foto Guru ke LocalStorage untuk digunakan di Halaman Loading Dinamis
                         if(mediaData.fotoGuru && mediaData.fotoGuru.trim() !== "") {
                             localStorage.setItem('siguru_foto_guru', mediaData.fotoGuru);
                             let loadingFoto = document.getElementById('loading-foto-img');
-                            
-                            if(loadingFoto) {
-                                loadingFoto.src = mediaData.fotoGuru;
-                            }
+                            if(loadingFoto) loadingFoto.src = mediaData.fotoGuru;
                         }
                         
                         previewMedia(mediaData.logoKiri, 'prev-logokiri', 'ph-logokiri');
@@ -1487,13 +1428,44 @@
                     else listJurnal = [];
                 } catch(e) {}
 
-                // Try Get Jadwal Pelajaran (Optional if DB exists)
+                try {
+                    const resAbsen = await fetch(`${API_URL}?action=getAbsen&_t=${tstamp}`).then(r => r.json());
+                    if(resAbsen.status === 'success' && Object.keys(resAbsen.data).length > 0) {
+                        globalAbsen = resAbsen.data;
+                    }
+                } catch(e) { console.warn("Load Absen:", e); }
+
+                initDataNilaiLokal(); 
+                try {
+                    const [resF, resS, resSik] = await Promise.all([
+                        fetch(`${API_URL}?action=getFormatif&_t=${tstamp}`).then(r => r.json()),
+                        fetch(`${API_URL}?action=getSumatif&_t=${tstamp}`).then(r => r.json()),
+                        fetch(`${API_URL}?action=getSikap&_t=${tstamp}`).then(r => r.json())
+                    ]);
+                    
+                    if(resF.status === 'success' && Object.keys(resF.data).length > 0) {
+                        Object.keys(resF.data).forEach(sIdx => {
+                            if(nilaiSiswa[sIdx]) nilaiSiswa[sIdx].formatif = resF.data[sIdx].formatif;
+                        });
+                    }
+                    if(resS.status === 'success' && Object.keys(resS.data).length > 0) {
+                        Object.keys(resS.data).forEach(sIdx => {
+                            if(nilaiSiswa[sIdx]) nilaiSiswa[sIdx].sumatif = resS.data[sIdx].sumatif;
+                        });
+                    }
+                    if(resSik.status === 'success' && Object.keys(resSik.data).length > 0) {
+                        Object.keys(resSik.data).forEach(sIdx => {
+                            if(nilaiSiswa[sIdx]) nilaiSiswa[sIdx].sikap = resSik.data[sIdx].sikap;
+                        });
+                    }
+                } catch(e) { console.warn("Load Nilai Error:", e); }
+
                 try {
                     const resJadwal = await fetch(`${API_URL}?action=getJadwal&_t=${tstamp}`).then(r => r.json());
                     if(resJadwal.status === 'success' && resJadwal.data.length > 0) {
                         jadwalData = resJadwal.data;
                     }
-                } catch(e) { console.warn("Load Jadwal (Bisa diabaikan jika belum disetup di backend):", e); }
+                } catch(e) {}
 
                 initialSetupSemua(usingMock);
             } catch (error) {
@@ -1508,14 +1480,11 @@
         }
 
         function initialSetupSemua(usingMock) {
-            if(usingMock) {
-                document.getElementById('mock-warning').classList.remove('hidden');
-            } else {
-                document.getElementById('mock-warning').classList.add('hidden');
-            }
+            if(usingMock) document.getElementById('mock-warning').classList.remove('hidden');
+            else document.getElementById('mock-warning').classList.add('hidden');
 
             document.getElementById('dash-total-siswa').innerText = globalSiswa.length;
-            initDataNilai();
+            initDataNilaiLokal();
             initMockAbsen();
             renderDataSiswa();
             renderInputAbsenBulan();
@@ -1525,11 +1494,11 @@
             renderLegger();      
             updateJurnalMapel();
             renderTabelJurnal();
-            renderJadwal(); // Init Jadwal
+            renderJadwal();
             updateDashboardCharts();
         }
 
-        function initDataNilai() {
+        function initDataNilaiLokal() {
             globalSiswa.forEach((s, i) => {
                 if(!nilaiSiswa[i]) {
                     nilaiSiswa[i] = { formatif: {}, sumatif: {}, sikap: { dsk: '', ins: '', dsp: '', tgg: '' } };
@@ -1549,12 +1518,13 @@
         }
 
         function initMockAbsen() {
-            globalSiswa.forEach((s, i) => { 
-                if(!currentAbsenData[i]) currentAbsenData[i] = { hari: {} }; 
-            });
+            for(let b in globalAbsen) {
+                globalSiswa.forEach((s, i) => { 
+                    if(!globalAbsen[b][i]) globalAbsen[b][i] = { hari: {} }; 
+                });
+            }
         }
 
-        // --- DASHBOARD CHARTS (CHART.JS) ---
         function updateDashboardCharts() {
             const ctxGender = document.getElementById('chartGender');
             const ctxNilai = document.getElementById('chartNilai');
@@ -1580,11 +1550,8 @@
                     }]
                 },
                 options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { 
-                        legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 10, font: { size: 11, family: 'Inter' } } } 
-                    },
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 10, font: { size: 11, family: 'Inter' } } } },
                     cutout: '65%'
                 }
             });
@@ -1593,14 +1560,15 @@
             let dataNilai = [];
             
             labelsMapel.forEach(m => {
-                let total = 0;
-                let count = 0;
+                let total = 0; let count = 0;
                 globalSiswa.forEach((s, i) => {
                     if(nilaiSiswa[i] && nilaiSiswa[i].formatif && nilaiSiswa[i].formatif[m]) {
                         nilaiSiswa[i].formatif[m].forEach(f => {
-                            if(f.k1 !== '' && f.k2 !== '') {
-                                total += Math.round((parseInt(f.k1) + parseInt(f.k2))/2);
-                                count++;
+                            let v1 = f.k1 !== '' ? parseInt(f.k1) : null;
+                            let v2 = f.k2 !== '' ? parseInt(f.k2) : null;
+                            if(v1 !== null || v2 !== null) {
+                                let na = (v1 !== null && v2 !== null) ? Math.round((v1+v2)/2) : (v1 !== null ? v1 : v2);
+                                total += na; count++;
                             }
                         });
                     }
@@ -1614,36 +1582,24 @@
                 data: {
                     labels: labelsMapel.map(m => m.length > 12 ? m.substring(0,12)+'...' : m),
                     datasets: [{
-                        label: 'Rata-rata Formatif Kelas',
-                        data: dataNilai,
-                        backgroundColor: '#6366f1',
-                        borderRadius: 4,
-                        barPercentage: 0.6
+                        label: 'Rata-rata Formatif Kelas', data: dataNilai, backgroundColor: '#6366f1', borderRadius: 4, barPercentage: 0.6
                     }]
                 },
                 options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
+                    responsive: true, maintainAspectRatio: false, 
                     scales: { 
                         y: { beginAtZero: true, max: 100, grid: { borderDash: [4, 4] }, ticks: { font: { family: 'Inter', size: 10 } } },
                         x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 } } }
                     },
-                    plugins: { 
-                        legend: { display: false },
-                        tooltip: { titleFont: { family: 'Inter' }, bodyFont: { family: 'Inter' } }
-                    }
+                    plugins: { legend: { display: false }, tooltip: { titleFont: { family: 'Inter' }, bodyFont: { family: 'Inter' } } }
                 }
             });
         }
 
-        // --- DATA INDUK SISWA ---
         function renderDataSiswa() {
-            let tbody = "";
-            let l = 0, p = 0;
+            let tbody = ""; let l = 0, p = 0;
             globalSiswa.forEach((s, i) => {
-                if(s.jk.toUpperCase() === 'L') l++;
-                else if(s.jk.toUpperCase() === 'P') p++;
-
+                if(s.jk.toUpperCase() === 'L') l++; else if(s.jk.toUpperCase() === 'P') p++;
                 tbody += `
                 <tr class="align-top hover:bg-slate-50 transition-colors">
                     <td class="border-r border-slate-300 border-b p-1 text-center font-medium">${i+1}</td>
@@ -1692,7 +1648,7 @@
         function tambahSiswa() {
             let newSiswa = {nis: '', nisn: '', nama: '', jk: 'L', tLahir: '', tglLahir: '', usia: '', agama: '', alamat: '', namaAyah: '', namaIbu: '', pekAyah: '', pekIbu: '', pendAyah: '', pendIbu: ''};
             globalSiswa.push(newSiswa);
-            initDataNilai(); 
+            initDataNilaiLokal(); 
             initMockAbsen();
             renderDataSiswa();
         }
@@ -1702,13 +1658,20 @@
             globalSiswa.splice(index, 1);
             
             let newAbsen = {};
+            for(let b in globalAbsen) {
+                newAbsen[b] = {};
+                globalSiswa.forEach((s, i) => {
+                    let oldIdx = i >= index ? i + 1 : i;
+                    newAbsen[b][i] = globalAbsen[b][oldIdx] || { hari: {} };
+                });
+            }
+            globalAbsen = newAbsen;
+
             let newNilai = {};
             globalSiswa.forEach((s, i) => {
                 let oldIdx = i >= index ? i + 1 : i;
-                newAbsen[i] = currentAbsenData[oldIdx] || { hari: {} };
                 newNilai[i] = nilaiSiswa[oldIdx] || { formatif: {}, sumatif: {}, sikap: { dsk: '', ins: '', dsp: '', tgg: '' } };
             });
-            currentAbsenData = newAbsen;
             nilaiSiswa = newNilai;
             
             renderDataSiswa();
@@ -1719,7 +1682,6 @@
             postToDB(payload, "Data Induk Siswa berhasil disimpan ke Database Excel!");
         }
 
-        // --- NAVIGASI UI ---
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
         function toggleAccordion(menuId) {
             const menu = document.getElementById(menuId);
@@ -1728,22 +1690,16 @@
             else { menu.classList.add('open'); icon.classList.add('rotate'); }
         }
         function pindahHalaman(idHalaman, btnElement) {
-            document.querySelectorAll('.halaman').forEach(el => {
-                el.classList.add('hidden');
-                el.classList.remove('block');
-                el.classList.remove('flex');
-            });
+            document.querySelectorAll('.halaman').forEach(el => { el.classList.add('hidden'); el.classList.remove('block', 'flex'); });
             let targetHalaman = document.getElementById(`hal-${idHalaman}`);
             targetHalaman.classList.remove('hidden');
             targetHalaman.classList.add('block'); 
             
             let judul = "Papan Utama";
-            
             if(idHalaman === 'dashboard') { updateDashboardCharts(); } 
             else if(idHalaman === 'identitas-target') { judul = "Perangkat Ajar - Target"; loadMenuSettingMapel(); }
             else if(idHalaman === 'jadwal-pelajaran') { judul = "Jadwal Pelajaran Kelas"; renderJadwal(); }
             else if(idHalaman.includes('identitas')) { judul = "Identitas Kelas"; }
-            
             if(idHalaman.includes('siswa')) judul = "Administrasi Kehadiran";
             if(idHalaman==='data-siswa') judul = "Data Master Siswa";
             if(idHalaman.includes('nilai')) judul = "Pengolahan Nilai (Rapor)";
@@ -1765,18 +1721,13 @@
             if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('-translate-x-full');
         }
 
-        // --- KELENGKAPAN KELAS ---
         function previewMedia(url, imgId, phId) {
             const img = document.getElementById(imgId);
             const ph = document.getElementById(phId);
             if(url && url.trim() !== "") {
-                img.src = url;
-                img.classList.remove('hidden');
-                if(ph) ph.classList.add('hidden');
+                img.src = url; img.classList.remove('hidden'); if(ph) ph.classList.add('hidden');
             } else {
-                img.src = "";
-                img.classList.add('hidden');
-                if(ph) ph.classList.remove('hidden');
+                img.src = ""; img.classList.add('hidden'); if(ph) ph.classList.remove('hidden');
             }
         }
 
@@ -1788,41 +1739,26 @@
             mediaData.ttdGuru = document.getElementById('inp-media-ttdguru').value;
             mediaData.stempel = document.getElementById('inp-media-stempel').value;
 
-            // Simpan Logo Kanan ke LocalStorage
             if(mediaData.logoKanan && mediaData.logoKanan.trim() !== "") {
                 localStorage.setItem('siguru_logo_sd', mediaData.logoKanan);
                 let loginLogo = document.getElementById('login-logo-img');
                 let loginFallback = document.getElementById('login-logo-fallback');
-                if(loginLogo && loginFallback) {
-                    loginLogo.src = mediaData.logoKanan;
-                    loginLogo.classList.remove('hidden');
-                    loginFallback.classList.add('hidden');
-                }
+                if(loginLogo && loginFallback) { loginLogo.src = mediaData.logoKanan; loginLogo.classList.remove('hidden'); loginFallback.classList.add('hidden'); }
             } else {
                 localStorage.removeItem('siguru_logo_sd');
                 let loginLogo = document.getElementById('login-logo-img');
                 let loginFallback = document.getElementById('login-logo-fallback');
-                if(loginLogo && loginFallback) {
-                    loginLogo.classList.add('hidden');
-                    loginFallback.classList.remove('hidden');
-                }
+                if(loginLogo && loginFallback) { loginLogo.classList.add('hidden'); loginFallback.classList.remove('hidden'); }
             }
 
-            // Simpan FOTO GURU ke LocalStorage untuk digunakan di Halaman Loading Dinamis
             if(mediaData.fotoGuru && mediaData.fotoGuru.trim() !== "") {
                 localStorage.setItem('siguru_foto_guru', mediaData.fotoGuru);
                 let loadingFoto = document.getElementById('loading-foto-img');
-                
-                if(loadingFoto) {
-                    loadingFoto.src = mediaData.fotoGuru;
-                }
+                if(loadingFoto) loadingFoto.src = mediaData.fotoGuru;
             } else {
                 localStorage.removeItem('siguru_foto_guru');
                 let loadingFoto = document.getElementById('loading-foto-img');
-                
-                if(loadingFoto) {
-                    loadingFoto.src = "https://cdn.phototourl.com/free/2026-04-17-64555a53-f2ac-4934-8647-bb4004ba8db7.jpg"; // Placeholder
-                }
+                if(loadingFoto) loadingFoto.src = "https://cdn.phototourl.com/free/2026-04-17-64555a53-f2ac-4934-8647-bb4004ba8db7.jpg"; 
             }
 
             let payload = { action: 'simpanMedia', data: mediaData };
@@ -1842,12 +1778,9 @@
             setImg('.img-ttdkepsek', mediaData.ttdKepsek);
             setImg('.img-ttdguru', mediaData.ttdGuru);
             setImg('.img-stempel', mediaData.stempel);
-            
-            // Render dinamis Foto Guru, jika kosong kembali ke foto default developer sebagai placeholder
             setImg('.img-fotoguru', mediaData.fotoGuru, 'https://cdn.phototourl.com/free/2026-04-17-64555a53-f2ac-4934-8647-bb4004ba8db7.jpg');
         }
 
-        // --- TARGET PEMBELAJARAN ---
         function loadMenuSettingMapel() {
             let html = "";
             for(let m in mapelData) {
@@ -1916,7 +1849,6 @@
             updateDashboardCharts();
         }
 
-        // --- JADWAL PELAJARAN ---
         function getWarnaJadwal(val) {
             if(!val) return "";
             let text = val.toLowerCase();
@@ -1962,9 +1894,7 @@
             lucide.createIcons();
         }
 
-        function updJadwal(idx, field, val) {
-            jadwalData[idx][field] = val;
-        }
+        function updJadwal(idx, field, val) { jadwalData[idx][field] = val; }
 
         function tambahBarisJadwal() {
             let nextJam = jadwalData.length > 0 ? (parseInt(jadwalData[jadwalData.length-1].jam) || 0) + 1 : 1;
@@ -1983,7 +1913,6 @@
             postToDB(payload, "Jadwal Pelajaran berhasil disimpan ke Database Excel!");
         }
 
-        // --- SINKRONISASI KOP CETAK ---
         function syncGlobalData() {
             let sep = document.getElementById('inp-kepsek').value;
             let sNip = document.getElementById('inp-nipkepsek').value;
@@ -2017,13 +1946,11 @@
             bindMediaToPrint(); 
         }
 
-        // --- EKSPOR KE EXCEL (HTML to XLS) ---
         function exportToExcel(containerId, filename) {
             syncGlobalData(); 
             
             let container = document.getElementById(containerId);
             if(!container) return;
-            
             let clone = container.cloneNode(true);
             
             let inputs = clone.querySelectorAll('input');
@@ -2034,10 +1961,7 @@
             });
 
             let printOnlyElements = clone.querySelectorAll('.print-only, .print-signature');
-            printOnlyElements.forEach(el => {
-                el.style.display = 'table';
-                el.classList.remove('hidden'); 
-            });
+            printOnlyElements.forEach(el => { el.style.display = 'table'; el.classList.remove('hidden'); });
 
             let noPrintElements = clone.querySelectorAll('.no-print');
             noPrintElements.forEach(el => el.remove());
@@ -2047,38 +1971,18 @@
             });
 
             let html = clone.innerHTML;
-            
             let excelFile = `
             <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-            <head>
-                <meta charset="utf-8">
-                <style>
-                    body { font-family: Arial, sans-serif; font-size: 10pt; }
-                    table { border-collapse: collapse; width: 100%; border: 1pt solid black; }
-                    th, td { border: 1pt solid black; padding: 4px; text-align: center; vertical-align: middle; }
-                    th { background-color: #e2efda; font-weight: bold; }
-                    .text-left { text-align: left !important; }
-                    .kop-surat h2 { font-size: 13pt; margin-bottom: 2px; }
-                    .print-signature { margin-top: 30px; width: 100%; border: none !important; }
-                    .print-signature td { border: none !important; }
-                </style>
-            </head>
-            <body>
-                ${html}
-            </body>
-            </html>`;
+            <head><meta charset="utf-8"><style>
+                body { font-family: Arial, sans-serif; font-size: 10pt; } table { border-collapse: collapse; width: 100%; border: 1pt solid black; } th, td { border: 1pt solid black; padding: 4px; text-align: center; vertical-align: middle; } th { background-color: #e2efda; font-weight: bold; } .text-left { text-align: left !important; } .kop-surat h2 { font-size: 13pt; margin-bottom: 2px; } .print-signature { margin-top: 30px; width: 100%; border: none !important; } .print-signature td { border: none !important; }
+            </style></head><body>${html}</body></html>`;
 
             let blob = new Blob([excelFile], { type: 'application/vnd.ms-excel' });
             let url = URL.createObjectURL(blob);
             let a = document.createElement("a");
-            a.href = url;
-            a.download = filename + ".xls";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            a.href = url; a.download = filename + ".xls"; document.body.appendChild(a); a.click(); document.body.removeChild(a);
         }
 
-        // --- KALENDER ABSENSI ---
         const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
         
         function getDaysInMonth(monthStr, year) { return new Date(year, monthNames.indexOf(monthStr) + 1, 0).getDate(); }
@@ -2088,6 +1992,65 @@
             let libur = 0;
             for(let d=1; d<=daysInMonth; d++) { if(isSunday(d, monthStr, year)) libur++; }
             return daysInMonth - libur;
+        }
+
+        function setAbsenMassal() {
+            let bln = document.getElementById('filter-bulan-absen-input').value;
+            let tgl = document.getElementById('mass-tgl').value;
+            let val = document.getElementById('mass-val').value;
+            
+            let ta = document.getElementById('inp-ta').value;
+            let startYear = parseInt(ta.split('/')[0]) || 2025;
+            let monthIdx = monthNames.indexOf(bln);
+            let activeYear = (monthIdx < 6) ? startYear + 1 : startYear; 
+            let maxDays = getDaysInMonth(bln, activeYear);
+
+            if(tgl) {
+                tgl = parseInt(tgl);
+                if(tgl < 1 || tgl > maxDays) { alert("Tanggal tidak valid untuk bulan " + bln); return; }
+                if(isSunday(tgl, bln, activeYear)) { alert("Tanggal tersebut adalah hari libur (Minggu)."); return; }
+                
+                globalSiswa.forEach((_, i) => { updateAbsenCellLogic(bln, i, tgl, val); });
+            } else {
+                if(!confirm(`Terapkan "${val === '' ? 'Kosong' : val}" ke seluruh hari efektif di bulan ${bln}?`)) return;
+                for(let d=1; d<=maxDays; d++) {
+                    if(!isSunday(d, bln, activeYear)) {
+                        globalSiswa.forEach((_, i) => { updateAbsenCellLogic(bln, i, d, val); });
+                    }
+                }
+            }
+            renderInputAbsenBulan();
+        }
+
+        function updateAbsenCellLogic(bln, studentIdx, day, val) {
+            if(!globalAbsen[bln]) globalAbsen[bln] = {};
+            if(!globalAbsen[bln][studentIdx]) globalAbsen[bln][studentIdx] = {hari:{}};
+            globalAbsen[bln][studentIdx].hari[day] = val;
+        }
+
+        function handleAbsenKey(e, cell, isSunday, studentIdx, day) {
+            if(isSunday) return;
+            const key = e.key.toUpperCase();
+            if(['H','S','I','A'].includes(key)) {
+                e.preventDefault();
+                updateAbsenVisual(cell, key, studentIdx, day);
+            } else if(e.key === 'Backspace' || e.key === 'Delete') {
+                e.preventDefault();
+                updateAbsenVisual(cell, '', studentIdx, day);
+            }
+        }
+
+        function updateAbsenVisual(cell, val, studentIdx, day) {
+            cell.innerText = val;
+            cell.classList.remove('val-h', 'val-s', 'val-i', 'val-a');
+            if(val === 'H') cell.classList.add('val-h');
+            else if(val === 'S') cell.classList.add('val-s');
+            else if(val === 'I') cell.classList.add('val-i');
+            else if(val === 'A') cell.classList.add('val-a');
+
+            let bln = document.getElementById('filter-bulan-absen-input').value;
+            updateAbsenCellLogic(bln, studentIdx, day, val);
+            recalcTotalRow(cell.parentElement, studentIdx, true);
         }
 
         function buildCalendarGrid(targetTbody, targetThead, monthStr, isInput) {
@@ -2119,7 +2082,8 @@
             let totKelasH=0, totKelasS=0, totKelasI=0, totKelasA=0;
 
             globalSiswa.forEach((s, i) => {
-                let cells = ""; let dVal = currentAbsenData[i] || {hari:{}};
+                let cells = ""; 
+                let dVal = (globalAbsen[monthStr] && globalAbsen[monthStr][i]) ? globalAbsen[monthStr][i] : {hari:{}};
                 let th=0, ts=0, ti=0, ta_abs=0;
 
                 for(let d=1; d<=daysInMonth; d++) {
@@ -2134,7 +2098,7 @@
                     else if(val === "H") cls = "val-h"; else if(val === "S") cls = "val-s"; else if(val === "I") cls = "val-i"; else if(val === "A") cls = "val-a";
 
                     if(isInput) {
-                        cells += `<td class="border-r border-slate-200 text-center cell-abs ${cls}" onclick="toggleAbsenCel(this, ${sunday}, ${i}, ${d})">${val}</td>`;
+                        cells += `<td class="border-r border-slate-200 text-center cell-abs ${cls}" tabindex="0" onclick="toggleAbsenCel(this, ${sunday}, ${i}, ${d})" onkeydown="handleAbsenKey(event, this, ${sunday}, ${i}, ${d})">${val}</td>`;
                     } else {
                         cells += `<td class="border-r border-slate-300 text-center font-bold text-[8pt] sm:text-[9pt] ${cls}">${val}</td>`;
                     }
@@ -2147,7 +2111,7 @@
                 <tr id="tr-${isInput?'inp':'rek'}-${i}">
                     <td class="border-r border-slate-300 border-b">${i+1}</td>
                     <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[11rem] w-48">${s.nama}</td>
-                    <td class="border-r border-slate-300 border-b font-bold text-[9px] ${s.jk==='L'?'text-blue-500':'textpink-500'}">${s.jk}</td>
+                    <td class="border-r border-slate-300 border-b font-bold text-[9px] ${s.jk==='L'?'text-blue-500':'text-pink-500'}">${s.jk}</td>
                     ${cells}
                     <td class="border-r border-slate-300 border-b font-bold text-blue-700 bg-slate-50" id="tot-h-${isInput?'inp':'rek'}-${i}">${th}</td>
                     <td class="border-r border-slate-300 border-b font-bold text-amber-500 bg-slate-50" id="tot-s-${isInput?'inp':'rek'}-${i}">${ts}</td>
@@ -2186,19 +2150,76 @@
             buildCalendarGrid('tb-rekap-bulan', 'head-tanggal-rekap', bln, false);
         }
 
+        function renderRekapSemester() {
+            let smt = document.getElementById('inp-smt').value.toLowerCase();
+            let arrBulan = smt === 'ganjil' ? ["Juli", "Agustus", "September", "Oktober", "November", "Desember"] : ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
+            
+            let thead1 = `<tr><th rowspan="2" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap w-48">Nama Murid</th>`;
+            let thead2 = `<tr class="font-normal text-[9px] sm:text-[10px] text-slate-600">`;
+            
+            arrBulan.forEach(b => {
+                thead1 += `<th colspan="4" class="px-1 py-1 border-r border-slate-300 border-b">${b}</th>`;
+                thead2 += `<th class="border-r border-slate-300 font-bold">H</th><th class="border-r border-slate-300 font-bold">S</th><th class="border-r border-slate-300 font-bold">I</th><th class="border-r border-slate-300 font-bold text-red-500">A</th>`;
+            });
+            
+            thead1 += `<th colspan="4" class="px-2 py-1 border-r border-slate-300 border-b bg-blue-50 text-blue-800">TOTAL SMT</th><th rowspan="2" class="px-2 py-1 bg-blue-50 text-blue-800 border-l border-slate-300">% HADIR</th></tr>`;
+            thead2 += `<th class="border-r border-slate-300 bg-blue-50 font-bold text-slate-800">H</th><th class="border-r border-slate-300 bg-blue-50 font-bold text-slate-800">S</th><th class="border-r border-slate-300 bg-blue-50 font-bold text-slate-800">I</th><th class="bg-blue-50 font-bold text-slate-800">A</th></tr>`;
+            
+            document.getElementById('head-rekap-smt').innerHTML = thead1 + thead2;
+
+            let tbody = "";
+            let ta = document.getElementById('inp-ta').value;
+            let startYear = parseInt(ta.split('/')[0]) || 2025;
+
+            globalSiswa.forEach((s, i) => {
+                let cells = "";
+                let totH=0, totS=0, totI=0, totA=0;
+                let totEfektifSmt = 0;
+
+                arrBulan.forEach(b => {
+                    let activeYear = (monthNames.indexOf(b) < 6) ? startYear + 1 : startYear; 
+                    let ef = getHariEfektif(b, activeYear);
+                    totEfektifSmt += ef;
+
+                    let h=0, sk=0, iz=0, a=0;
+                    if(globalAbsen[b] && globalAbsen[b][i]) {
+                        let dVal = globalAbsen[b][i].hari;
+                        for(let d in dVal) {
+                            if(dVal[d] === "H") h++;
+                            if(dVal[d] === "S") sk++;
+                            if(dVal[d] === "I") iz++;
+                            if(dVal[d] === "A") a++;
+                        }
+                    }
+                    totH+=h; totS+=sk; totI+=iz; totA+=a;
+                    cells += `<td class="border-r border-slate-300 border-b">${h||'-'}</td><td class="border-r border-slate-300 border-b">${sk||'-'}</td><td class="border-r border-slate-300 border-b">${iz||'-'}</td><td class="border-r border-slate-300 border-b text-red-500">${a||'-'}</td>`;
+                });
+
+                let pct = totEfektifSmt > 0 ? Math.round((totH / totEfektifSmt) * 100) : 0;
+
+                tbody += `<tr class="hover:bg-slate-50 transition">
+                    <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis max-w-[11rem] w-48">${s.nama}</td>
+                    ${cells}
+                    <td class="border-r border-slate-300 border-b font-bold bg-blue-50 text-blue-800">${totH}</td>
+                    <td class="border-r border-slate-300 border-b font-bold bg-blue-50 text-amber-600">${totS}</td>
+                    <td class="border-r border-slate-300 border-b font-bold bg-blue-50 text-purple-600">${totI}</td>
+                    <td class="border-r border-slate-300 border-b font-bold bg-blue-50 text-red-600">${totA}</td>
+                    <td class="border-b border-slate-300 border-l bg-blue-50 font-bold text-blue-800">${pct}%</td>
+                </tr>`;
+            });
+            document.getElementById('tb-rekap-smt').innerHTML = tbody;
+        }
+
         function toggleAbsenCel(cell, isSunday, studentIdx, day) {
             if(isSunday) return; 
             let v = cell.innerText;
-            cell.classList.remove('val-h', 'val-s', 'val-i', 'val-a');
-            if(v === "") { cell.innerText = "H"; cell.classList.add('val-h'); }
-            else if(v === "H") { cell.innerText = "S"; cell.classList.add('val-s'); }
-            else if(v === "S") { cell.innerText = "I"; cell.classList.add('val-i'); }
-            else if(v === "I") { cell.innerText = "A"; cell.classList.add('val-a'); }
-            else if(v === "A") { cell.innerText = ""; }
+            let nextV = "";
+            if(v === "") nextV = "H";
+            else if(v === "H") nextV = "S";
+            else if(v === "S") nextV = "I";
+            else if(v === "I") nextV = "A";
             
-            if(!currentAbsenData[studentIdx]) currentAbsenData[studentIdx] = {hari:{}};
-            currentAbsenData[studentIdx].hari[day] = cell.innerText;
-            recalcTotalRow(cell.parentElement, studentIdx, true);
+            updateAbsenVisual(cell, nextV, studentIdx, day);
         }
 
         function recalcTotalRow(tr, i, isInput) {
@@ -2224,12 +2245,10 @@
         }
 
         function simpanAbsenAksi() {
-            let bulan = document.getElementById('filter-bulan-absen-input').value;
-            let payload = { action: 'simpanAbsen', bulan: bulan, data: currentAbsenData };
-            postToDB(payload, "Data Absensi Bulan " + bulan + " berhasil dikirim!");
+            let payload = { action: 'simpanAbsen', data: globalAbsen };
+            postToDB(payload, "Data Absensi seluruh bulan berhasil diamankan di Cloud Database!");
         }
 
-        // --- PENILAIAN INPUT DINAMIS ---
         function initDropdownMapel() {
             let opts = "";
             for(let m in mapelData) opts += `<option value="${m}">${m}</option>`;
@@ -2247,284 +2266,287 @@
             let th1 = `<tr><th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 min-w-[150px] whitespace-nowrap">NAMA SISWA</th>`;
             let th2 = `<tr>`;
             data.tp.forEach((t, i) => {
-                th1 += `<th colspan="3" class="px-1 py-1 border-r border-slate-300 border-b w-24">TP ${i+1}: ${t.nama.substring(0,35)}...</th>`;
-                th2 += `<th class="px-1 py-1 border-r border-slate-300 font-normal bg-slate-200/50">${t.k1.substring(0,8)}</th><th class="px-1 py-1 border-r border-slate-300 font-normal bg-slate-200/50">${t.k2.substring(0,8)}</th><th class="px-1 py-1 border-r border-slate-300 font-bold bg-white/50 text-black">NA</th>`;
+                th1 += `<th colspan="3" class="px-1 py-1 border-r border-slate-300 border-b w-24">TP ${i+1}: ${t.nama.substring(0,20)}...</th>`;
+                th2 += `<th class="px-1 py-1 border-r border-slate-300 font-medium">K1</th><th class="px-1 py-1 border-r border-slate-300 font-medium">K2</th><th class="px-1 py-1 border-r border-slate-300 font-bold bg-slate-200">R</th>`;
             });
-            th1 += `<th rowspan="2" class="px-2 py-2 font-bold bg-slate-200 w-16">Rata-Rata Formatif</th></tr>`;
+            th1 += `<th rowspan="2" class="px-2 py-1 bg-blue-50 text-blue-800 border-l border-slate-300 w-16">Rata-Rata<br>Formatif</th></tr>`;
             th2 += `</tr>`;
             document.getElementById('head-formatif').innerHTML = th1 + th2;
 
-            let tb = "";
+            let tbody = "";
             globalSiswa.forEach((s, i) => {
-                let rt = 0; let cells = ""; let validTpCount = 0;
-                for(let x=0; x<jml; x++) {
-                    let f = nilaiSiswa[i].formatif[m][x] || {k1:'', k2:''}; 
-                    let na = '';
-                    if(f.k1 !== '' && f.k2 !== '') {
-                        na = Math.round((parseInt(f.k1) + parseInt(f.k2))/2);
-                        rt += na; validTpCount++;
-                    }
-                    cells += `<td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${f.k1}" oninput="updForm(${i}, '${m}', ${x}, 'k1', this.value)"></td>
-                              <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${f.k2}" oninput="updForm(${i}, '${m}', ${x}, 'k2', this.value)"></td>
-                              <td class="border-r border-slate-300 border-b font-bold bg-slate-50" id="na-f-${i}-${x}">${na}</td>`;
-                }
-                rt = validTpCount > 0 ? Math.round(rt/validTpCount) : '-';
-                tb += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white w-48 whitespace-nowrap overflow-hidden text-ellipsis">${s.nama}</td>${cells}<td class="border-b border-slate-300 font-bold text-slate-800 bg-slate-100" id="rt-f-${i}">${rt}</td></tr>`;
+                let cells = "";
+                let totNilai = 0; let countNilai = 0;
+                let vFor = nilaiSiswa[i].formatif[m] || [];
+                
+                data.tp.forEach((_, tIdx) => {
+                    let v1 = vFor[tIdx] ? vFor[tIdx].k1 : "";
+                    let v2 = vFor[tIdx] ? vFor[tIdx].k2 : "";
+                    let rata = "";
+                    let n1 = v1 !== "" ? parseFloat(v1) : null;
+                    let n2 = v2 !== "" ? parseFloat(v2) : null;
+                    
+                    if(n1 !== null && n2 !== null) rata = Math.round((n1 + n2) / 2);
+                    else if(n1 !== null) rata = n1;
+                    else if(n2 !== null) rata = n2;
+
+                    if(rata !== "") { totNilai += rata; countNilai++; }
+
+                    cells += `<td class="border-r border-slate-300 border-b p-0"><input type="number" class="cell-input" value="${v1}" oninput="updFor(${i}, '${m}', ${tIdx}, 'k1', this.value)"></td>
+                              <td class="border-r border-slate-300 border-b p-0"><input type="number" class="cell-input" value="${v2}" oninput="updFor(${i}, '${m}', ${tIdx}, 'k2', this.value)"></td>
+                              <td class="border-r border-slate-300 border-b font-bold bg-slate-50" id="for-r-${i}-${tIdx}">${rata}</td>`;
+                });
+                
+                let avgTot = countNilai > 0 ? Math.round(totNilai / countNilai) : "";
+                tbody += `<tr class="hover:bg-slate-50 transition">
+                    <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis w-48">${s.nama}</td>
+                    ${cells}
+                    <td class="border-b border-slate-300 border-l font-bold bg-blue-50 text-blue-800" id="for-avg-${i}">${avgTot}</td>
+                </tr>`;
             });
-            document.getElementById('tb-formatif').innerHTML = tb;
+            document.getElementById('tb-formatif').innerHTML = tbody;
         }
 
-        function updForm(sIdx, mapel, tpIdx, field, val) {
-            let v = val === '' ? '' : parseInt(val);
-            nilaiSiswa[sIdx].formatif[mapel][tpIdx][field] = v;
-            let f = nilaiSiswa[sIdx].formatif[mapel][tpIdx];
+        function updFor(sIdx, m, tIdx, k, val) {
+            if(!nilaiSiswa[sIdx].formatif[m][tIdx]) nilaiSiswa[sIdx].formatif[m][tIdx] = {k1:"", k2:""};
+            nilaiSiswa[sIdx].formatif[m][tIdx][k] = val;
+            let v1 = nilaiSiswa[sIdx].formatif[m][tIdx].k1;
+            let v2 = nilaiSiswa[sIdx].formatif[m][tIdx].k2;
+            let n1 = v1 !== "" ? parseFloat(v1) : null;
+            let n2 = v2 !== "" ? parseFloat(v2) : null;
+            let rata = "";
+            if(n1 !== null && n2 !== null) rata = Math.round((n1+n2)/2);
+            else if(n1 !== null) rata = n1;
+            else if(n2 !== null) rata = n2;
+            document.getElementById(`for-r-${sIdx}-${tIdx}`).innerText = rata;
             
-            let na = '';
-            if(f.k1 !== '' && f.k2 !== '') { na = Math.round((parseInt(f.k1) + parseInt(f.k2))/2); }
-            document.getElementById(`na-f-${sIdx}-${tpIdx}`).innerText = na;
-            
-            let rt = 0; let count = 0;
-            nilaiSiswa[sIdx].formatif[mapel].forEach(x => { 
-                if(x.k1 !== '' && x.k2 !== '') { rt += Math.round((parseInt(x.k1) + parseInt(x.k2))/2); count++; }
+            let tot = 0; let count = 0;
+            nilaiSiswa[sIdx].formatif[m].forEach(f => {
+                let fn1 = f.k1 !== "" ? parseFloat(f.k1) : null;
+                let fn2 = f.k2 !== "" ? parseFloat(f.k2) : null;
+                let fr = "";
+                if(fn1 !== null && fn2 !== null) fr = Math.round((fn1+fn2)/2);
+                else if(fn1 !== null) fr = fn1;
+                else if(fn2 !== null) fr = fn2;
+                if(fr !== "") { tot += fr; count++; }
             });
-            document.getElementById(`rt-f-${sIdx}`).innerText = count > 0 ? Math.round(rt/count) : '-';
-            updateDashboardCharts();
+            document.getElementById(`for-avg-${sIdx}`).innerText = count > 0 ? Math.round(tot/count) : "";
         }
 
         function simpanFormatifAksi() {
-            let mapel = document.getElementById('filter-mapel-formatif').value;
-            let payload = { action: 'simpanFormatif', mapel: mapel, data: nilaiSiswa };
-            postToDB(payload, "Nilai Formatif " + mapel + " berhasil dikirim!");
+            let fmtData = {};
+            globalSiswa.forEach((s, i) => { fmtData[i] = { formatif: nilaiSiswa[i].formatif }; });
+            postToDB({ action: 'simpanFormatif', data: fmtData }, "Nilai Asesmen Formatif berhasil disimpan ke Database!");
         }
 
         function renderSumatif() {
             let m = document.getElementById('filter-mapel-sumatif').value;
             document.getElementById('print-mapel-sumatif').innerText = m;
             let data = mapelData[m] || {lm:[]};
-            let jml = data.lm.length;
             
-            let th1 = `<tr><th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 min-w-[150px] whitespace-nowrap">NAMA SISWA</th>`;
-            if(jml > 0) th1 += `<th colspan="${jml}" class="px-1 py-1 border-r border-slate-300 border-b">Sumatif Lingkup Materi (LM)</th>`;
-            th1 += `<th rowspan="2" class="px-1 py-1 border-r border-slate-300 bg-slate-200/50 w-12 text-black">Rata<br>LM</th><th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-12">STS</th><th rowspan="2" class="px-1 py-1 border-r border-slate-300 w-12">SAS</th><th rowspan="2" class="px-2 py-2 font-bold bg-slate-200 text-slate-800 w-16 text-black">NILAI AKHIR</th></tr>`;
-            
-            let th2 = `<tr>`;
-            data.lm.forEach((l, i) => { th2 += `<th class="px-1 py-1 border-r border-slate-300 font-medium whitespace-nowrap max-w-[8rem] overflow-hidden text-ellipsis" title="${l}">LM ${i+1}: ${l.substring(0,20)}</th>`; });
-            th2 += `</tr>`;
-            document.getElementById('head-sumatif').innerHTML = th1 + th2;
+            let th = `<tr><th rowspan="2" class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 min-w-[150px] whitespace-nowrap">NAMA SISWA</th>`;
+            th += `<th colspan="${data.lm.length || 1}" class="px-2 py-1 border-r border-slate-300 border-b">Lingkup Materi (NA Sumatif)</th>`;
+            th += `<th rowspan="2" class="px-2 py-1 border-r border-slate-300 bg-amber-50">STS</th><th rowspan="2" class="px-2 py-1 border-r border-slate-300 bg-emerald-50">SAS</th><th rowspan="2" class="px-2 py-1 bg-blue-50 text-blue-800">NA<br>Sumatif</th></tr><tr>`;
+            data.lm.forEach((l, i) => { th += `<th class="px-1 py-1 border-r border-slate-300 font-medium">LM ${i+1}</th>`; });
+            if(data.lm.length === 0) th += `<th class="px-1 py-1 border-r border-slate-300 font-medium">-</th>`;
+            th += `</tr>`;
+            document.getElementById('head-sumatif').innerHTML = th;
 
-            let tb = "";
+            let tbody = "";
             globalSiswa.forEach((s, i) => {
-                let smt = nilaiSiswa[i].sumatif[m];
-                let rtLM = 0; let cells = ""; let countLM = 0;
-                for(let x=0; x<jml; x++) { 
-                    if(smt.lm[x] !== '') { rtLM += parseInt(smt.lm[x]); countLM++; }
-                    cells += `<td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${smt.lm[x]}" oninput="updSum(${i}, '${m}', 'lm', ${x}, this.value)"></td>`; 
-                }
-                rtLM = countLM > 0 ? Math.round(rtLM/countLM) : '-';
+                let vSum = nilaiSiswa[i].sumatif[m] || {lm:[], sts:"", sas:""};
+                let cells = "";
+                let totLm = 0; let cLm = 0;
                 
-                let rapor = '-';
-                if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
-                    rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4); 
-                }
+                data.lm.forEach((_, lIdx) => {
+                    let v = vSum.lm[lIdx] || "";
+                    if(v !== "") { totLm += parseFloat(v); cLm++; }
+                    cells += `<td class="border-r border-slate-300 border-b p-0"><input type="number" class="cell-input" value="${v}" oninput="updSumLm(${i}, '${m}', ${lIdx}, this.value)"></td>`;
+                });
+                if(data.lm.length === 0) cells += `<td class="border-r border-slate-300 border-b">-</td>`;
                 
-                tb += `<tr><td class="px-2 py-1.5 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white w-48 whitespace-nowrap overflow-hidden text-ellipsis">${s.nama}</td>
-                ${cells}
-                <td class="border-r border-slate-300 border-b bg-slate-50 font-bold" id="rtl-${i}">${rtLM}</td>
-                <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${smt.sts}" oninput="upSum(${i}, '${m}', 'sts', 0, this.value)"></td>
-                <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${smt.sas}" oninput="updSum(${i}, '${m}', 'sas', 0, this.value)"></td>
-                <td class="border-b border-slate-300 font-bold text-slate-800 bg-slate-100 text-sm py-1" id="na-s-${i}">${rapor}</td></tr>`;
+                let sts = vSum.sts; let sas = vSum.sas;
+                let naLm = cLm > 0 ? (totLm / cLm) : null;
+                let pSts = sts !== "" ? parseFloat(sts) : null;
+                let pSas = sas !== "" ? parseFloat(sas) : null;
+                
+                let finalSum = "";
+                let countNa = 0; let totNa = 0;
+                if(naLm !== null) { totNa += naLm; countNa++; }
+                if(pSts !== null) { totNa += pSts; countNa++; }
+                if(pSas !== null) { totNa += pSas; countNa++; }
+                if(countNa > 0) finalSum = Math.round(totNa / countNa);
+
+                tbody += `<tr class="hover:bg-slate-50 transition">
+                    <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis w-48">${s.nama}</td>
+                    ${cells}
+                    <td class="border-r border-slate-300 border-b p-0 bg-amber-50/30"><input type="number" class="cell-input" value="${sts}" oninput="updSum(${i}, '${m}', 'sts', this.value)"></td>
+                    <td class="border-r border-slate-300 border-b p-0 bg-emerald-50/30"><input type="number" class="cell-input" value="${sas}" oninput="updSum(${i}, '${m}', 'sas', this.value)"></td>
+                    <td class="border-b border-slate-300 font-bold bg-blue-50 text-blue-800" id="sum-na-${i}">${finalSum}</td>
+                </tr>`;
             });
-            document.getElementById('tb-sumatif').innerHTML = tb;
+            document.getElementById('tb-sumatif').innerHTML = tbody;
         }
 
-        function updSum(sIdx, mapel, tipe, idxLM, val) {
-            let v = val === '' ? '' : parseInt(val);
-            if(tipe === 'lm') nilaiSiswa[sIdx].sumatif[mapel].lm[idxLM] = v;
-            else nilaiSiswa[sIdx].sumatif[mapel][tipe] = v;
-            
-            let smt = nilaiSiswa[sIdx].sumatif[mapel];
-            let rtLM = 0; let countLM = 0;
-            smt.lm.forEach(l => { if(l !== '') { rtLM += parseInt(l); countLM++; }});
-            rtLM = countLM > 0 ? Math.round(rtLM/countLM) : '-';
-            document.getElementById(`rtl-${sIdx}`).innerText = rtLM;
-            
-            let rapor = '-';
-            if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
-                rapor = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4);
-            }
-            document.getElementById(`na-s-${sIdx}`).innerText = rapor;
+        function calcNaSumatif(sIdx, m) {
+            let vSum = nilaiSiswa[sIdx].sumatif[m];
+            let totLm = 0; let cLm = 0;
+            vSum.lm.forEach(v => { if(v !== "") { totLm += parseFloat(v); cLm++; } });
+            let naLm = cLm > 0 ? (totLm / cLm) : null;
+            let pSts = vSum.sts !== "" ? parseFloat(vSum.sts) : null;
+            let pSas = vSum.sas !== "" ? parseFloat(vSum.sas) : null;
+            let countNa = 0; let totNa = 0;
+            if(naLm !== null) { totNa += naLm; countNa++; }
+            if(pSts !== null) { totNa += pSts; countNa++; }
+            if(pSas !== null) { totNa += pSas; countNa++; }
+            document.getElementById(`sum-na-${sIdx}`).innerText = countNa > 0 ? Math.round(totNa / countNa) : "";
         }
+
+        function updSumLm(sIdx, m, lIdx, val) { nilaiSiswa[sIdx].sumatif[m].lm[lIdx] = val; calcNaSumatif(sIdx, m); }
+        function updSum(sIdx, m, field, val) { nilaiSiswa[sIdx].sumatif[m][field] = val; calcNaSumatif(sIdx, m); }
 
         function simpanSumatifAksi() {
-            let mapel = document.getElementById('filter-mapel-sumatif').value;
-            let payload = { action: 'simpanSumatif', mapel: mapel, data: nilaiSiswa };
-            postToDB(payload, "Nilai Sumatif " + mapel + " berhasil dikirim!");
+            let sumData = {};
+            globalSiswa.forEach((s, i) => { sumData[i] = { sumatif: nilaiSiswa[i].sumatif }; });
+            postToDB({ action: 'simpanSumatif', data: sumData }, "Nilai Asesmen Sumatif berhasil disimpan ke Database!");
+        }
+
+        function getPredikat(v) {
+            if(v === "") return "";
+            let n = parseFloat(v);
+            if(n >= 90) return "Sangat Baik";
+            if(n >= 75) return "Baik";
+            if(n >= 60) return "Cukup";
+            return "Kurang";
         }
 
         function renderSikap() {
-            let tSikap="";
-            const pr = (val) => {
-                if(val === '' || val === '-') return '-';
-                return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup');
-            };
-            globalSiswa.forEach((s,i) => {
-                let d = nilaiSiswa[i].sikap;
-                let prA = (d.dsk !== '' && d.ins !== '') ? pr((parseInt(d.dsk)+parseInt(d.ins))/2) : '-';
-                let prB = (d.dsp !== '' && d.tgg !== '') ? pr((parseInt(d.dsp)+parseInt(d.tgg))/2) : '-';
+            let tbody = "";
+            globalSiswa.forEach((s, i) => {
+                let v = nilaiSiswa[i].sikap || {dsk:'', ins:'', dsp:'', tgg:''};
+                let p1 = "", p2 = "";
+                let n1 = v.dsk!=="" ? parseFloat(v.dsk) : null; let n2 = v.ins!=="" ? parseFloat(v.ins) : null;
+                if(n1!==null && n2!==null) p1 = getPredikat((n1+n2)/2); else if(n1!==null) p1 = getPredikat(n1); else if(n2!==null) p1 = getPredikat(n2);
+                
+                let n3 = v.dsp!=="" ? parseFloat(v.dsp) : null; let n4 = v.tgg!=="" ? parseFloat(v.tgg) : null;
+                if(n3!==null && n4!==null) p2 = getPredikat((n3+n4)/2); else if(n3!==null) p2 = getPredikat(n3); else if(n4!==null) p2 = getPredikat(n4);
 
-                tSikap += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium sticky left-0 bg-white min-w-[150px] w-48 whitespace-nowrap">${s.nama}</td>
-                <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${d.dsk}" oninput="updSikap(${i}, 'dsk', this.value)"></td>
-                <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${d.ins}" oninput="updSikap(${i}, 'ins', this.value)"></td>
-                <td class="border-r border-slate-300 border-b font-bold text-slate-700 bg-slate-50" id="pr-a-${i}">${prA}</td>
-                <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${d.dsp}" oninput="updSikap(${i}, 'dsp', this.value)"></td>
-                <td class="border-r border-slate-300 border-b"><input type="number" class="cell-input" value="${d.tgg}" oninput="updSikap(${i}, 'tgg', this.value)"></td>
-                <td class="border-b border-slate-300 font-bold text-slate-700 bg-slate-50" id="pr-b-${i}">${prB}</td></tr>`;
+                tbody += `<tr class="hover:bg-slate-50 transition">
+                    <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white font-medium shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis w-48">${s.nama}</td>
+                    <td class="border-r border-slate-300 border-b p-0"><input type="number" class="cell-input" value="${v.dsk}" oninput="updSikap(${i}, 'dsk', this.value)"></td>
+                    <td class="border-r border-slate-300 border-b p-0"><input type="number" class="cell-input" value="${v.ins}" oninput="updSikap(${i}, 'ins', this.value)"></td>
+                    <td class="border-r border-slate-300 border-b font-bold bg-slate-50" id="sik-p1-${i}">${p1}</td>
+                    <td class="border-r border-slate-300 border-b p-0"><input type="number" class="cell-input" value="${v.dsp}" oninput="updSikap(${i}, 'dsp', this.value)"></td>
+                    <td class="border-r border-slate-300 border-b p-0"><input type="number" class="cell-input" value="${v.tgg}" oninput="updSikap(${i}, 'tgg', this.value)"></td>
+                    <td class="border-b border-slate-300 font-bold bg-slate-50" id="sik-p2-${i}">${p2}</td>
+                </tr>`;
             });
-            document.getElementById('tb-sikap').innerHTML = tSikap;
+            document.getElementById('tb-sikap').innerHTML = tbody;
         }
 
-        function updSikap(sIdx, field, val) {
-            let v = val === '' ? '' : parseInt(val);
-            nilaiSiswa[sIdx].sikap[field] = v;
-            let d = nilaiSiswa[sIdx].sikap;
-            const pr = (val) => {
-                if(val === '' || val === '-') return '-';
-                return val > 85 ? 'Sangat Baik' : (val > 70 ? 'Baik' : 'Cukup');
-            };
-            let prA = (d.dsk !== '' && d.ins !== '') ? pr((parseInt(d.dsk)+parseInt(d.ins))/2) : '-';
-            let prB = (d.dsp !== '' && d.tgg !== '') ? pr((parseInt(d.dsp)+parseInt(d.tgg))/2) : '-';
-            
-            document.getElementById(`pr-a-${sIdx}`).innerText = prA;
-            document.getElementById(`pr-b-${sIdx}`).innerText = prB;
+        function updSikap(sIdx, f, val) {
+            if(!nilaiSiswa[sIdx].sikap) nilaiSiswa[sIdx].sikap = {dsk:'', ins:'', dsp:'', tgg:''};
+            nilaiSiswa[sIdx].sikap[f] = val;
+            let v = nilaiSiswa[sIdx].sikap;
+            if(f === 'dsk' || f === 'ins') {
+                let n1 = v.dsk!=="" ? parseFloat(v.dsk) : null; let n2 = v.ins!=="" ? parseFloat(v.ins) : null;
+                let p1 = "";
+                if(n1!==null && n2!==null) p1 = getPredikat((n1+n2)/2); else if(n1!==null) p1 = getPredikat(n1); else if(n2!==null) p1 = getPredikat(n2);
+                document.getElementById(`sik-p1-${sIdx}`).innerText = p1;
+            } else {
+                let n3 = v.dsp!=="" ? parseFloat(v.dsp) : null; let n4 = v.tgg!=="" ? parseFloat(v.tgg) : null;
+                let p2 = "";
+                if(n3!==null && n4!==null) p2 = getPredikat((n3+n4)/2); else if(n3!==null) p2 = getPredikat(n3); else if(n4!==null) p2 = getPredikat(n4);
+                document.getElementById(`sik-p2-${sIdx}`).innerText = p2;
+            }
         }
 
         function simpanSikapAksi() {
-            let payload = { action: 'simpanSikap', data: nilaiSiswa };
-            postToDB(payload, "Nilai Keaktifan & Sikap seluruh siswa berhasil dikirim!");
+            let sikData = {};
+            globalSiswa.forEach((s, i) => { sikData[i] = { sikap: nilaiSiswa[i].sikap }; });
+            postToDB({ action: 'simpanSikap', data: sikData }, "Nilai Sikap & Keaktifan berhasil disimpan ke Database!");
         }
 
-        // --- LEGGER RAPOR (DINAMIS SESUAI JUMLAH MAPEL) ---
         function renderLegger() {
-            let mapelList = Object.keys(mapelData);
-            let jmlMapel = mapelList.length;
-            
-            let th1 = `<tr>
-                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-40 shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap">NAMA MURID</th>
-                <th colspan="${jmlMapel}" class="px-2 py-1 border-r border-slate-300 border-b">NILAI MATA PELAJARAN (NA)</th>
-                <th colspan="2" class="px-2 py-1 border-r border-slate-300 border-b bg-slate-200">TAMBAHAN</th>
-                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 bg-slate-200 text-black">RATA<br>RATA</th>
-                <th rowspan="2" class="px-2 py-1 border-slate-300 bg-slate-200 text-black">RANK</th>
-            </tr><tr>`;
-            
-            mapelList.forEach(m => {
-                let shortM = m;
-                if(m === 'Pendidikan Pancasila') shortM = 'Pancasila';
-                if(m === 'Bahasa Indonesia') shortM = 'B. Indo';
-                if(m === 'Bahasa Inggris') shortM = 'B. Inggris';
-                if(m === 'Muatan Lokal') shortM = 'Mulok';
-                th1 += `<th class="py-1 border-r border-slate-300 font-medium w-10 text-[9px]" title="${m}">${shortM}</th>`;
+            let th = `<tr><th class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 min-w-[150px] whitespace-nowrap">Nama Siswa</th>`;
+            let mapelKeys = Object.keys(mapelData);
+            mapelKeys.forEach(m => {
+                th += `<th class="px-2 py-2 border-r border-slate-300 w-20">${m.length > 12 ? m.substring(0,12)+'...' : m}</th>`;
             });
-            th1 += `<th class="py-1 border-r border-slate-300 bg-slate-200 w-12">% Hadir</th><th class="py-1 border-r border-slate-300 bg-slate-200 w-16">Sikap</th></tr>`;
-            
-            document.getElementById('head-legger').innerHTML = th1;
+            th += `<th class="px-2 py-2 bg-blue-50 text-blue-800 w-24">Rata-Rata</th></tr>`;
+            document.getElementById('head-legger').innerHTML = th;
 
-            let tLeg = "";
-            let dataRank = [];
-            
-            globalSiswa.forEach((s,i) => {
-                let cells = ""; let totalRapor = 0; let nMapel = 0;
-                
-                for(let x=0; x<jmlMapel; x++) { 
-                    let mp = mapelList[x];
-                    let na = '-';
-                    if(nilaiSiswa[i] && nilaiSiswa[i].sumatif[mp]) {
-                        let smt = nilaiSiswa[i].sumatif[mp];
-                        let countLM = 0; let sumLM = 0;
-                        if(smt.lm) {
-                            smt.lm.forEach(l => { if(l!=='') { sumLM+=parseInt(l); countLM++; }});
-                        }
-                        let rtLM = countLM > 0 ? (sumLM/countLM) : '-';
-                        
-                        if(rtLM !== '-' && smt.sts !== '' && smt.sas !== '') {
-                            na = Math.round((rtLM + parseInt(smt.sts) + (parseInt(smt.sas)*2)) / 4);
-                            totalRapor += na; nMapel++;
-                        }
+            let tbody = "";
+            globalSiswa.forEach((s, i) => {
+                let cells = "";
+                let totNa = 0; let countNa = 0;
+                mapelKeys.forEach(m => {
+                    // Rata Formatif
+                    let totF = 0, cF = 0;
+                    if(nilaiSiswa[i] && nilaiSiswa[i].formatif && nilaiSiswa[i].formatif[m]) {
+                        nilaiSiswa[i].formatif[m].forEach(f => {
+                            let n1 = f.k1 !== "" ? parseFloat(f.k1) : null;
+                            let n2 = f.k2 !== "" ? parseFloat(f.k2) : null;
+                            if(n1 !== null && n2 !== null) { totF += Math.round((n1+n2)/2); cF++; }
+                            else if(n1 !== null) { totF += n1; cF++; }
+                            else if(n2 !== null) { totF += n2; cF++; }
+                        });
                     }
-                    cells += `<td class="border-r border-slate-300 border-b py-1.5">${na}</td>`;
-                }
+                    let avgF = cF > 0 ? (totF / cF) : 0;
 
-                let dVal = currentAbsenData[i] || {hari:{}};
-                let hariHadir = 0; let hariTotal = 0;
-                for(let d in dVal.hari) {
-                    if(dVal.hari[d] !== "") hariTotal++;
-                    if(dVal.hari[d] === "H") hariHadir++;
-                }
-                let pctHadir = hariTotal > 0 ? Math.round((hariHadir/hariTotal)*100) + "%" : "-";
-                
-                let prSikap = '-';
-                if(nilaiSiswa[i] && nilaiSiswa[i].sikap) {
-                    let d = nilaiSiswa[i].sikap;
-                    if(d.dsk!=='' && d.ins!=='' && d.dsp!=='' && d.tgg!=='') {
-                        let rtSikap = (parseInt(d.dsk) + parseInt(d.ins) + parseInt(d.dsp) + parseInt(d.tgg))/4;
-                        prSikap = rtSikap > 85 ? 'Sangat Baik' : (rtSikap > 70 ? 'Baik' : 'Cukup');
+                    // Rata Sumatif
+                    let vSum = (nilaiSiswa[i] && nilaiSiswa[i].sumatif) ? nilaiSiswa[i].sumatif[m] : null;
+                    let totLm = 0, cLm = 0;
+                    if(vSum && vSum.lm) {
+                        vSum.lm.forEach(v => { if(v !== "") { totLm += parseFloat(v); cLm++; } });
                     }
-                }
+                    let naLm = cLm > 0 ? (totLm / cLm) : null;
+                    let pSts = (vSum && vSum.sts !== "") ? parseFloat(vSum.sts) : null;
+                    let pSas = (vSum && vSum.sas !== "") ? parseFloat(vSum.sas) : null;
+                    
+                    let tS = 0, cS = 0;
+                    if(naLm !== null) { tS += naLm; cS++; }
+                    if(pSts !== null) { tS += pSts; cS++; }
+                    if(pSas !== null) { tS += pSas; cS++; }
+                    let avgS = cS > 0 ? (tS / cS) : 0;
 
-                let rtSem = nMapel > 0 ? Math.round(totalRapor/nMapel) : '-';
-                
-                dataRank.push({
-                    idx: i,
-                    nama: s.nama,
-                    cells: cells,
-                    pctHadir: pctHadir,
-                    prSikap: prSikap,
-                    rtSem: rtSem,
-                    rtVal: rtSem === '-' ? -1 : rtSem
+                    let finalNilai = "";
+                    if(cF > 0 || cS > 0) {
+                        let calc = (avgF * 0.65) + (avgS * 0.35);
+                        finalNilai = Math.round(calc);
+                        totNa += finalNilai; countNa++;
+                    }
+
+                    cells += `<td class="border-r border-slate-300 border-b font-bold ${finalNilai<75 && finalNilai!=="" ? 'text-red-600':'text-slate-700'}">${finalNilai}</td>`;
                 });
+                
+                let avgAll = countNa > 0 ? Math.round(totNa / countNa) : "";
+                tbody += `<tr class="hover:bg-slate-50 transition">
+                    <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis w-48 font-medium">${s.nama}</td>
+                    ${cells}
+                    <td class="border-b border-slate-300 font-bold bg-blue-50 text-blue-800">${avgAll}</td>
+                </tr>`;
             });
-
-            // Kalkulasi Ranking Otomatis
-            let sortedRank = [...dataRank].sort((a,b) => b.rtVal - a.rtVal);
-            let currentRank = 1;
-            sortedRank.forEach((sr, i) => {
-                if(sr.rtVal !== -1) {
-                    if(i > 0 && sr.rtVal < sortedRank[i-1].rtVal) currentRank = i + 1;
-                    dataRank.find(d => d.idx === sr.idx).rank = currentRank;
-                } else {
-                    dataRank.find(d => d.idx === sr.idx).rank = '-';
-                }
-            });
-
-            dataRank.forEach((d) => {
-                tLeg += `<tr><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-bold text-slate-800 sticky left-0 bg-slate-50 w-40 min-w-[150px] whitespace-nowrap">${d.nama}</td>
-                ${d.cells}
-                <td class="border-r border-slate-300 border-b py-1.5 bg-slate-100 font-bold">${d.pctHadir}</td><td class="border-r border-slate-300 border-b py-1.5 bg-slate-100 font-bold">${d.prSikap}</td>
-                <td class="border-r border-slate-300 border-b py-1.5 font-bold bg-slate-200 text-slate-800 text-sm">${d.rtSem}</td><td class="border-b border-slate-300 py-1.5 font-bold bg-slate-50">${d.rank}</td></tr>`;
-            });
-            document.getElementById('tb-legger').innerHTML = tLeg;
+            document.getElementById('tb-legger').innerHTML = tbody;
         }
 
-        // --- JURNAL ---
+        // --- JURNAL MENGAJAR ---
         function updateJurnalMapel() {
-            let opts = "<option value=''>-- Pilih Mata Pelajaran --</option>";
+            let opts = `<option value="">-- Pilih Mapel --</option>`;
             for(let m in mapelData) opts += `<option value="${m}">${m}</option>`;
             document.getElementById('jurnal-mapel').innerHTML = opts;
-            updateJurnalDropdowns();
-            document.getElementById('jurnal-tgl').valueAsDate = new Date();
         }
-
+        
         function updateJurnalDropdowns() {
-            let mapel = document.getElementById('jurnal-mapel').value;
-            let lmSelect = document.getElementById('jurnal-lm');
-            let tpSelect = document.getElementById('jurnal-tp');
-
-            lmSelect.innerHTML = "<option value=''>-- Pilih Lingkup Materi --</option>";
-            tpSelect.innerHTML = "<option value=''>-- Pilih Tujuan Pembelajaran --</option>";
-
-            if(mapel && mapelData[mapel]) {
-                mapelData[mapel].lm.forEach(lm => { if(lm.trim() !== "") lmSelect.innerHTML += `<option value="${lm}">${lm}</option>`; });
-                mapelData[mapel].tp.forEach(tp => { if(tp.nama.trim() !== "") tpSelect.innerHTML += `<option value="${tp.nama}">${tp.nama}</option>`; });
+            let m = document.getElementById('jurnal-mapel').value;
+            let lmOpts = `<option value="">-- Pilih Lingkup Materi --</option>`;
+            let tpOpts = `<option value="">-- Pilih Tujuan Pembelajaran --</option>`;
+            if(m && mapelData[m]) {
+                mapelData[m].lm.forEach(l => lmOpts += `<option value="${l}">${l}</option>`);
+                mapelData[m].tp.forEach(t => tpOpts += `<option value="${t.nama}">${t.nama}</option>`);
             }
+            document.getElementById('jurnal-lm').innerHTML = lmOpts;
+            document.getElementById('jurnal-tp').innerHTML = tpOpts;
         }
 
         function simpanJurnalAksi() {
@@ -2533,64 +2555,64 @@
             let mapel = document.getElementById('jurnal-mapel').value;
             let lm = document.getElementById('jurnal-lm').value;
             let tp = document.getElementById('jurnal-tp').value;
-            let kegiatan = document.getElementById('jurnal-kegiatan').value;
-            let refleksi = document.getElementById('jurnal-refleksi').value || "-";
-
-            if(!tgl || !jam || !mapel || !kegiatan) { alert("Harap lengkapi semua isian wajib!"); return; }
-
+            let keg = document.getElementById('jurnal-kegiatan').value;
+            let ref = document.getElementById('jurnal-refleksi').value;
+            if(!tgl || !jam || !mapel) { alert('Tanggal, Jam, dan Mapel wajib diisi!'); return; }
+            
             let d = new Date(tgl);
             let hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"][d.getDay()];
             let bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"][d.getMonth()];
-            let tglFormat = `${hari},<br>${d.getDate()} ${bulan} ${d.getFullYear()}`;
+            let tglFmt = `${hari},<br>${d.getDate()} ${bulan} ${d.getFullYear()}`;
 
-            let payload = { action: 'simpanJurnal', data: { tanggal: tgl, jam: jam, mapel: mapel, lingkupMateri: lm, tujuanPembelajaran: tp, kegiatan: kegiatan, refleksi: refleksi } };
+            let newJ = { tanggal: tgl, tglFormat: tglFmt, jam: jam, mapel: mapel, lingkupMateri: lm, tujuanPembelajaran: tp, kegiatan: keg, refleksi: ref };
+            listJurnal.unshift(newJ);
             
-            postToDB(payload, "Jurnal berhasil disimpan ke Database!");
-            
-            listJurnal.unshift({ tanggal: tgl, tglFormat, jam, mapel, lingkupMateri: lm, tujuanPembelajaran: tp, kegiatan, refleksi });
-            document.getElementById('dash-total-jurnal').innerText = listJurnal.length;
+            postToDB({ action: 'simpanJurnal', data: newJ }, "Jurnal Mengajar berhasil disimpan!");
             renderTabelJurnal();
-            document.getElementById('form-jurnal').classList.add('hidden');
+            document.getElementById('jurnal-jam').value = "";
+            document.getElementById('jurnal-kegiatan').value = "";
+            document.getElementById('jurnal-refleksi').value = "";
         }
 
         function renderTabelJurnal() {
             let tbody = "";
             listJurnal.forEach(j => {
-                let formatTgl = j.tglFormat || j.tanggal;
-                tbody += `<tr class="align-top hover:bg-slate-50">
-                    <td class="px-3 py-2 font-semibold text-slate-800 text-center border-r border-slate-300">${formatTgl}</td>
-                    <td class="px-2 py-2 text-center border-r border-slate-300 font-bold text-slate-600 bg-slate-50">${j.jam}</td>
-                    <td class="px-3 py-2 border-r border-slate-300"><div class="font-bold text-blue-700 mb-1">${j.mapel}</div>${j.lingkupMateri && j.lingkupMateri !== '-' ? `<div class="text-[8pt] text-slate-500"><b>LM:</b> ${j.lingkupMateri}</div>` : ''}${j.tujuanPembelajaran && j.tujuanPembelajaran !== '-' ? `<div class="text-[8pt] text-slate-500 mt-0.5"><b>TP:</b> ${j.tujuanPembelajaran}</div>` : ''}</td>
-                    <td class="px-3 py-2 border-r border-slate-300"><p class="text-[8pt]">${j.kegiatan}</p></td>
-                    <td class="px-3 py-2 text-[8pt] italic text-slate-600">${j.refleksi}</td>
+                let tglFmt = j.tglFormat || j.tanggal; 
+                tbody += `<tr class="hover:bg-slate-50 transition align-top">
+                    <td class="border-r border-slate-300 border-b p-2 text-center text-[10px] whitespace-nowrap leading-relaxed">${tglFmt}</td>
+                    <td class="border-r border-slate-300 border-b p-2 text-center font-bold text-xs">${j.jam}</td>
+                    <td class="border-r border-slate-300 border-b p-2"><div class="font-bold text-blue-600 mb-1 text-xs">${j.mapel}</div><div class="text-[10px] text-slate-500 mb-1"><span class="font-semibold text-slate-700">LM:</span> ${j.lingkupMateri}</div><div class="text-[10px] text-slate-500"><span class="font-semibold text-slate-700">TP:</span> ${j.tujuanPembelajaran}</div></td>
+                    <td class="border-r border-slate-300 border-b p-2 text-xs leading-relaxed text-slate-700">${j.kegiatan}</td>
+                    <td class="border-slate-300 border-b p-2 text-[10px] italic text-slate-500">${j.refleksi}</td>
                 </tr>`;
             });
             document.getElementById('tb-jurnal').innerHTML = tbody;
+            document.getElementById('dash-total-jurnal').innerText = listJurnal.length;
         }
 
-        // --- FUNGSI CETAK LAPORAN ---
+        // --- CETAK LAPORAN GLOBAL ---
         function cetakLaporan(tipe) {
-            syncGlobalData(); 
+            syncGlobalData();
             
-            let kota = document.getElementById('inp-kota').value;
-            let overrideDate = (inputId, targetId) => {
-                let inputEl = document.getElementById(inputId);
-                if(inputEl && inputEl.value) {
-                    let d = new Date(inputEl.value);
-                    let f = new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
-                    document.querySelectorAll(targetId).forEach(el => el.innerText = `${kota}, ${f}`);
+            const setOverrideDate = (inpId, targetSelector) => {
+                let val = document.getElementById(inpId).value;
+                if(val) {
+                    let d = new Date(val);
+                    let f = d.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+                    let kota = document.getElementById('inp-kota').value;
+                    document.querySelectorAll(targetSelector).forEach(e => e.innerText = `${kota}, ${f}`);
                 }
             };
 
-            if(tipe === 'siswa') { overrideDate('tgl-cetak-siswa', '#print-tgl-siswa'); renderDataSiswa(); }
-            if(tipe === 'abs') { overrideDate('tgl-cetak-rekap-bulan', '#print-tgl-rekap'); renderRekapBulanan(); }
-            if(tipe === 'smt') overrideDate('tgl-cetak-rekap-smt', '#print-tgl-smt');
-            if(tipe === 'for') overrideDate('tgl-cetak-for', '#print-tgl-for');
-            if(tipe === 'sum') overrideDate('tgl-cetak-sum', '#print-tgl-sum');
-            if(tipe === 'sikap') overrideDate('tgl-cetak-sikap', '#print-tgl-sikap');
-            if(tipe === 'legger') overrideDate('tgl-cetak-legger', '#print-tgl-legger');
-            if(tipe === 'jurnal') overrideDate('tgl-cetak-jurnal', '#print-tgl-jurnal');
-            if(tipe === 'jadwal') overrideDate('tgl-cetak-jadwal', '#print-tgl-jadwal');
+            if(tipe === 'siswa') setOverrideDate('tgl-cetak-siswa', '#print-tgl-siswa');
+            if(tipe === 'abs') setOverrideDate('tgl-cetak-rekap-bulan', '#print-tgl-rekap');
+            if(tipe === 'smt') setOverrideDate('tgl-cetak-rekap-smt', '#print-tgl-smt');
+            if(tipe === 'for') setOverrideDate('tgl-cetak-for', '#print-tgl-for');
+            if(tipe === 'sum') setOverrideDate('tgl-cetak-sum', '#print-tgl-sum');
+            if(tipe === 'sikap') setOverrideDate('tgl-cetak-sikap', '#print-tgl-sikap');
+            if(tipe === 'legger') setOverrideDate('tgl-cetak-legger', '#print-tgl-legger');
+            if(tipe === 'jurnal') setOverrideDate('tgl-cetak-jurnal', '#print-tgl-jurnal');
+            if(tipe === 'jadwal') setOverrideDate('tgl-cetak-jadwal', '#print-tgl-jadwal');
 
             if(!document.getElementById('hal-nilai-legger').classList.contains('hidden')) renderLegger();
             if(!document.getElementById('hal-jadwal-pelajaran').classList.contains('hidden')) renderJadwal();
@@ -2598,8 +2620,8 @@
             setTimeout(() => { window.print(); }, 300);
         }
 
+        // --- INISIALISASI SAAT DIMUAT ---
         window.onload = () => {
-            // Cek foto guru dan logo sekolah di localStorage untuk Halaman Login / Loading Dinamis
             let savedFotoGuru = localStorage.getItem('siguru_foto_guru');
             let savedLogoSD = localStorage.getItem('siguru_logo_sd');
             
@@ -2613,7 +2635,6 @@
                 loginFallback.classList.add('hidden');
             }
             
-            // Pada awal dimuat, pasang di spinner loading jika fotonya ada
             if (savedFotoGuru && loadingFoto) {
                 loadingFoto.src = savedFotoGuru;
             }
