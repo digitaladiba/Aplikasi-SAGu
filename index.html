@@ -2468,23 +2468,49 @@
         }
 
         function renderLegger() {
-            let th = `<tr><th class="px-2 py-2 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-48 min-w-[150px] whitespace-nowrap">Nama Siswa</th>`;
-            let mapelKeys = Object.keys(mapelData);
-            mapelKeys.forEach(m => {
-                th += `<th class="px-2 py-2 border-r border-slate-300 w-20">${m.length > 12 ? m.substring(0,12)+'...' : m}</th>`;
+            let mapelList = Object.keys(mapelData);
+            let jmlMapel = mapelList.length;
+            
+            let th1 = `<tr>
+                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 text-left sticky left-0 bg-slate-100 z-10 w-40 shadow-[1px_0_0_0_#cbd5e1] min-w-[120px] whitespace-nowrap">NAMA MURID</th>
+                <th colspan="${jmlMapel}" class="px-2 py-1 border-r border-slate-300 border-b">NILAI MATA PELAJARAN (NA)</th>
+                <th colspan="2" class="px-2 py-1 border-r border-slate-300 border-b bg-slate-200">TAMBAHAN</th>
+                <th rowspan="2" class="px-2 py-1 border-r border-slate-300 bg-slate-200 text-black">RATA<br>RATA</th>
+                <th rowspan="2" class="px-2 py-1 border-slate-300 bg-slate-200 text-black">RANK</th>
+            </tr><tr>`;
+            
+            mapelList.forEach(m => {
+                let shortM = m;
+                if(m === 'Pendidikan Pancasila') shortM = 'Pancasila';
+                if(m === 'Bahasa Indonesia') shortM = 'B. Indo';
+                if(m === 'Bahasa Inggris') shortM = 'B. Inggris';
+                if(m === 'Muatan Lokal') shortM = 'Mulok';
+                th1 += `<th class="py-1 border-r border-slate-300 font-medium w-10 text-[9px]" title="${m}">${shortM}</th>`;
             });
-            th += `<th class="px-2 py-2 bg-blue-50 text-blue-800 w-24">Rata-Rata</th></tr>`;
-            document.getElementById('head-legger').innerHTML = th;
+            th1 += `<th class="py-1 border-r border-slate-300 bg-slate-200 w-12 text-[9px]">% Hadir</th><th class="py-1 border-r border-slate-300 bg-slate-200 w-16 text-[9px]">Sikap</th></tr>`;
+            
+            document.getElementById('head-legger').innerHTML = th1;
 
-            let tbody = "";
-            globalSiswa.forEach((s, i) => {
-                let cells = "";
-                let totNa = 0; let countNa = 0;
-                mapelKeys.forEach(m => {
+            let tLeg = "";
+            let dataRank = [];
+            
+            let ta = document.getElementById('inp-ta').value;
+            let startYear = parseInt(ta.split('/')[0]) || 2025;
+            let smt = document.getElementById('inp-smt').value.toLowerCase();
+            let arrBulan = smt === 'ganjil' ? ["Juli", "Agustus", "September", "Oktober", "November", "Desember"] : ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
+            
+            globalSiswa.forEach((s,i) => {
+                let cells = ""; let totalRapor = 0; let nMapel = 0;
+                
+                // Hitung Nilai Per Mapel
+                for(let x=0; x<jmlMapel; x++) { 
+                    let mp = mapelList[x];
+                    let finalNilai = '-';
+                    
                     // Rata Formatif
                     let totF = 0, cF = 0;
-                    if(nilaiSiswa[i] && nilaiSiswa[i].formatif && nilaiSiswa[i].formatif[m]) {
-                        nilaiSiswa[i].formatif[m].forEach(f => {
+                    if(nilaiSiswa[i] && nilaiSiswa[i].formatif && nilaiSiswa[i].formatif[mp]) {
+                        nilaiSiswa[i].formatif[mp].forEach(f => {
                             let n1 = f.k1 !== "" ? parseFloat(f.k1) : null;
                             let n2 = f.k2 !== "" ? parseFloat(f.k2) : null;
                             if(n1 !== null && n2 !== null) { totF += Math.round((n1+n2)/2); cF++; }
@@ -2495,7 +2521,7 @@
                     let avgF = cF > 0 ? (totF / cF) : 0;
 
                     // Rata Sumatif
-                    let vSum = (nilaiSiswa[i] && nilaiSiswa[i].sumatif) ? nilaiSiswa[i].sumatif[m] : null;
+                    let vSum = (nilaiSiswa[i] && nilaiSiswa[i].sumatif) ? nilaiSiswa[i].sumatif[mp] : null;
                     let totLm = 0, cLm = 0;
                     if(vSum && vSum.lm) {
                         vSum.lm.forEach(v => { if(v !== "") { totLm += parseFloat(v); cLm++; } });
@@ -2510,24 +2536,75 @@
                     if(pSas !== null) { tS += pSas; cS++; }
                     let avgS = cS > 0 ? (tS / cS) : 0;
 
-                    let finalNilai = "";
                     if(cF > 0 || cS > 0) {
                         let calc = (avgF * 0.65) + (avgS * 0.35);
                         finalNilai = Math.round(calc);
-                        totNa += finalNilai; countNa++;
+                        totalRapor += finalNilai; nMapel++;
                     }
 
-                    cells += `<td class="border-r border-slate-300 border-b font-bold ${finalNilai<75 && finalNilai!=="" ? 'text-red-600':'text-slate-700'}">${finalNilai}</td>`;
+                    cells += `<td class="border-r border-slate-300 border-b py-1.5 font-bold ${finalNilai<75 && finalNilai!=='-' ? 'text-red-600':'text-slate-700'}">${finalNilai}</td>`;
+                }
+
+                // Hitung Kehadiran Semester Ini
+                let totH = 0, totEfektif = 0;
+                arrBulan.forEach(b => {
+                    let activeYear = (monthNames.indexOf(b) < 6) ? startYear + 1 : startYear;
+                    let ef = getHariEfektif(b, activeYear);
+                    totEfektif += ef;
+                    if(globalAbsen[b] && globalAbsen[b][i]) {
+                        let dVal = globalAbsen[b][i].hari;
+                        for(let d in dVal) {
+                            if(dVal[d] === "H") totH++;
+                        }
+                    }
                 });
+                let pctHadir = totEfektif > 0 ? Math.round((totH / totEfektif) * 100) + "%" : "-";
                 
-                let avgAll = countNa > 0 ? Math.round(totNa / countNa) : "";
-                tbody += `<tr class="hover:bg-slate-50 transition">
-                    <td class="border-r border-slate-300 border-b text-left sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis w-48 font-medium">${s.nama}</td>
-                    ${cells}
-                    <td class="border-b border-slate-300 font-bold bg-blue-50 text-blue-800">${avgAll}</td>
-                </tr>`;
+                // Hitung Predikat Sikap
+                let prSikap = '-';
+                if(nilaiSiswa[i] && nilaiSiswa[i].sikap) {
+                    let d = nilaiSiswa[i].sikap;
+                    if(d.dsk!=='' && d.ins!=='' && d.dsp!=='' && d.tgg!=='') {
+                        let rtSikap = (parseInt(d.dsk) + parseInt(d.ins) + parseInt(d.dsp) + parseInt(d.tgg))/4;
+                        prSikap = rtSikap > 85 ? 'Sangat Baik' : (rtSikap > 70 ? 'Baik' : 'Cukup');
+                    }
+                }
+
+                let rtSem = nMapel > 0 ? Math.round(totalRapor/nMapel) : '-';
+                
+                dataRank.push({
+                    idx: i,
+                    nama: s.nama,
+                    cells: cells,
+                    pctHadir: pctHadir,
+                    prSikap: prSikap,
+                    rtSem: rtSem,
+                    rtVal: rtSem === '-' ? -1 : rtSem
+                });
             });
-            document.getElementById('tb-legger').innerHTML = tbody;
+
+            // Kalkulasi Ranking Otomatis
+            let sortedRank = [...dataRank].sort((a,b) => b.rtVal - a.rtVal);
+            let currentRank = 1;
+            sortedRank.forEach((sr, i) => {
+                if(sr.rtVal !== -1) {
+                    if(i > 0 && sr.rtVal < sortedRank[i-1].rtVal) currentRank = i + 1;
+                    dataRank.find(d => d.idx === sr.idx).rank = currentRank;
+                } else {
+                    dataRank.find(d => d.idx === sr.idx).rank = '-';
+                }
+            });
+
+            // Tampilkan Data
+            dataRank.forEach((d) => {
+                tLeg += `<tr class="hover:bg-slate-50 transition"><td class="px-2 py-1 border-r border-slate-300 border-b text-left font-medium text-slate-800 sticky left-0 bg-white shadow-[1px_0_0_0_#cbd5e1] whitespace-nowrap overflow-hidden text-ellipsis w-48">${d.nama}</td>
+                ${d.cells}
+                <td class="border-r border-slate-300 border-b py-1.5 bg-slate-50 font-bold text-[10px] text-blue-700">${d.pctHadir}</td>
+                <td class="border-r border-slate-300 border-b py-1.5 bg-slate-50 font-bold text-[10px] text-purple-700">${d.prSikap}</td>
+                <td class="border-r border-slate-300 border-b py-1.5 font-bold bg-blue-50 text-blue-800 text-sm">${d.rtSem}</td>
+                <td class="border-b border-slate-300 py-1.5 font-bold bg-amber-50 text-amber-700">${d.rank}</td></tr>`;
+            });
+            document.getElementById('tb-legger').innerHTML = tLeg;
         }
 
         // --- JURNAL MENGAJAR ---
