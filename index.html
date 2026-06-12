@@ -234,7 +234,7 @@
         </header>
 
         <div id="mock-warning" class="hidden bg-amber-50 text-amber-700 border-b border-amber-200 px-4 py-2 text-[11px] font-bold text-center w-full no-print flex justify-center items-center">
-            <i data-lucide="cloud-off" class="w-4 h-4 mr-2"></i> Koneksi Cloud Terputus. Menampilkan data lokal (Offline Mode).
+            <i data-lucide="cloud-off" class="w-4 h-4 mr-2"></i> Koneksi Cloud Terputus. Menampilkan data lokal (Offline Mode). Pastikan Akses Deployment Apps Script diset ke "Anyone/Siapa Saja".
         </div>
 
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 print-area w-full custom-scrollbar">
@@ -981,11 +981,18 @@
                 document.getElementById('loading-title').innerText = "Menyimpan Data...";
                 loader.classList.remove('hidden', 'opacity-0');
                 try {
-                    const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                    // PERBAIKAN: Menambahkan Content-Type agar tidak diblokir CORS preflight oleh Browser
+                    const response = await fetch(API_URL, { 
+                        method: 'POST', 
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8'
+                        },
+                        body: JSON.stringify(payload) 
+                    });
                     const res = await response.json();
                     if(res.status === 'success') alert(successMsg); else alert("Disimpan ke Memori Browser (Mode Offline).");
                 } catch (error) {
-                    alert("Tersimpan di Memori Browser Anda. Data tidak akan hilang.");
+                    alert("Tersimpan di Memori Browser Anda. Pastikan Izin Deployment Apps Script Anda diset ke 'Anyone'.");
                 } finally {
                     loader.classList.add('opacity-0'); setTimeout(() => loader.classList.add('hidden'), 500);
                 }
@@ -1484,8 +1491,8 @@
             if(v === "") { cell.innerText = "H"; cell.classList.add('val-h'); } else if(v === "H") { cell.innerText = "S"; cell.classList.add('val-s'); } else if(v === "S") { cell.innerText = "I"; cell.classList.add('val-i'); } else if(v === "I") { cell.innerText = "A"; cell.classList.add('val-a'); } else if(v === "A") { cell.innerText = ""; }
             
             let bln = document.getElementById('filter-bulan-absen-input').value;
-            if(!currentAbsenData[bln]) currentAbsenData[bln] = {}; if(!currentAbsenData[bln][studentIdx]) currentAbsenData[bln][studentIdx] = {hari:{}};
-            currentAbsenData[bln][studentIdx].hari[day] = cell.innerText; recalcTotalRow(cell.parentElement, studentIdx, true); saveAllToLocal();
+            if(!currentAbsenData[bln]) currentAbsenData[bln] = {}; if(!currentAbsenData[bln][sIdx]) currentAbsenData[bln][sIdx] = {hari:{}};
+            currentAbsenData[bln][sIdx].hari[day] = cell.innerText; recalcTotalRow(cell.parentElement, sIdx, true); saveAllToLocal();
         }
 
         function isiSemuaAbsen(status) {
