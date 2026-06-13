@@ -2542,7 +2542,8 @@
                         totalRapor += finalNilai; nMapel++;
                     }
 
-                    cells += `<td class="border-r border-slate-300 border-b py-1.5 font-bold ${finalNilai<75 && finalNilai!=='-' ? 'text-red-600':'text-slate-700'}">${finalNilai}</td>`;
+                    // Logika warna merah untuk nilai di bawah 70
+                    cells += `<td class="border-r border-slate-300 border-b py-1.5 font-bold ${finalNilai<70 && finalNilai!=='-' ? 'text-red-600':'text-slate-700'}">${finalNilai}</td>`;
                 }
 
                 // Hitung Kehadiran Semester Ini
