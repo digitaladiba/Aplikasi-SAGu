@@ -1,9 +1,250 @@
+<!--
+ * API BACKEND SIGURU KELAS V5.0 (MULTI-DATABASE)
+ * SILAKAN COPY KODE DI BAWAH INI KE GOOGLE APPS SCRIPT DAN LAKUKAN DEPLOYMENT BARU.
+ *=========================================================================
+
+const SPREADSHEET_ID_DEFAULT = "1ctu63-UFMoevz4sMvSlIbPE0Os_nuswRBH4ryb_die0"; // Kelas 4
+
+function getDb(dbId) {
+  var targetId = dbId || SPREADSHEET_ID_DEFAULT;
+  return SpreadsheetApp.openById(targetId);
+}
+
+// =========================================================================
+// METHOD GET (BACA DATA DARI EXCEL)
+// =========================================================================
+function doGet(e) {
+  var action = e.parameter.action;
+  var dbId = e.parameter.dbId; // Tangkap ID Database dari Frontend
+  if (!action) return respondJSON({ message: "API SiGuru V5.0 Multi-DB Aktif." }, 200);
+
+  try {
+    if (action === 'getIdentitas') return respondJSON(getIdentitas(dbId), 200);
+    else if (action === 'getSiswa') return respondJSON(getSiswaLengkap(dbId), 200); 
+    else if (action === 'getJurnal') return respondJSON(getJurnal(dbId), 200);
+    else if (action === 'getMapel') return respondJSON(getMapelTarget(dbId), 200);
+    else if (action === 'getMedia') return respondJSON(getMediaDB(dbId), 200); 
+    else if (action === 'getAbsen') return respondJSON(getJSONFromDB(dbId, 'DB_ABSEN'), 200);
+    else if (action === 'getFormatif') return respondJSON(getJSONFromDB(dbId, 'DB_FORMATIF'), 200);
+    else if (action === 'getSumatif') return respondJSON(getJSONFromDB(dbId, 'DB_SUMATIF'), 200);
+    else if (action === 'getSikap') return respondJSON(getJSONFromDB(dbId, 'DB_SIKAP'), 200);
+    else if (action === 'getJadwal') return respondJSON(getJSONFromDB(dbId, 'DB_JADWAL'), 200);
+    else return respondJSON({ error: "Endpoint tidak ditemukan!" }, 404);
+  } catch (error) {
+    return respondJSON({ error: error.message }, 500);
+  }
+}
+
+// =========================================================================
+// METHOD POST (SIMPAN DATA DARI WEB KE EXCEL)
+// =========================================================================
+function doPost(e) {
+  try {
+    var payload = JSON.parse(e.postData.contents);
+    var action = payload.action;
+    var data = payload.data;
+    var dbId = payload.dbId; // Tangkap ID Database dari Frontend
+
+    if (action === 'simpanJurnal') return respondJSON(simpanJurnalBaru(dbId, data), 200);
+    if (action === 'simpanMedia') return respondJSON(simpanMediaDB(dbId, data), 200); 
+    if (action === 'simpanDataInduk') return respondJSON(simpanDataSiswaDB(dbId, data), 200); 
+    if (action === 'simpanMapel') return respondJSON(saveJSONToDB(dbId, 'DB_MAPEL_SIGURU', data), 200); 
+    if (action === 'simpanAbsen') return respondJSON(saveJSONToDB(dbId, 'DB_ABSEN', data), 200);
+    if (action === 'simpanFormatif') return respondJSON(saveJSONToDB(dbId, 'DB_FORMATIF', data), 200);
+    if (action === 'simpanSumatif') return respondJSON(saveJSONToDB(dbId, 'DB_SUMATIF', data), 200);
+    if (action === 'simpanSikap') return respondJSON(saveJSONToDB(dbId, 'DB_SIKAP', data), 200);
+    if (action === 'simpanJadwal') return respondJSON(saveJSONToDB(dbId, 'DB_JADWAL', data), 200);
+    
+    return respondJSON({ error: "Action POST tidak valid!" }, 400);
+  } catch (error) {
+    return respondJSON({ error: error.message }, 500);
+  }
+}
+
+// =========================================================================
+// FUNGSI TULIS & BACA JSON GLOBAL
+// =========================================================================
+function saveJSONToDB(dbId, sheetName, data) {
+  var db = getDb(dbId);
+  var sheet = db.getSheetByName(sheetName);
+  if (!sheet) { sheet = db.insertSheet(sheetName); sheet.hideSheet(); }
+  sheet.getRange("A1").setValue(JSON.stringify(data));
+  return { message: "Data " + sheetName + " berhasil disimpan ke Database!" };
+}
+
+function getJSONFromDB(dbId, sheetName) {
+  var sheet = getDb(dbId).getSheetByName(sheetName);
+  if (!sheet) return {};
+  var data = sheet.getRange("A1").getValue();
+  if (data) { try { return JSON.parse(data); } catch(e) { return {}; } }
+  return {};
+}
+
+// =========================================================================
+// FUNGSI TULIS KHUSUS KE EXCEL
+// =========================================================================
+function simpanDataSiswaDB(dbId, dataSiswa) {
+  var db = getDb(dbId);
+  var sheet = db.getSheetByName("Data Siswa");
+  if (!sheet) { sheet = db.insertSheet("Data Siswa"); }
+
+  var headers1 = ["No", "NIS", "NISN", "Nama Peserta Didik", "J. Kel L/P", "", "T. Lahir", "Tgl. Lahir", "Usia", "Agm", "Alamat", "Nama orang Tua", "", "Pekerjaan Orangtua", "", "Pendidikan", ""];
+  var headers2 = ["", "", "", "", "", "", "", "", "", "", "", "Ayah", "Ibu", "Ayah", "Ibu", "Ayah", "Ibu"];
+  sheet.getRange(6, 1, 1, 17).setValues([headers1]).setFontWeight("bold").setBackground("#e5e7eb");
+  sheet.getRange(7, 1, 1, 17).setValues([headers2]).setFontWeight("bold").setBackground("#e5e7eb");
+
+  var writeData = [];
+  for (var i = 0; i < dataSiswa.length; i++) {
+    var s = dataSiswa[i];
+    writeData.push([ (i+1), s.nis, s.nisn, s.nama, s.jk, "", s.tLahir, s.tglLahir, s.usia, s.agama, s.alamat, s.namaAyah, s.namaIbu, s.pekAyah, s.pekIbu, s.pendAyah, s.pendIbu ]);
+  }
+  
+  var lastRow = Math.max(sheet.getLastRow(), 8);
+  if(lastRow >= 8) sheet.getRange(8, 1, lastRow, 17).clearContent();
+  if(writeData.length > 0) sheet.getRange(8, 1, writeData.length, 17).setValues(writeData);
+  return { message: "Data Induk Siswa berhasil disimpan ke Excel!" };
+}
+
+function simpanJurnalBaru(dbId, dataJurnal) {
+  var sheet = getDb(dbId).getSheetByName("JURNAL");
+  if(!sheet) return {message: "Sheet JURNAL tidak ada."};
+  var data = sheet.getDataRange().getValues();
+  var barisKosong = -1;
+  for (var i = 4; i < data.length; i++) {
+    if (data[i][2] === "" || data[i][2] === null) { barisKosong = i + 1; break; }
+  }
+  if (barisKosong === -1) throw new Error("Tabel jurnal penuh.");
+  
+  sheet.getRange(barisKosong, 3).setValue(dataJurnal.tanggal);
+  sheet.getRange(barisKosong, 4).setValue(dataJurnal.jam);
+  sheet.getRange(barisKosong, 5).setValue(dataJurnal.mapel);
+  sheet.getRange(barisKosong, 6).setValue(dataJurnal.lingkupMateri);
+  sheet.getRange(barisKosong, 7).setValue(dataJurnal.tujuanPembelajaran);
+  sheet.getRange(barisKosong, 8).setValue(dataJurnal.kegiatan);
+  sheet.getRange(barisKosong, 9).setValue(dataJurnal.refleksi);
+  return { message: "Jurnal tersimpan" };
+}
+
+function simpanMediaDB(dbId, mediaData) {
+  var db = getDb(dbId);
+  var sheet = db.getSheetByName("Kelengkapan Kelas");
+  if (!sheet) {
+    sheet = db.insertSheet("Kelengkapan Kelas");
+    sheet.appendRow(["URL Logo Kiri", "URL Logo Kanan", "URL TTD Kepsek", "URL TTD Guru", "URL Stempel", "URL Foto Guru"]);
+    sheet.getRange("A1:F1").setFontWeight("bold").setBackground("#e5e7eb");
+  }
+  sheet.getRange("A2").setValue(mediaData.logoKiri);
+  sheet.getRange("B2").setValue(mediaData.logoKanan);
+  sheet.getRange("C2").setValue(mediaData.ttdKepsek);
+  sheet.getRange("D2").setValue(mediaData.ttdGuru);
+  sheet.getRange("E2").setValue(mediaData.stempel);
+  sheet.getRange("F2").setValue(mediaData.fotoGuru);
+  return { message: "Pengaturan visual berhasil diamankan di DB" };
+}
+
+// =========================================================================
+// FUNGSI BACA DARI EXCEL
+// =========================================================================
+function respondJSON(data, statusCode) {
+  var output = { status: statusCode === 200 ? "success" : "error", code: statusCode, data: data };
+  return ContentService.createTextOutput(JSON.stringify(output)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function getMediaDB(dbId) {
+  var sheet = getDb(dbId).getSheetByName("Kelengkapan Kelas");
+  if (!sheet) return { logoKiri: "", logoKanan: "", ttdKepsek: "", ttdGuru: "", stempel: "", fotoGuru: "" };
+  var data = sheet.getDataRange().getValues();
+  if (data.length < 2) return { logoKiri: "", logoKanan: "", ttdKepsek: "", ttdGuru: "", stempel: "", fotoGuru: "" };
+  return { logoKiri: data[1][0] || "", logoKanan: data[1][1] || "", ttdKepsek: data[1][2] || "", ttdGuru: data[1][3] || "", stempel: data[1][4] || "", fotoGuru: data[1][5] || "" };
+}
+
+function getIdentitas(dbId) {
+  var sheet = getDb(dbId).getSheetByName("Input Identitas");
+  if (!sheet) return { sekolah: "", semester: "", tahunAjaran: "", kota: "", kepalaSekolah: "", nipKepsek: "", kelas: "", namaGuru: "", nipGuru: "", mapel: [] };
+  var data = sheet.getDataRange().getValues();
+  var identitas = { sekolah: "", semester: "", tahunAjaran: "", kota: "", kepalaSekolah: "", nipKepsek: "", kelas: "", namaGuru: "", nipGuru: "", mapel: [] };
+
+  for (var i = 0; i < 30; i++) {
+    if(!data[i]) continue;
+    var label = String(data[i][0]).trim();
+    var value = data[i][2] ? String(data[i][2]).trim() : "";
+    if (label === "Nama Sekolah") identitas.sekolah = value;
+    if (label === "Semester") identitas.semester = value;
+    if (label === "Tahun Ajaran") identitas.tahunAjaran = value;
+    if (label === "Kota" || label === "Desa/Kecamatan") identitas.kota = value;
+    if ((label === "Nama" || label === "Nama Kepala Sekolah") && i < 15) identitas.kepalaSekolah = value;
+    if (label === "NIP" && i < 15) identitas.nipKepsek = value;
+    if ((label === "Nama" || label === "Nama Guru Kelas") && i > 15) identitas.namaGuru = value;
+    if (label === "NIP" && i > 15) identitas.nipGuru = value;
+    if (label === "Kelas") identitas.kelas = value;
+  }
+  return identitas;
+}
+
+function getSiswaLengkap(dbId) {
+  var db = getDb(dbId);
+  var listSiswa = [];
+  var sheetDataSiswa = db.getSheetByName("Data Siswa");
+  if (sheetDataSiswa) {
+    var data = sheetDataSiswa.getDataRange().getValues();
+    var startRow = 8;
+    for (var i = 0; i < Math.min(data.length, 10); i++) {
+      if (data[i] && data[i][3] && String(data[i][3]).toUpperCase().includes("NAMA PESERTA")) { startRow = i + 2; break; }
+    }
+    for (var i = startRow - 1; i < data.length; i++) { 
+      if (!data[i] || !data[i][3] || String(data[i][3]).trim() === "") continue; 
+      var tglLahirFormated = "";
+      if(data[i][7]){
+         if(data[i][7] instanceof Date) tglLahirFormated = Utilities.formatDate(data[i][7], "GMT+7", "dd/MM/yyyy");
+         else tglLahirFormated = String(data[i][7]);
+      }
+      listSiswa.push({
+        nis: data[i][1] || "", nisn: data[i][2] || "", nama: String(data[i][3]).trim(), jk: String(data[i][4]).trim().toUpperCase(),
+        tLahir: data[i][6] || "", tglLahir: tglLahirFormated, usia: data[i][8] || "",
+        agama: data[i][9] || "", alamat: data[i][10] || "", namaAyah: data[i][11] || "",
+        namaIbu: data[i][12] || "", pekAyah: data[i][13] || "", pekIbu: data[i][14] || "", pendAyah: data[i][15] || "", pendIbu: data[i][16] || ""
+      });
+    }
+  }
+  return listSiswa;
+}
+
+function getJurnal(dbId) {
+  var sheet = getDb(dbId).getSheetByName("JURNAL");
+  if(!sheet) return [];
+  var data = sheet.getDataRange().getValues();
+  var listJurnal = [];
+  for (var i = 4; i < data.length; i++) {
+    var tanggal = data[i][2];
+    if (!tanggal || tanggal.toString().trim() === "") continue;
+    var d = new Date(tanggal);
+    var hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"][d.getDay()];
+    var bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"][d.getMonth()];
+    var tglFormat = hari + ",<br>" + d.getDate() + " " + bulan + " " + d.getFullYear();
+    listJurnal.push({ tglFormat: tglFormat, jam: data[i][3], mapel: data[i][4], lingkupMateri: data[i][5], tujuanPembelajaran: data[i][6], kegiatan: data[i][7], refleksi: data[i][8] });
+  }
+  return listJurnal.reverse();
+}
+
+function getMapelTarget(dbId) {
+  var finalData = getJSONFromDB(dbId, "DB_MAPEL_SIGURU");
+  var fallback = {
+    "Pendidikan Pancasila": { lm: ["Kerja Sama", "Pancasila"], tp: [{ nama: "Memahami kerja sama", k1: "K1", k2: "K2" }] },
+    "Bahasa Indonesia": { lm: ["Teks Fabel"], tp: [{ nama: "Memahami teks", k1: "K1", k2: "K2" }] },
+    "Matematika": { lm: ["Pengukuran"], tp: [{ nama: "Mengukur Luas", k1: "K1", k2: "K2" }] },
+    "IPAS": { lm: ["Daerahku"], tp: [{ nama: "Menganalisis alam", k1: "K1", k2: "K2" }] }
+  };
+  if (!finalData || Object.keys(finalData).length === 0) finalData = fallback;
+  return finalData;
+}
+=========================================================================
+-->
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiGuru Kelas V4.9 - Sistem Administrasi Guru</title>
+    <title>SiGuru Kelas V5.0 - Multi Database</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -85,9 +326,27 @@
                     </div>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">Login Aplikasi</h2>
-                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas</p>
+                <p class="text-sm text-slate-500 mt-1">SiGuru Kelas (Multi-DB)</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">Pilih Kelas</label>
+                        <select id="login-kelas" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 focus:bg-white text-sm font-medium cursor-pointer">
+                            <option value="4">Kelas 4</option>
+                            <option value="6A">Kelas 6 A</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">Semester</label>
+                        <select id="login-semester" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 focus:bg-white text-sm font-medium cursor-pointer">
+                            <option value="Ganjil">Ganjil</option>
+                            <option value="Genap">Genap</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div>
                     <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">Username</label>
                     <input type="text" id="login-user" class="w-full border border-slate-300 rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 focus:bg-white text-sm font-medium" placeholder="Masukkan username..." required>
@@ -214,8 +473,8 @@
         </div>
         <div class="p-4 border-t border-slate-800 bg-slate-950 flex items-center justify-between">
             <button onclick="handleLogout()" class="text-xs font-semibold text-red-400 hover:text-red-300 transition flex items-center"><i data-lucide="log-out" class="w-3 h-3 mr-1"></i> Logout</button>
-            <div id="db-status-indicator" class="flex items-center text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">
-                <div class="w-2 h-2 rounded-full bg-emerald-500 mr-1 animate-pulse"></div> Live API
+            <div id="db-status-indicator" class="flex items-center text-[10px] font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">
+                <div class="w-2 h-2 rounded-full bg-emerald-500 mr-1 animate-pulse"></div> <span id="label-aktif-db">Live DB</span>
             </div>
         </div>
     </aside>
@@ -1149,7 +1408,7 @@
         lucide.createIcons();
 
         // ------------------------------------------
-        // 1. DATA MAPEL & TARGET
+        // 1. DATA MAPEL & JADWAL (Default)
         // ------------------------------------------
         let mapelData = {
             "Pendidikan Pancasila": {
@@ -1263,11 +1522,15 @@
         ];
 
         // ------------------------------------------
-        // 2. KONEKSI & LOGIKA LOGIN API
+        // 2. KONEKSI & LOGIKA LOGIN MULTI-DB API
         // ------------------------------------------
         
+        // GANTI INI DENGAN URL APPS SCRIPT ANDA SETELAH COPY-PASTE KODE BACKEND BARU (DI ATAS)
         const API_URL = "https://script.google.com/macros/s/AKfycbx1NwJ4SQ5ZyZAEAjKrgwfz-0gZpz2LluVl044y9d7b8YcO6kL4a3tu_U-dvSPdHmE-7g/exec";
         
+        const DB_KELAS_4 = "1ctu63-UFMoevz4sMvSlIbPE0Os_nuswRBH4ryb_die0";
+        const DB_KELAS_6A = "1c2-SZ4CRRAou3OLB0J5kU2eZ3y_aoTp8FExbqce1IFE";
+
         let globalSiswa = [];
         let listJurnal = [];
         let currentSettingMapel = "";
@@ -1281,12 +1544,21 @@
             e.preventDefault();
             const u = document.getElementById('login-user').value.trim().toLowerCase();
             const p = document.getElementById('login-pass').value.trim();
+            const k = document.getElementById('login-kelas').value;
+            const smt = document.getElementById('login-semester').value;
             
             if(u === 'sdn04taman' && p === 'bayuprahastian') {
                 sessionStorage.setItem('siguru_logged_in', 'true');
-                document.getElementById('login-error').classList.add('hidden');
+                sessionStorage.setItem('siguru_kelas_aktif', k);
+                sessionStorage.setItem('siguru_smt_aktif', smt);
                 
+                // Set DB sesuai pilihan
+                const db_id = (k === '6A') ? DB_KELAS_6A : DB_KELAS_4;
+                sessionStorage.setItem('siguru_db_id', db_id);
+
+                document.getElementById('login-error').classList.add('hidden');
                 document.getElementById('login-overlay').classList.add('opacity-0');
+                
                 setTimeout(() => {
                     document.getElementById('login-overlay').classList.add('hidden');
                     sinkronisasiDB(true);
@@ -1299,6 +1571,9 @@
         function handleLogout() {
             if(confirm("Yakin ingin keluar dari sistem?")) {
                 sessionStorage.removeItem('siguru_logged_in');
+                sessionStorage.removeItem('siguru_kelas_aktif');
+                sessionStorage.removeItem('siguru_smt_aktif');
+                sessionStorage.removeItem('siguru_db_id');
                 window.location.reload();
             }
         }
@@ -1312,10 +1587,18 @@
 
         const loader = document.getElementById('loading-overlay');
 
+        function getActiveDbId() {
+            return sessionStorage.getItem('siguru_db_id') || DB_KELAS_4;
+        }
+
         async function postToDB(payload, successMsg) {
             document.getElementById('loading-title').innerText = "Menyimpan Data...";
             document.getElementById('loading-subtitle').innerText = "Menyinkronkan ke Database Google Sheets";
             loader.classList.remove('hidden', 'opacity-0');
+            
+            // Sisipkan DB_ID di setiap POST request
+            payload.dbId = getActiveDbId();
+
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -1337,17 +1620,23 @@
         }
 
         async function sinkronisasiDB(isManual = false) {
+            let activeKelas = sessionStorage.getItem('siguru_kelas_aktif') || '4';
+            document.getElementById('label-aktif-db').innerText = activeKelas === '6A' ? 'DB: Kelas 6 A' : 'DB: Kelas 4';
+            
             if(isManual) {
-                document.getElementById('loading-title').innerText = "Menyinkronkan Database...";
-                document.getElementById('loading-subtitle').innerText = "MOHON TUNGGU SEBENTAR";
+                document.getElementById('loading-title').innerText = `Sinkronisasi Kelas ${activeKelas}...`;
+                document.getElementById('loading-subtitle').innerText = "MENGAMBIL DATA DARI DATABASE";
                 loader.classList.remove('hidden', 'opacity-0');
             }
+            
             let usingMock = false;
             let tstamp = new Date().getTime();
+            let dbId = getActiveDbId();
             
             try {
+                // Fetch Data dengan mengirimkan parameter dbId ke backend
                 try {
-                    const resMapel = await fetch(`${API_URL}?action=getMapel&_t=${tstamp}`).then(r => r.json());
+                    const resMapel = await fetch(`${API_URL}?action=getMapel&dbId=${dbId}&_t=${tstamp}`).then(r => r.json());
                     if(resMapel.status === 'success' && Object.keys(resMapel.data).length > 0) {
                         let keys = Object.keys(resMapel.data);
                         if(keys.includes("Pendidikan Pancasila") && keys.includes("Muatan Lokal")) {
@@ -1358,7 +1647,7 @@
                 currentSettingMapel = Object.keys(mapelData)[0]; 
 
                 try {
-                    const resSiswa = await fetch(`${API_URL}?action=getSiswa&_t=${tstamp}`).then(r => r.json());
+                    const resSiswa = await fetch(`${API_URL}?action=getSiswa&dbId=${dbId}&_t=${tstamp}`).then(r => r.json());
                     if(resSiswa.status === 'success' && resSiswa.data.length > 0) { 
                         globalSiswa = resSiswa.data;
                     } else { 
@@ -1371,22 +1660,27 @@
                 }
 
                 try {
-                    const resId = await fetch(`${API_URL}?action=getIdentitas&_t=${tstamp}`).then(r => r.json());
+                    const resId = await fetch(`${API_URL}?action=getIdentitas&dbId=${dbId}&_t=${tstamp}`).then(r => r.json());
                     if(resId.status === 'success') {
                         const d = resId.data;
                         document.getElementById('inp-sekolah').value = d.sekolah || 'SD Negeri 04 Taman';
                         document.getElementById('inp-kota').value = d.kota || 'Pemalang';
-                        document.getElementById('inp-ta').value = d.tahunAjaran || '2025/2026';
                         document.getElementById('inp-kepsek').value = d.kepalaSekolah || 'Tentrem Lestari, S.Pd.';
                         document.getElementById('inp-nipkepsek').value = d.nipKepsek || '196706291991032002';
                         document.getElementById('inp-guru').value = d.namaGuru || 'Bayu Prahastian, S.Pd.';
                         document.getElementById('inp-nipguru').value = d.nipGuru || '199601212025211014';
-                        document.getElementById('inp-kelas').value = d.kelas || 'IV B';
+                        document.getElementById('inp-ta').value = d.tahunAjaran || '2025/2026';
                     }
                 } catch(e) {}
 
+                // Override Identitas dengan preferensi Session saat Login
+                let k_aktif = sessionStorage.getItem('siguru_kelas_aktif') || '4';
+                let s_aktif = sessionStorage.getItem('siguru_smt_aktif') || 'Genap';
+                document.getElementById('inp-kelas').value = (k_aktif === '6A') ? 'VI A' : 'IV B';
+                document.getElementById('inp-smt').value = s_aktif;
+
                 try {
-                    const resMedia = await fetch(`${API_URL}?action=getMedia&_t=${tstamp}`).then(r => r.json());
+                    const resMedia = await fetch(`${API_URL}?action=getMedia&dbId=${dbId}&_t=${tstamp}`).then(r => r.json());
                     if(resMedia.status === 'success') {
                         mediaData = resMedia.data;
                         document.getElementById('inp-media-logokiri').value = mediaData.logoKiri || "";
@@ -1423,13 +1717,13 @@
                 } catch(e) {}
 
                 try {
-                    const resJurnal = await fetch(`${API_URL}?action=getJurnal&_t=${tstamp}`).then(r => r.json());
+                    const resJurnal = await fetch(`${API_URL}?action=getJurnal&dbId=${dbId}&_t=${tstamp}`).then(r => r.json());
                     if(resJurnal.status === 'success') listJurnal = resJurnal.data.reverse(); 
                     else listJurnal = [];
                 } catch(e) {}
 
                 try {
-                    const resAbsen = await fetch(`${API_URL}?action=getAbsen&_t=${tstamp}`).then(r => r.json());
+                    const resAbsen = await fetch(`${API_URL}?action=getAbsen&dbId=${dbId}&_t=${tstamp}`).then(r => r.json());
                     if(resAbsen.status === 'success' && Object.keys(resAbsen.data).length > 0) {
                         globalAbsen = resAbsen.data;
                     }
@@ -1438,9 +1732,9 @@
                 initDataNilaiLokal(); 
                 try {
                     const [resF, resS, resSik] = await Promise.all([
-                        fetch(`${API_URL}?action=getFormatif&_t=${tstamp}`).then(r => r.json()),
-                        fetch(`${API_URL}?action=getSumatif&_t=${tstamp}`).then(r => r.json()),
-                        fetch(`${API_URL}?action=getSikap&_t=${tstamp}`).then(r => r.json())
+                        fetch(`${API_URL}?action=getFormatif&dbId=${dbId}&_t=${tstamp}`).then(r => r.json()),
+                        fetch(`${API_URL}?action=getSumatif&dbId=${dbId}&_t=${tstamp}`).then(r => r.json()),
+                        fetch(`${API_URL}?action=getSikap&dbId=${dbId}&_t=${tstamp}`).then(r => r.json())
                     ]);
                     
                     if(resF.status === 'success' && Object.keys(resF.data).length > 0) {
@@ -1461,7 +1755,7 @@
                 } catch(e) { console.warn("Load Nilai Error:", e); }
 
                 try {
-                    const resJadwal = await fetch(`${API_URL}?action=getJadwal&_t=${tstamp}`).then(r => r.json());
+                    const resJadwal = await fetch(`${API_URL}?action=getJadwal&dbId=${dbId}&_t=${tstamp}`).then(r => r.json());
                     if(resJadwal.status === 'success' && resJadwal.data.length > 0) {
                         jadwalData = resJadwal.data;
                     }
