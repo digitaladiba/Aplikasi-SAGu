@@ -1408,118 +1408,10 @@ function getMapelTarget(dbId) {
         lucide.createIcons();
 
         // ------------------------------------------
-        // 1. DATA MAPEL & JADWAL (Default)
+        // 1. DATA MAPEL & JADWAL (Default Kosong)
         // ------------------------------------------
-        let mapelData = {
-            "Pendidikan Pancasila": {
-                lm: ["Kerja Sama di Lingkunganku", "Pancasila dalam Diriku"],
-                tp: [
-                    { nama: "menjelaskan dan memberikan contoh kerja sama dalam keberagaman sosial dan budaya", k1: "K1", k2: "K2" },
-                    { nama: "menunjukan sikap kompak dan bersatu melalui gotong royong di sekolah dan masyarakat", k1: "K1", k2: "K2" },
-                    { nama: "menunjukan sikap bangga menjadi anak Indonesia dengan bahasa persatuan", k1: "K1", k2: "K2" },
-                    { nama: "mengidentifikasi dan menjelaskan makna sila-sila pancasila di lingkungan masyarakat", k1: "K1", k2: "K2" },
-                    { nama: "menunjukan sikap dan perilaku sesuai nilai sila-sila pancasila di masyarakat", k1: "K1", k2: "K2" },
-                    { nama: "menjelaskan secara singkat sejarah perumusan pancasila dan mengenal tokoh perumusnya", k1: "K1", k2: "K2" },
-                    { nama: "menceritakan dan meneladai karakter para perumus pancasila", k1: "K1", k2: "K2" }
-                ]
-            },
-            "Bahasa Indonesia": {
-                lm: ["Bertukar dan Membayar", "Satu Titik", "Asal Usul", "Sahatlah Ragaku"],
-                tp: [
-                    { nama: "memahami informasi dari teks fabel dan infografik", k1: "K1", k2: "K2" },
-                    { nama: "menerapkan kaidah penulisan nilai uang", k1: "K1", k2: "K2" },
-                    { nama: "menulis teks prosedur", k1: "K1", k2: "K2" },
-                    { nama: "berdiskusi tentang kebutuhan dan keinginan", k1: "K1", k2: "K2" },
-                    { nama: "menggunakan kaidah kalimat efektif", k1: "K1", k2: "K2" },
-                    { nama: "memahami makna dan menulis puisi", k1: "K1", k2: "K2" },
-                    { nama: "mengidentifikasi majas metafora", k1: "K1", k2: "K2" },
-                    { nama: "menulis laporan perjalanan berstruktur", k1: "K1", k2: "K2" },
-                    { nama: "memahami teks dan media audio", k1: "K1", k2: "K2" },
-                    { nama: "mengidentifikasi rima dan syair", k1: "K1", k2: "K2" },
-                    { nama: "memahami teks narasi sejarah", k1: "K1", k2: "K2" },
-                    { nama: "menggunakan konjungsi antar kalimat", k1: "K1", k2: "K2" },
-                    { nama: "membedakan informasi fakta dan opini", k1: "K1", k2: "K2" },
-                    { nama: "mengidentifikasi jenis paragraf deduktif dan induktif", k1: "K1", k2: "K2" },
-                    { nama: "melakukan swasuting pada tulisan", k1: "K1", k2: "K2" }
-                ]
-            },
-            "Matematika": {
-                lm: ["Pengukuran", "Geometri", "Analisis Data dan Peluang"],
-                tp: [
-                    { nama: "mengukur luas dengan satuan tidak baku dan baku", k1: "K1", k2: "K2" },
-                    { nama: "mengukur volume dengan satuan tidak baku dan baku", k1: "K1", k2: "K2" },
-                    { nama: "mendeskripsikan ciri-ciri bentuk bangun datar", k1: "K1", k2: "K2" },
-                    { nama: "menyusun komosisi dan dekomposisi bangun datar", k1: "K1", k2: "K2" },
-                    { nama: "menyajikan data dalam bentuk pictogram", k1: "K1", k2: "K2" },
-                    { nama: "menyajikan data dalam bentuk diagram batang", k1: "K1", k2: "K2" }
-                ]
-            },
-            "IPAS": {
-                lm: ["Ini Khas Daerahku", "Peranku di Lingkungan Sekolah dan Masyarakat", "Keragaman Budaya dan Kearifan Lokal", "Menjadi Pahlawan Lingkungan"],
-                tp: [
-                    { nama: "menganalisi bentang alam dengan keaneragaman hayati dan profesi masyarakat", k1: "K1", k2: "K2" },
-                    { nama: "menerapkan peran, tugas serta tanggung jawab di sekolah dan masyarakat", k1: "K1", k2: "K2" },
-                    { nama: "menceritakan keragaman budaya dan kearifan lokal", k1: "K1", k2: "K2" },
-                    { nama: "menunjukan sikap peduli terhadap permasalahan lingkungan", k1: "K1", k2: "K2" },
-                    { nama: "berkontribusi dalam mitigasi perubahan", k1: "K1", k2: "K2" }
-                ]
-            },
-            "Seni Rupa": {
-                lm: ["Menciptakan, Berpikir dan Bekerja Artistik", "Berdampak, Merefleksikan", "Berdampak, Menciptakan"],
-                tp: [
-                    { nama: "Membuat Konstruksi Sederhana", k1: "K1", k2: "K2" },
-                    { nama: "menyusun ulang bentuk dan bangun ruang", k1: "K1", k2: "K2" },
-                    { nama: "Menanggapi Karya Seni Rupa", k1: "K1", k2: "K2" },
-                    { nama: "memberikan umpan balik dampak karya seni", k1: "K1", k2: "K2" },
-                    { nama: "Membuat Karya Seni yang Berdampak", k1: "K1", k2: "K2" },
-                    { nama: "mempresentasikan muatan positif", k1: "K1", k2: "K2" }
-                ]
-            },
-            "Bahasa Inggris": {
-                lm: ["My School Activities", "My PE Class", "My School Day"],
-                tp: [
-                    { nama: "Menyebutkan aktivitas di sekolah", k1: "K1", k2: "K2" },
-                    { nama: "Mendeskripsikan kegiatan", k1: "K1", k2: "K2" },
-                    { nama: "Mengenal tempat di sekolah", k1: "K1", k2: "K2" },
-                    { nama: "Memahami teks sederhana", k1: "K1", k2: "K2" },
-                    { nama: "Memahami instruksi sederhana", k1: "K1", k2: "K2" },
-                    { nama: "Menyebutkan aktivitas olahraga", k1: "K1", k2: "K2" },
-                    { nama: "Mengungkapkan perasaan", k1: "K1", k2: "K2" },
-                    { nama: "Memahami cerita sederhana", k1: "K1", k2: "K2" },
-                    { nama: "Menyebutkan hari dalam seminggu", k1: "K1", k2: "K2" },
-                    { nama: "Membuat jadwal sederhana", k1: "K1", k2: "K2" },
-                    { nama: "Menyebutkan kegiatan harian", k1: "K1", k2: "K2" },
-                    { nama: "Memahami teks sederhana", k1: "K1", k2: "K2" }
-                ]
-            },
-            "Muatan Lokal": {
-                lm: ["Narasi Tradhisi", "Tembang Gambuh", "Crita Pengalaman", "Maca Lan Nulis Aksara Jawa"],
-                tp: [
-                    { nama: "memahami pengertian tradhisi dengan baik dan benar", k1: "K1", k2: "K2" },
-                    { nama: "memahami jenis-jenis tradhisi masyarakat dengan baik", k1: "K1", k2: "K2" },
-                    { nama: "memahami jenis-jenis teks narasi", k1: "K1", k2: "K2" },
-                    { nama: "memahami unsur intrinsik dalam teks narasi", k1: "K1", k2: "K2" },
-                    { nama: "memahami sejarah aksara jawa dengan baik", k1: "K1", k2: "K2" },
-                    { nama: "menulis aksara jawa nglegena pasangan aksara jawa", k1: "K1", k2: "K2" },
-                    { nama: "memahami jenis-jenis shandangan dengan baik", k1: "K1", k2: "K2" }
-                ]
-            }
-        };
-        
-        let jadwalData = [
-            { jam: "1", senin: "Upacara", selasa: "B. Inggris", rabu: "P. Pancasila", kamis: "PJOK", jumat: "Senam", sabtu: "B. Indonesia" },
-            { jam: "2", senin: "Matematika", selasa: "B. Inggris", rabu: "P. Pancasila", kamis: "PJOK", jumat: "Kebersihan", sabtu: "B. Indonesia" },
-            { jam: "3", senin: "Matematika", selasa: "Matematika", rabu: "P. Pancasila", kamis: "PJOK", jumat: "Asmaul Husna", sabtu: "Kokulikuler" },
-            { jam: "4", senin: "Matematika", selasa: "Matematika", rabu: "P. Pancasila", kamis: "PJOK", jumat: "Matematika", sabtu: "Kokurikuler" },
-            { jam: "5", senin: "Istirahat", selasa: "Istirahat", rabu: "Istirahat", kamis: "Istirahat", jumat: "Istirahat", sabtu: "Istirahat" },
-            { jam: "6", senin: "IPAS", selasa: "Matematika", rabu: "B. Indonesia", kamis: "P. Pancasila", jumat: "Matematika", sabtu: "Peng. Diri" },
-            { jam: "7", senin: "IPAS", selasa: "PAI", rabu: "B. Indonesia", kamis: "P. Pancasila", jumat: "B. Jawa", sabtu: "Peng. Diri" },
-            { jam: "8", senin: "IPAS", selasa: "PAI", rabu: "B. Indonesia", kamis: "Seni", jumat: "B. Jawa", sabtu: "Peng. Diri" },
-            { jam: "9", senin: "Istirahat", selasa: "Istirahat", rabu: "Istirahat", kamis: "Istirahat", jumat: "", sabtu: "" },
-            { jam: "10", senin: "IPAS", selasa: "Sholat Dzuhur", rabu: "B. Indonesia", kamis: "Seni", jumat: "", sabtu: "Jam Tambah" },
-            { jam: "11", senin: "Pulang", selasa: "Pulang", rabu: "Pulang", kamis: "Pulang", jumat: "", sabtu: "" },
-            { jam: "12", senin: "Jam Tambah", selasa: "", rabu: "", kamis: "Jam Tambah", jumat: "", sabtu: "Jam Tambah" }
-        ];
+        let mapelData = {};
+        let jadwalData = [];
 
         // ------------------------------------------
         // 2. KONEKSI & LOGIKA LOGIN MULTI-DB API
@@ -1539,6 +1431,17 @@ function getMapelTarget(dbId) {
         let mediaData = { logoKiri: "", logoKanan: "", ttdKepsek: "", ttdGuru: "", stempel: "", fotoGuru: "" };
         let chartGenderInstance = null;
         let chartNilaiInstance = null;
+
+        // FUNGSI RESET AGAR DATA KELAS LAMA TIDAK MENUMPANG DI MEMORI
+        function resetAppState() {
+            globalSiswa = [];
+            listJurnal = [];
+            nilaiSiswa = {};
+            globalAbsen = { "Januari": {}, "Februari": {}, "Maret": {}, "April": {}, "Mei": {}, "Juni": {}, "Juli": {}, "Agustus": {}, "September": {}, "Oktober": {}, "November": {}, "Desember": {} };
+            mapelData = {};
+            jadwalData = [];
+            currentSettingMapel = "";
+        }
 
         function handleLogin(e) {
             e.preventDefault();
@@ -1620,6 +1523,7 @@ function getMapelTarget(dbId) {
         }
 
         async function sinkronisasiDB(isManual = false) {
+            resetAppState(); // Bersihkan memori sebelum memuat database baru
             let activeKelas = sessionStorage.getItem('siguru_kelas_aktif') || '4';
             document.getElementById('label-aktif-db').innerText = activeKelas === '6A' ? 'DB: Kelas 6 A' : 'DB: Kelas 4';
             
